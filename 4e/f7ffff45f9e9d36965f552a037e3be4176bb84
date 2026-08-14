@@ -1,0 +1,865 @@
+.gitignore
+  s_6b5f3f85d57b7b::t_563cc546e6501d 1-4
+Package.swift
+  s_6b5f3f85d57b7b::t_1398debf233f7a 1-118
+Sources/COniguruma/LICENSE.txt
+  s_6b5f3f85d57b7b::t_4240e6163f3c7e 1-26
+Sources/COniguruma/ascii.c
+  s_6b5f3f85d57b7b::t_72cb0ee5059b38 1-118
+Sources/COniguruma/big5.c
+  s_6b5f3f85d57b7b::t_0f658761855f7b 1-200
+Sources/COniguruma/cp1251.c
+  s_6b5f3f85d57b7b::t_67baa30b6a87a6 1-209
+Sources/COniguruma/euc_jp.c
+  s_6b5f3f85d57b7b::t_f81c2ed7ed11b4 1-308
+Sources/COniguruma/euc_jp_prop.c
+  s_6b5f3f85d57b7b::t_9a75f5209fbf49 1-151
+Sources/COniguruma/euc_kr.c
+  s_6b5f3f85d57b7b::t_60ac6f3e34530f 1-200
+Sources/COniguruma/euc_tw.c
+  s_6b5f3f85d57b7b::t_f0ab555bb47a94 1-194
+Sources/COniguruma/gb18030.c
+  s_6b5f3f85d57b7b::t_6794e5200013ce 1-596
+Sources/COniguruma/include/ShikiOnig.h
+  s_6b5f3f85d57b7b::t_04b125df764a03 1-56
+Sources/COniguruma/include/oniguruma.h
+  s_6b5f3f85d57b7b::t_40d93fc0dc4879 1-1089
+Sources/COniguruma/iso8859_1.c
+  s_6b5f3f85d57b7b::t_c22802d728c51f 1-276
+Sources/COniguruma/iso8859_10.c
+  s_6b5f3f85d57b7b::t_4af88a0e82b45c 1-226
+Sources/COniguruma/iso8859_11.c
+  s_6b5f3f85d57b7b::t_add07842ef1816 1-101
+Sources/COniguruma/iso8859_13.c
+  s_6b5f3f85d57b7b::t_dd8ee5771e8726 1-211
+Sources/COniguruma/iso8859_14.c
+  s_6b5f3f85d57b7b::t_423ff0fbd35055 1-227
+Sources/COniguruma/iso8859_15.c
+  s_6b5f3f85d57b7b::t_0474a47eb4f02d 1-217
+Sources/COniguruma/iso8859_16.c
+  s_6b5f3f85d57b7b::t_3be4cfa7cfc271 1-224
+Sources/COniguruma/iso8859_2.c
+  s_6b5f3f85d57b7b::t_09a8a5ec0f58c3 1-222
+Sources/COniguruma/iso8859_3.c
+  s_6b5f3f85d57b7b::t_4a3dec2f4922d1 1-218
+Sources/COniguruma/iso8859_4.c
+  s_6b5f3f85d57b7b::t_2c15ea86a01a66 1-221
+Sources/COniguruma/iso8859_5.c
+  s_6b5f3f85d57b7b::t_646af136ec0e4c 1-222
+Sources/COniguruma/iso8859_6.c
+  s_6b5f3f85d57b7b::t_125a4b6fec8db6 1-101
+Sources/COniguruma/iso8859_7.c
+  s_6b5f3f85d57b7b::t_7b0c4f9918d42f 1-210
+Sources/COniguruma/iso8859_8.c
+  s_6b5f3f85d57b7b::t_b2d7bc7115b322 1-101
+Sources/COniguruma/iso8859_9.c
+  s_6b5f3f85d57b7b::t_d1563271b0a4c4 1-211
+Sources/COniguruma/koi8_r.c
+  s_6b5f3f85d57b7b::t_d413188ba6a764 1-208
+Sources/COniguruma/onig_init.c
+  s_6b5f3f85d57b7b::t_5f9ba09d352d84 1-45
+Sources/COniguruma/oniggnu.h
+  s_6b5f3f85d57b7b::t_e641cdcc687882 1-87
+Sources/COniguruma/regcomp.c
+  s_6b5f3f85d57b7b::t_5accaa32cce1ca 1-8515
+Sources/COniguruma/regenc.c
+  s_6b5f3f85d57b7b::t_35f2181fb2d787 1-994
+Sources/COniguruma/regenc.h
+  s_6b5f3f85d57b7b::t_7c253bba22c5fc 1-286
+Sources/COniguruma/regerror.c
+  s_6b5f3f85d57b7b::t_1558418e83fe5c 1-414
+Sources/COniguruma/regexec.c
+  s_6b5f3f85d57b7b::t_2a7d8b1bb084ef 1-6704
+Sources/COniguruma/regext.c
+  s_6b5f3f85d57b7b::t_760387ed094e3e 1-202
+Sources/COniguruma/reggnu.c
+  s_6b5f3f85d57b7b::t_a1ea19605ae5c2 1-143
+Sources/COniguruma/regint.h
+  s_6b5f3f85d57b7b::t_4b8f4fd6b44243 1-1044
+Sources/COniguruma/regparse.c
+  s_6b5f3f85d57b7b::t_b11fdf5efcb3d7 1-9292
+Sources/COniguruma/regparse.h
+  s_6b5f3f85d57b7b::t_4e6db67f9e0ea5 1-493
+Sources/COniguruma/regsyntax.c
+  s_6b5f3f85d57b7b::t_c8aec05c1399ef 1-367
+Sources/COniguruma/regtrav.c
+  s_6b5f3f85d57b7b::t_049a6101b12606 1-76
+Sources/COniguruma/regversion.c
+  s_6b5f3f85d57b7b::t_e5f6f65be9032f 1-59
+Sources/COniguruma/sjis.c
+  s_6b5f3f85d57b7b::t_f56ee9581bdc8b 1-312
+Sources/COniguruma/sjis_prop.c
+  s_6b5f3f85d57b7b::t_e78b711d995bb1 1-151
+Sources/COniguruma/st.c
+  s_6b5f3f85d57b7b::t_5739634375ec0e 1-588
+Sources/COniguruma/st.h
+  s_6b5f3f85d57b7b::t_1e77d90deadb07 1-67
+Sources/COniguruma/unicode.c
+  s_6b5f3f85d57b7b::t_101af14d2c3dc4 1-1239
+Sources/COniguruma/unicode_egcb_data.c
+  s_6b5f3f85d57b7b::t_7e5816c553b6a2 1-1403
+Sources/COniguruma/unicode_fold1_key.c
+  s_6b5f3f85d57b7b::t_b5265ccf8f75ef 1-3077
+Sources/COniguruma/unicode_fold2_key.c
+  s_6b5f3f85d57b7b::t_7119890914deec 1-226
+Sources/COniguruma/unicode_fold3_key.c
+  s_6b5f3f85d57b7b::t_b4439ffea97865 1-136
+Sources/COniguruma/unicode_fold_data.c
+  s_6b5f3f85d57b7b::t_4c05242f4d576b 1-1592
+Sources/COniguruma/unicode_property_data.c
+  s_6b5f3f85d57b7b::t_a48399befeda60 1-31863
+Sources/COniguruma/unicode_property_data_posix.c
+  s_6b5f3f85d57b7b::t_22154a8c4ce8f7 1-5606
+Sources/COniguruma/unicode_unfold_key.c
+  s_6b5f3f85d57b7b::t_714ff538b44f4a 1-3394
+Sources/COniguruma/unicode_wb_data.c
+  s_6b5f3f85d57b7b::t_0ab8f13b768d91 1-1084
+Sources/COniguruma/utf16_be.c
+  s_6b5f3f85d57b7b::t_7aa318787bbb62 1-276
+Sources/COniguruma/utf16_le.c
+  s_6b5f3f85d57b7b::t_0ee94af414b192 1-276
+Sources/COniguruma/utf32_be.c
+  s_6b5f3f85d57b7b::t_ffd3b96e621336 1-166
+Sources/COniguruma/utf32_le.c
+  s_6b5f3f85d57b7b::t_6256458f1beb66 1-167
+Sources/COniguruma/utf8.c
+  s_6b5f3f85d57b7b::t_983d6e4a5223a7 1-290
+Sources/Shiki/Resources/asset-manifest.json
+  s_6b5f3f85d57b7b::t_99a6216d8870a7 1-1684
+Sources/Shiki/Resources/grammars/abap.json
+  s_6b5f3f85d57b7b::t_6871563fa8bcfd 1-384
+Sources/Shiki/Resources/grammars/actionscript-3.json
+  s_6b5f3f85d57b7b::t_90286c84c02d23 1-1081
+Sources/Shiki/Resources/grammars/ada.json
+  s_6b5f3f85d57b7b::t_03602c32e67aa0 1-3873
+Sources/Shiki/Resources/grammars/ahk.json
+  s_6b5f3f85d57b7b::t_9711ed2d1e592c 1-697
+Sources/Shiki/Resources/grammars/ahk2.json
+  s_6b5f3f85d57b7b::t_acba5657817393 1-2282
+Sources/Shiki/Resources/grammars/angular-expression.json
+  s_6b5f3f85d57b7b::t_0790325787316e 1-973
+Sources/Shiki/Resources/grammars/angular-html.json
+  s_6b5f3f85d57b7b::t_ae38526901c074 1-50
+Sources/Shiki/Resources/grammars/angular-inline-style.json
+  s_6b5f3f85d57b7b::t_2b374592de7953 1-105
+Sources/Shiki/Resources/grammars/angular-inline-template.json
+  s_6b5f3f85d57b7b::t_b6e295f02fa140 1-84
+Sources/Shiki/Resources/grammars/angular-let-declaration.json
+  s_6b5f3f85d57b7b::t_a35212e6724ffe 1-61
+Sources/Shiki/Resources/grammars/angular-template-blocks.json
+  s_6b5f3f85d57b7b::t_7fdc8397368d87 1-147
+Sources/Shiki/Resources/grammars/angular-template.json
+  s_6b5f3f85d57b7b::t_a7244c15ddbef9 1-40
+Sources/Shiki/Resources/grammars/angular-ts.json
+  s_6b5f3f85d57b7b::t_fc5ae4759917d6 1-5755
+Sources/Shiki/Resources/grammars/apache.json
+  s_6b5f3f85d57b7b::t_ac314881aa20be 1-562
+Sources/Shiki/Resources/grammars/apex.json
+  s_6b5f3f85d57b7b::t_0b030037cb104e 1-3334
+Sources/Shiki/Resources/grammars/apl.json
+  s_6b5f3f85d57b7b::t_7c9c173fdb8741 1-1486
+Sources/Shiki/Resources/grammars/applescript.json
+  s_6b5f3f85d57b7b::t_9318c53dbbc0d2 1-1391
+Sources/Shiki/Resources/grammars/ara.json
+  s_6b5f3f85d57b7b::t_e700072bf9a82e 1-411
+Sources/Shiki/Resources/grammars/asciidoc.json
+  s_6b5f3f85d57b7b::t_6bf5ba883f5016 1-8850
+Sources/Shiki/Resources/grammars/asm.json
+  s_6b5f3f85d57b7b::t_ed53168a872bb6 1-1752
+Sources/Shiki/Resources/grammars/astro.json
+  s_6b5f3f85d57b7b::t_a0a6102afa8ebf 1-861
+Sources/Shiki/Resources/grammars/awk.json
+  s_6b5f3f85d57b7b::t_099d7d82c7e764 1-388
+Sources/Shiki/Resources/grammars/ballerina.json
+  s_6b5f3f85d57b7b::t_ae3d4c737a3a50 1-3827
+Sources/Shiki/Resources/grammars/bat.json
+  s_6b5f3f85d57b7b::t_865b8d7ce26c3f 1-787
+Sources/Shiki/Resources/grammars/beancount.json
+  s_6b5f3f85d57b7b::t_028a7716b6e413 1-757
+Sources/Shiki/Resources/grammars/berry.json
+  s_6b5f3f85d57b7b::t_da0ae42225a9bb 1-219
+Sources/Shiki/Resources/grammars/bibtex.json
+  s_6b5f3f85d57b7b::t_e0cd841804c5bd 1-336
+Sources/Shiki/Resources/grammars/bicep.json
+  s_6b5f3f85d57b7b::t_6edee63c4dd0b1 1-311
+Sources/Shiki/Resources/grammars/bird2.json
+  s_6b5f3f85d57b7b::t_d281def6cc8ae1 1-1479
+Sources/Shiki/Resources/grammars/blade.json
+  s_6b5f3f85d57b7b::t_c22e16099dae11 1-3989
+Sources/Shiki/Resources/grammars/bsl.json
+  s_6b5f3f85d57b7b::t_4c36bfedfa88d7 1-489
+Sources/Shiki/Resources/grammars/c.json
+  s_6b5f3f85d57b7b::t_c5431ce710cece 1-3550
+Sources/Shiki/Resources/grammars/c3.json
+  s_6b5f3f85d57b7b::t_bfafe0d32233a2 1-2110
+Sources/Shiki/Resources/grammars/cadence.json
+  s_6b5f3f85d57b7b::t_51847d9783c31d 1-1551
+Sources/Shiki/Resources/grammars/cairo.json
+  s_6b5f3f85d57b7b::t_399648cc3aa7bb 1-198
+Sources/Shiki/Resources/grammars/chapel.json
+  s_6b5f3f85d57b7b::t_0291cde89e4123 1-394
+Sources/Shiki/Resources/grammars/clarity.json
+  s_6b5f3f85d57b7b::t_80dca7f406e244 1-868
+Sources/Shiki/Resources/grammars/clojure.json
+  s_6b5f3f85d57b7b::t_0533d421be2201 1-429
+Sources/Shiki/Resources/grammars/cmake.json
+  s_6b5f3f85d57b7b::t_cfc1c7da5e33ef 1-124
+Sources/Shiki/Resources/grammars/cobol.json
+  s_6b5f3f85d57b7b::t_1e1c8cb462da63 1-1162
+Sources/Shiki/Resources/grammars/codeowners.json
+  s_6b5f3f85d57b7b::t_76f38ffeb0de69 1-40
+Sources/Shiki/Resources/grammars/codeql.json
+  s_6b5f3f85d57b7b::t_28ba45b241e971 1-1543
+Sources/Shiki/Resources/grammars/coffee.json
+  s_6b5f3f85d57b7b::t_6b332ed9079214 1-1317
+Sources/Shiki/Resources/grammars/common-lisp.json
+  s_6b5f3f85d57b7b::t_e155f04fce7123 1-568
+Sources/Shiki/Resources/grammars/coq.json
+  s_6b5f3f85d57b7b::t_175ce7383c0ed1 1-263
+Sources/Shiki/Resources/grammars/cpp-macro.json
+  s_6b5f3f85d57b7b::t_8a2e93c8c8aa74 1-11550
+Sources/Shiki/Resources/grammars/cpp.json
+  s_6b5f3f85d57b7b::t_03ec1cca4e4b2d 1-20058
+Sources/Shiki/Resources/grammars/crystal.json
+  s_6b5f3f85d57b7b::t_a3cb529b625e61 1-1814
+Sources/Shiki/Resources/grammars/csharp.json
+  s_6b5f3f85d57b7b::t_720d4c98212734 1-6014
+Sources/Shiki/Resources/grammars/css.json
+  s_6b5f3f85d57b7b::t_e7f0824332969b 1-1860
+Sources/Shiki/Resources/grammars/csv.json
+  s_6b5f3f85d57b7b::t_61d7340519059c 1-46
+Sources/Shiki/Resources/grammars/cue.json
+  s_6b5f3f85d57b7b::t_7e325754780da4 1-1128
+Sources/Shiki/Resources/grammars/cypher.json
+  s_6b5f3f85d57b7b::t_ca1066a34eee25 1-349
+Sources/Shiki/Resources/grammars/d.json
+  s_6b5f3f85d57b7b::t_4d10de1bb481e7 1-3280
+Sources/Shiki/Resources/grammars/dart.json
+  s_6b5f3f85d57b7b::t_8f1370d352f161 1-601
+Sources/Shiki/Resources/grammars/dax.json
+  s_6b5f3f85d57b7b::t_aaf27d3b629ce1 1-184
+Sources/Shiki/Resources/grammars/desktop.json
+  s_6b5f3f85d57b7b::t_32cd2623355063 1-106
+Sources/Shiki/Resources/grammars/diff.json
+  s_6b5f3f85d57b7b::t_bb7f5b50c13d20 1-154
+Sources/Shiki/Resources/grammars/docker.json
+  s_6b5f3f85d57b7b::t_040ff40ef32bd1 1-106
+Sources/Shiki/Resources/grammars/dotenv.json
+  s_6b5f3f85d57b7b::t_738d48a409624e 1-114
+Sources/Shiki/Resources/grammars/dream-maker.json
+  s_6b5f3f85d57b7b::t_ea673d959e1101 1-639
+Sources/Shiki/Resources/grammars/edge.json
+  s_6b5f3f85d57b7b::t_951f4474bc25de 1-151
+Sources/Shiki/Resources/grammars/elixir.json
+  s_6b5f3f85d57b7b::t_e117f422453e34 1-989
+Sources/Shiki/Resources/grammars/elm.json
+  s_6b5f3f85d57b7b::t_fdfc4a90870e15 1-752
+Sources/Shiki/Resources/grammars/emacs-lisp.json
+  s_6b5f3f85d57b7b::t_b6b1a18c05b2ba 1-1401
+Sources/Shiki/Resources/grammars/erb.json
+  s_6b5f3f85d57b7b::t_364a8522b29953 1-160
+Sources/Shiki/Resources/grammars/erlang.json
+  s_6b5f3f85d57b7b::t_3f53eefa2ea385 1-2278
+Sources/Shiki/Resources/grammars/es-tag-css.json
+  s_6b5f3f85d57b7b::t_8e8defdd778f6a 1-123
+Sources/Shiki/Resources/grammars/es-tag-glsl.json
+  s_6b5f3f85d57b7b::t_d0310321395293 1-123
+Sources/Shiki/Resources/grammars/es-tag-html.json
+  s_6b5f3f85d57b7b::t_e1430547317494 1-145
+Sources/Shiki/Resources/grammars/es-tag-sql.json
+  s_6b5f3f85d57b7b::t_c23f74ceb2dd36 1-166
+Sources/Shiki/Resources/grammars/es-tag-xml.json
+  s_6b5f3f85d57b7b::t_3ac12f6d209393 1-81
+Sources/Shiki/Resources/grammars/fennel.json
+  s_6b5f3f85d57b7b::t_66340f406de1d5 1-233
+Sources/Shiki/Resources/grammars/fish.json
+  s_6b5f3f85d57b7b::t_1f01c40dea63ab 1-542
+Sources/Shiki/Resources/grammars/fluent.json
+  s_6b5f3f85d57b7b::t_91b5ca72f87e9b 1-209
+Sources/Shiki/Resources/grammars/fortran-fixed-form.json
+  s_6b5f3f85d57b7b::t_d95f349e298e81 1-119
+Sources/Shiki/Resources/grammars/fortran-free-form.json
+  s_6b5f3f85d57b7b::t_cfed3a3c37b940 1-5735
+Sources/Shiki/Resources/grammars/fsharp.json
+  s_6b5f3f85d57b7b::t_0ef83a6e79c825 1-1841
+Sources/Shiki/Resources/grammars/gdresource.json
+  s_6b5f3f85d57b7b::t_06ee806292acb2 1-297
+Sources/Shiki/Resources/grammars/gdscript.json
+  s_6b5f3f85d57b7b::t_10758471c56e07 1-1132
+Sources/Shiki/Resources/grammars/gdshader.json
+  s_6b5f3f85d57b7b::t_be7a2d125fa9cc 1-405
+Sources/Shiki/Resources/grammars/genie.json
+  s_6b5f3f85d57b7b::t_c9f3763c9c39a5 1-194
+Sources/Shiki/Resources/grammars/gherkin.json
+  s_6b5f3f85d57b7b::t_b96ca272ebfdfe 1-133
+Sources/Shiki/Resources/grammars/git-commit.json
+  s_6b5f3f85d57b7b::t_9e0e494a7e13e3 1-83
+Sources/Shiki/Resources/grammars/git-rebase.json
+  s_6b5f3f85d57b7b::t_39a090c84b77af 1-59
+Sources/Shiki/Resources/grammars/gleam.json
+  s_6b5f3f85d57b7b::t_2c30d649ec6002 1-175
+Sources/Shiki/Resources/grammars/glimmer-js.json
+  s_6b5f3f85d57b7b::t_af9bbd73ea1df5 1-1501
+Sources/Shiki/Resources/grammars/glimmer-ts.json
+  s_6b5f3f85d57b7b::t_fffd8491d4ed13 1-1501
+Sources/Shiki/Resources/grammars/glsl.json
+  s_6b5f3f85d57b7b::t_66b4bb1301ee57 1-60
+Sources/Shiki/Resources/grammars/gn.json
+  s_6b5f3f85d57b7b::t_0ac68438c94f34 1-155
+Sources/Shiki/Resources/grammars/gnuplot.json
+  s_6b5f3f85d57b7b::t_d30f4823e829dd 1-892
+Sources/Shiki/Resources/grammars/go.json
+  s_6b5f3f85d57b7b::t_a4ea3487087c19 1-3156
+Sources/Shiki/Resources/grammars/graphql.json
+  s_6b5f3f85d57b7b::t_bea5ab0e51eaa6 1-1301
+Sources/Shiki/Resources/grammars/groovy.json
+  s_6b5f3f85d57b7b::t_8c4fd6ea02dfd9 1-1375
+Sources/Shiki/Resources/grammars/hack.json
+  s_6b5f3f85d57b7b::t_d14b67ef3e4026 1-2702
+Sources/Shiki/Resources/grammars/haml.json
+  s_6b5f3f85d57b7b::t_d1e4518b51614a 1-607
+Sources/Shiki/Resources/grammars/handlebars.json
+  s_6b5f3f85d57b7b::t_90eaf64f738943 1-856
+Sources/Shiki/Resources/grammars/haskell.json
+  s_6b5f3f85d57b7b::t_eb523dfbdd7556 1-2428
+Sources/Shiki/Resources/grammars/haxe.json
+  s_6b5f3f85d57b7b::t_fec4482f898446 1-2561
+Sources/Shiki/Resources/grammars/hcl.json
+  s_6b5f3f85d57b7b::t_b71d231acd9b67 1-757
+Sources/Shiki/Resources/grammars/hjson.json
+  s_6b5f3f85d57b7b::t_fc048b6051e92f 1-821
+Sources/Shiki/Resources/grammars/hlsl.json
+  s_6b5f3f85d57b7b::t_5b5bee9c70805c 1-212
+Sources/Shiki/Resources/grammars/html-derivative.json
+  s_6b5f3f85d57b7b::t_146d8d0590fbc9 1-46
+Sources/Shiki/Resources/grammars/html.json
+  s_6b5f3f85d57b7b::t_4d6542d6a86205 1-2631
+Sources/Shiki/Resources/grammars/http.json
+  s_6b5f3f85d57b7b::t_358770f23b3728 1-306
+Sources/Shiki/Resources/grammars/hurl.json
+  s_6b5f3f85d57b7b::t_e9afe17848bcbc 1-273
+Sources/Shiki/Resources/grammars/hxml.json
+  s_6b5f3f85d57b7b::t_67cc43bf8aa0c2 1-79
+Sources/Shiki/Resources/grammars/hy.json
+  s_6b5f3f85d57b7b::t_211cb3f5e580c2 1-107
+Sources/Shiki/Resources/grammars/imba.json
+  s_6b5f3f85d57b7b::t_b1277b33c5ba21 1-2842
+Sources/Shiki/Resources/grammars/ini.json
+  s_6b5f3f85d57b7b::t_d4726efbc0c37a 1-111
+Sources/Shiki/Resources/grammars/java.json
+  s_6b5f3f85d57b7b::t_22b316b649eab3 1-1885
+Sources/Shiki/Resources/grammars/javascript.json
+  s_6b5f3f85d57b7b::t_6eec3e49774278 1-6001
+Sources/Shiki/Resources/grammars/jinja-html.json
+  s_6b5f3f85d57b7b::t_76cc4d36592d7e 1-19
+Sources/Shiki/Resources/grammars/jinja.json
+  s_6b5f3f85d57b7b::t_bda93c6f3d1f58 1-348
+Sources/Shiki/Resources/grammars/jison.json
+  s_6b5f3f85d57b7b::t_e076bd8c036910 1-718
+Sources/Shiki/Resources/grammars/json.json
+  s_6b5f3f85d57b7b::t_62a64b6011d062 1-206
+Sources/Shiki/Resources/grammars/json5.json
+  s_6b5f3f85d57b7b::t_03276e0889fa16 1-238
+Sources/Shiki/Resources/grammars/jsonc.json
+  s_6b5f3f85d57b7b::t_833524ee267abd 1-206
+Sources/Shiki/Resources/grammars/jsonl.json
+  s_6b5f3f85d57b7b::t_a813a991046f5d 1-206
+Sources/Shiki/Resources/grammars/jsonnet.json
+  s_6b5f3f85d57b7b::t_a959f95112104d 1-211
+Sources/Shiki/Resources/grammars/jssm.json
+  s_6b5f3f85d57b7b::t_7f631495611fda 1-135
+Sources/Shiki/Resources/grammars/jsx.json
+  s_6b5f3f85d57b7b::t_45fe4e7b708b83 1-5996
+Sources/Shiki/Resources/grammars/julia.json
+  s_6b5f3f85d57b7b::t_daf03079d1d708 1-1082
+Sources/Shiki/Resources/grammars/just.json
+  s_6b5f3f85d57b7b::t_a928cc3bf580cb 1-762
+Sources/Shiki/Resources/grammars/kdl.json
+  s_6b5f3f85d57b7b::t_5a4e1fcbf34497 1-213
+Sources/Shiki/Resources/grammars/kotlin.json
+  s_6b5f3f85d57b7b::t_18ecedc5acafcd 1-584
+Sources/Shiki/Resources/grammars/kusto.json
+  s_6b5f3f85d57b7b::t_4291eebc5b9864 1-661
+Sources/Shiki/Resources/grammars/latex.json
+  s_6b5f3f85d57b7b::t_4b68bfe2c3db69 1-4456
+Sources/Shiki/Resources/grammars/lean.json
+  s_6b5f3f85d57b7b::t_e8b2c590d68110 1-255
+Sources/Shiki/Resources/grammars/less.json
+  s_6b5f3f85d57b7b::t_c0fe37763d2a1e 1-5734
+Sources/Shiki/Resources/grammars/liquid.json
+  s_6b5f3f85d57b7b::t_a37ea8e041f1f7 1-1107
+Sources/Shiki/Resources/grammars/llvm.json
+  s_6b5f3f85d57b7b::t_4fd91a41cd1eef 1-122
+Sources/Shiki/Resources/grammars/log.json
+  s_6b5f3f85d57b7b::t_c89b79b3cb8fb7 1-131
+Sources/Shiki/Resources/grammars/logo.json
+  s_6b5f3f85d57b7b::t_39e99b4d7c2b94 1-54
+Sources/Shiki/Resources/grammars/lua.json
+  s_6b5f3f85d57b7b::t_50ac0c6c7ea12b 1-982
+Sources/Shiki/Resources/grammars/luau.json
+  s_6b5f3f85d57b7b::t_3c0f1844c0a3b2 1-930
+Sources/Shiki/Resources/grammars/make.json
+  s_6b5f3f85d57b7b::t_29084f4a3ae7f5 1-632
+Sources/Shiki/Resources/grammars/markdown-nix.json
+  s_6b5f3f85d57b7b::t_f68ae9b540706a 1-49
+Sources/Shiki/Resources/grammars/markdown-vue.json
+  s_6b5f3f85d57b7b::t_65da2058de7166 1-43
+Sources/Shiki/Resources/grammars/markdown.json
+  s_6b5f3f85d57b7b::t_19aec7c9afb8a2 1-3326
+Sources/Shiki/Resources/grammars/marko.json
+  s_6b5f3f85d57b7b::t_94ac091aa94807 1-1751
+Sources/Shiki/Resources/grammars/matlab.json
+  s_6b5f3f85d57b7b::t_263193c19fd660 1-1101
+Sources/Shiki/Resources/grammars/mdc.json
+  s_6b5f3f85d57b7b::t_666fd39e92b972 1-596
+Sources/Shiki/Resources/grammars/mdx.json
+  s_6b5f3f85d57b7b::t_3002446e0e12ba 1-6286
+Sources/Shiki/Resources/grammars/mermaid.json
+  s_6b5f3f85d57b7b::t_62ff6a67a75a35 1-3522
+Sources/Shiki/Resources/grammars/mipsasm.json
+  s_6b5f3f85d57b7b::t_595587d1d99bd2 1-127
+Sources/Shiki/Resources/grammars/mojo.json
+  s_6b5f3f85d57b7b::t_99b5d87a9ef146 1-4121
+Sources/Shiki/Resources/grammars/moonbit.json
+  s_6b5f3f85d57b7b::t_93588e4d7350d9 1-1434
+Sources/Shiki/Resources/grammars/move.json
+  s_6b5f3f85d57b7b::t_7253c8c88ade28 1-1459
+Sources/Shiki/Resources/grammars/narrat.json
+  s_6b5f3f85d57b7b::t_b60d8ec519fedc 1-230
+Sources/Shiki/Resources/grammars/nextflow-groovy.json
+  s_6b5f3f85d57b7b::t_9740061a9ac15f 1-789
+Sources/Shiki/Resources/grammars/nextflow.json
+  s_6b5f3f85d57b7b::t_87a0a558ce95f3 1-327
+Sources/Shiki/Resources/grammars/nginx.json
+  s_6b5f3f85d57b7b::t_df69233a2a57eb 1-2208
+Sources/Shiki/Resources/grammars/nim.json
+  s_6b5f3f85d57b7b::t_a10787dbbbee9b 1-1507
+Sources/Shiki/Resources/grammars/nix.json
+  s_6b5f3f85d57b7b::t_9f53a851732e8c 1-1191
+Sources/Shiki/Resources/grammars/nsis.json
+  s_6b5f3f85d57b7b::t_c97a5dfb9c6793 1-336
+Sources/Shiki/Resources/grammars/nushell.json
+  s_6b5f3f85d57b7b::t_db6d48d1c52e3b 1-1116
+Sources/Shiki/Resources/grammars/objective-c.json
+  s_6b5f3f85d57b7b::t_f66d54dc9c5027 1-3752
+Sources/Shiki/Resources/grammars/objective-cpp.json
+  s_6b5f3f85d57b7b::t_e7469d146206c1 1-7240
+Sources/Shiki/Resources/grammars/ocaml.json
+  s_6b5f3f85d57b7b::t_81ff8829548a06 1-2965
+Sources/Shiki/Resources/grammars/odin.json
+  s_6b5f3f85d57b7b::t_b262a236e749fc 1-1166
+Sources/Shiki/Resources/grammars/openscad.json
+  s_6b5f3f85d57b7b::t_57dcf01ae8aeb9 1-154
+Sources/Shiki/Resources/grammars/org.json
+  s_6b5f3f85d57b7b::t_68e54663c61e69 1-2109
+Sources/Shiki/Resources/grammars/pascal.json
+  s_6b5f3f85d57b7b::t_c88589385f8b84 1-155
+Sources/Shiki/Resources/grammars/perl.json
+  s_6b5f3f85d57b7b::t_193f4fe4cfd05c 1-2965
+Sources/Shiki/Resources/grammars/php.json
+  s_6b5f3f85d57b7b::t_6ed285f1f507cf 1-4196
+Sources/Shiki/Resources/grammars/pkl.json
+  s_6b5f3f85d57b7b::t_71b176d273c652 1-568
+Sources/Shiki/Resources/grammars/plsql.json
+  s_6b5f3f85d57b7b::t_1634c6a1f2a378 1-241
+Sources/Shiki/Resources/grammars/po.json
+  s_6b5f3f85d57b7b::t_9801981699dfa9 1-232
+Sources/Shiki/Resources/grammars/polar.json
+  s_6b5f3f85d57b7b::t_99dc1670a3a890 1-395
+Sources/Shiki/Resources/grammars/postcss.json
+  s_6b5f3f85d57b7b::t_87ad2c5f2165a5 1-377
+Sources/Shiki/Resources/grammars/powerquery.json
+  s_6b5f3f85d57b7b::t_1fb34504af8c7f 1-349
+Sources/Shiki/Resources/grammars/powershell.json
+  s_6b5f3f85d57b7b::t_294dd863bbcefd 1-1007
+Sources/Shiki/Resources/grammars/prisma.json
+  s_6b5f3f85d57b7b::t_68045e8b238093 1-563
+Sources/Shiki/Resources/grammars/prolog.json
+  s_6b5f3f85d57b7b::t_2b347e0aa673bd 1-298
+Sources/Shiki/Resources/grammars/proto.json
+  s_6b5f3f85d57b7b::t_d2f6c203290a8a 1-510
+Sources/Shiki/Resources/grammars/pug.json
+  s_6b5f3f85d57b7b::t_fb77fa034e3183 1-1031
+Sources/Shiki/Resources/grammars/puppet.json
+  s_6b5f3f85d57b7b::t_aaa7f8e0ebe714 1-772
+Sources/Shiki/Resources/grammars/purescript.json
+  s_6b5f3f85d57b7b::t_23cecce13141bc 1-1300
+Sources/Shiki/Resources/grammars/python.json
+  s_6b5f3f85d57b7b::t_8f8dfcaa259b90 1-4177
+Sources/Shiki/Resources/grammars/qml.json
+  s_6b5f3f85d57b7b::t_3f059995c5c939 1-439
+Sources/Shiki/Resources/grammars/qmldir.json
+  s_6b5f3f85d57b7b::t_73244f1c33ec59 1-83
+Sources/Shiki/Resources/grammars/qss.json
+  s_6b5f3f85d57b7b::t_38d4c6b2045401 1-285
+Sources/Shiki/Resources/grammars/r.json
+  s_6b5f3f85d57b7b::t_012923d97e4007 1-543
+Sources/Shiki/Resources/grammars/racket.json
+  s_6b5f3f85d57b7b::t_f1581db8b8f256 1-1661
+Sources/Shiki/Resources/grammars/raku.json
+  s_6b5f3f85d57b7b::t_0365e4c25e0f70 1-313
+Sources/Shiki/Resources/grammars/razor.json
+  s_6b5f3f85d57b7b::t_739713164bc62a 1-2035
+Sources/Shiki/Resources/grammars/rbs.json
+  s_6b5f3f85d57b7b::t_9ca1fe1b5bfc92 1-213
+Sources/Shiki/Resources/grammars/reg.json
+  s_6b5f3f85d57b7b::t_16de525a0d9559 1-136
+Sources/Shiki/Resources/grammars/regexp.json
+  s_6b5f3f85d57b7b::t_81b5c76d86e6a1 1-497
+Sources/Shiki/Resources/grammars/rel.json
+  s_6b5f3f85d57b7b::t_9d834066ab2c63 1-200
+Sources/Shiki/Resources/grammars/riscv.json
+  s_6b5f3f85d57b7b::t_17fd0a4f4c555c 1-291
+Sources/Shiki/Resources/grammars/ron.json
+  s_6b5f3f85d57b7b::t_400f5c22b71d54 1-318
+Sources/Shiki/Resources/grammars/rosmsg.json
+  s_6b5f3f85d57b7b::t_9ae15934553de1 1-343
+Sources/Shiki/Resources/grammars/rst.json
+  s_6b5f3f85d57b7b::t_1071f6ce97d63f 1-745
+Sources/Shiki/Resources/grammars/ruby.json
+  s_6b5f3f85d57b7b::t_3c786ac85fdc3d 1-3131
+Sources/Shiki/Resources/grammars/rust.json
+  s_6b5f3f85d57b7b::t_e6a37384b21015 1-1106
+Sources/Shiki/Resources/grammars/sas.json
+  s_6b5f3f85d57b7b::t_0013161197cc2c 1-295
+Sources/Shiki/Resources/grammars/sass.json
+  s_6b5f3f85d57b7b::t_ecb6b2aab176f8 1-618
+Sources/Shiki/Resources/grammars/scala.json
+  s_6b5f3f85d57b7b::t_e2f877ea85523e 1-1383
+Sources/Shiki/Resources/grammars/scheme.json
+  s_6b5f3f85d57b7b::t_ff83a2d291e55a 1-375
+Sources/Shiki/Resources/grammars/scss.json
+  s_6b5f3f85d57b7b::t_9f933fc137e9a8 1-1877
+Sources/Shiki/Resources/grammars/sdbl.json
+  s_6b5f3f85d57b7b::t_4eed906e4dac5b 1-103
+Sources/Shiki/Resources/grammars/shaderlab.json
+  s_6b5f3f85d57b7b::t_b221f996a9fcdf 1-205
+Sources/Shiki/Resources/grammars/shellscript.json
+  s_6b5f3f85d57b7b::t_2ace8cb20ac8b3 1-2353
+Sources/Shiki/Resources/grammars/shellsession.json
+  s_6b5f3f85d57b7b::t_bb3e32524ded4f 1-39
+Sources/Shiki/Resources/grammars/smalltalk.json
+  s_6b5f3f85d57b7b::t_ffb921b1ec3fcc 1-860
+Sources/Shiki/Resources/grammars/smithy.json
+  s_6b5f3f85d57b7b::t_fde42b61cf59c4 1-624
+Sources/Shiki/Resources/grammars/solidity.json
+  s_6b5f3f85d57b7b::t_a4fc030cf0205d 1-1230
+Sources/Shiki/Resources/grammars/soy.json
+  s_6b5f3f85d57b7b::t_cea23805960f26 1-616
+Sources/Shiki/Resources/grammars/sparql.json
+  s_6b5f3f85d57b7b::t_1eae4d082c32a2 1-48
+Sources/Shiki/Resources/grammars/splunk.json
+  s_6b5f3f85d57b7b::t_cbcc4f8a603804 1-83
+Sources/Shiki/Resources/grammars/sql.json
+  s_6b5f3f85d57b7b::t_c47956756f393e 1-633
+Sources/Shiki/Resources/grammars/ssh-config.json
+  s_6b5f3f85d57b7b::t_2041cd5634d7e5 1-88
+Sources/Shiki/Resources/grammars/stata.json
+  s_6b5f3f85d57b7b::t_881ecf6972a651 1-3012
+Sources/Shiki/Resources/grammars/stylus.json
+  s_6b5f3f85d57b7b::t_3de3b32a954a88 1-1209
+Sources/Shiki/Resources/grammars/surrealql.json
+  s_6b5f3f85d57b7b::t_d3f6db60001528 1-761
+Sources/Shiki/Resources/grammars/svelte.json
+  s_6b5f3f85d57b7b::t_0edfef8f5fca9f 1-1302
+Sources/Shiki/Resources/grammars/swift.json
+  s_6b5f3f85d57b7b::t_a686613e12effc 1-4210
+Sources/Shiki/Resources/grammars/system-verilog.json
+  s_6b5f3f85d57b7b::t_10e7059f89a61d 1-1419
+Sources/Shiki/Resources/grammars/systemd.json
+  s_6b5f3f85d57b7b::t_6dccb657cb29ab 1-412
+Sources/Shiki/Resources/grammars/talonscript.json
+  s_6b5f3f85d57b7b::t_dc4948755d1c30 1-542
+Sources/Shiki/Resources/grammars/tasl.json
+  s_6b5f3f85d57b7b::t_2a1a58dc18e23f 1-292
+Sources/Shiki/Resources/grammars/tcl.json
+  s_6b5f3f85d57b7b::t_adca3e57d7e1bd 1-282
+Sources/Shiki/Resources/grammars/templ.json
+  s_6b5f3f85d57b7b::t_f304154e706beb 1-1145
+Sources/Shiki/Resources/grammars/terraform.json
+  s_6b5f3f85d57b7b::t_a046d55b90662c 1-785
+Sources/Shiki/Resources/grammars/tex.json
+  s_6b5f3f85d57b7b::t_f165443a4f0279 1-375
+Sources/Shiki/Resources/grammars/toml.json
+  s_6b5f3f85d57b7b::t_690bb2d865d8a4 1-430
+Sources/Shiki/Resources/grammars/ts-tags.json
+  s_6b5f3f85d57b7b::t_65e94b4a42dadd 1-21
+Sources/Shiki/Resources/grammars/tsv.json
+  s_6b5f3f85d57b7b::t_45570e29ddbda2 1-47
+Sources/Shiki/Resources/grammars/tsx.json
+  s_6b5f3f85d57b7b::t_46ba5a4b889ceb 1-5996
+Sources/Shiki/Resources/grammars/turtle.json
+  s_6b5f3f85d57b7b::t_48f75babaf28eb 1-261
+Sources/Shiki/Resources/grammars/twig.json
+  s_6b5f3f85d57b7b::t_ed4d7e24caab03 1-1433
+Sources/Shiki/Resources/grammars/typescript.json
+  s_6b5f3f85d57b7b::t_95045dfff54740 1-5752
+Sources/Shiki/Resources/grammars/typespec.json
+  s_6b5f3f85d57b7b::t_4cff5e7b746b61 1-1466
+Sources/Shiki/Resources/grammars/typst.json
+  s_6b5f3f85d57b7b::t_7fdc42ac633270 1-10899
+Sources/Shiki/Resources/grammars/v.json
+  s_6b5f3f85d57b7b::t_8c911690499957 1-1015
+Sources/Shiki/Resources/grammars/vala.json
+  s_6b5f3f85d57b7b::t_a8bc4de8b24461 1-196
+Sources/Shiki/Resources/grammars/vb.json
+  s_6b5f3f85d57b7b::t_aa821145aedf5a 1-232
+Sources/Shiki/Resources/grammars/verilog.json
+  s_6b5f3f85d57b7b::t_e22ac34df9c318 1-325
+Sources/Shiki/Resources/grammars/vhdl.json
+  s_6b5f3f85d57b7b::t_e00e9296fc3a40 1-1531
+Sources/Shiki/Resources/grammars/viml.json
+  s_6b5f3f85d57b7b::t_ab0f5e5eef6205 1-445
+Sources/Shiki/Resources/grammars/vue-directives.json
+  s_6b5f3f85d57b7b::t_8b1e92a05805a7 1-17
+Sources/Shiki/Resources/grammars/vue-html.json
+  s_6b5f3f85d57b7b::t_de1d3a6f69f605 1-562
+Sources/Shiki/Resources/grammars/vue-interpolations.json
+  s_6b5f3f85d57b7b::t_af6c8dfe216c8e 1-17
+Sources/Shiki/Resources/grammars/vue-sfc-style-variable-injection.json
+  s_6b5f3f85d57b7b::t_2e54e5944af38e 1-54
+Sources/Shiki/Resources/grammars/vue-vine.json
+  s_6b5f3f85d57b7b::t_9286c46eb06b71 1-6421
+Sources/Shiki/Resources/grammars/vue.json
+  s_6b5f3f85d57b7b::t_e1d6dd68434122 1-1615
+Sources/Shiki/Resources/grammars/vyper.json
+  s_6b5f3f85d57b7b::t_383ee27258dd27 1-4277
+Sources/Shiki/Resources/grammars/wasm.json
+  s_6b5f3f85d57b7b::t_46d1bc298591f2 1-736
+Sources/Shiki/Resources/grammars/wenyan.json
+  s_6b5f3f85d57b7b::t_8698ef5d8b49ee 1-132
+Sources/Shiki/Resources/grammars/wgsl.json
+  s_6b5f3f85d57b7b::t_dcbd79e74a2aca 1-349
+Sources/Shiki/Resources/grammars/wikitext.json
+  s_6b5f3f85d57b7b::t_72bd310d2270e2 1-3694
+Sources/Shiki/Resources/grammars/wit.json
+  s_6b5f3f85d57b7b::t_f2b021a5676297 1-1409
+Sources/Shiki/Resources/grammars/wolfram.json
+  s_6b5f3f85d57b7b::t_7915b448c6f1a5 1-2373
+Sources/Shiki/Resources/grammars/xml.json
+  s_6b5f3f85d57b7b::t_247edbb26b4194 1-385
+Sources/Shiki/Resources/grammars/xsl.json
+  s_6b5f3f85d57b7b::t_c148795d7e515f 1-92
+Sources/Shiki/Resources/grammars/yaml.json
+  s_6b5f3f85d57b7b::t_aa4cd5c4b909a9 1-630
+Sources/Shiki/Resources/grammars/zenscript.json
+  s_6b5f3f85d57b7b::t_c5cf02a379a0eb 1-240
+Sources/Shiki/Resources/grammars/zig.json
+  s_6b5f3f85d57b7b::t_f2f72fc24ee983 1-342
+Sources/Shiki/Resources/language-manifest.json
+  s_6b5f3f85d57b7b::t_4d75ca48e82600 1-4542
+Sources/Shiki/Resources/licenses/tm-grammars-LICENSE.txt
+  s_6b5f3f85d57b7b::t_88caefff6219cb 1-22
+Sources/Shiki/Resources/licenses/tm-grammars-NOTICE.txt
+  s_6b5f3f85d57b7b::t_4bcebe749efdbd 1-12660
+Sources/Shiki/Resources/licenses/tm-themes-LICENSE.txt
+  s_6b5f3f85d57b7b::t_8db60de726c792 1-22
+Sources/Shiki/Resources/licenses/tm-themes-NOTICE.txt
+  s_6b5f3f85d57b7b::t_736f274da729fa 1-1597
+Sources/Shiki/Resources/provenance.json
+  s_6b5f3f85d57b7b::t_2772e3e3d38127 1-7219
+Sources/Shiki/Resources/theme-manifest.json
+  s_6b5f3f85d57b7b::t_e49487975e63da 1-466
+Sources/Shiki/Resources/themes/andromeeda.json
+  s_6b5f3f85d57b7b::t_fc5d0e45abed7f 1-335
+Sources/Shiki/Resources/themes/aurora-x.json
+  s_6b5f3f85d57b7b::t_51098ea5e66036 1-671
+Sources/Shiki/Resources/themes/ayu-dark.json
+  s_6b5f3f85d57b7b::t_b1afadf7a1d0a0 1-944
+Sources/Shiki/Resources/themes/ayu-light.json
+  s_6b5f3f85d57b7b::t_dcad9766af2d05 1-944
+Sources/Shiki/Resources/themes/ayu-mirage.json
+  s_6b5f3f85d57b7b::t_b7e1e4b221d5a2 1-944
+Sources/Shiki/Resources/themes/catppuccin-frappe.json
+  s_6b5f3f85d57b7b::t_300f851e5d2485 1-2364
+Sources/Shiki/Resources/themes/catppuccin-latte.json
+  s_6b5f3f85d57b7b::t_140074c2195568 1-2364
+Sources/Shiki/Resources/themes/catppuccin-macchiato.json
+  s_6b5f3f85d57b7b::t_9056f06f6c8377 1-2364
+Sources/Shiki/Resources/themes/catppuccin-mocha.json
+  s_6b5f3f85d57b7b::t_7cb434c4b0ce5d 1-2364
+Sources/Shiki/Resources/themes/dark-plus.json
+  s_6b5f3f85d57b7b::t_ecc9fb088e36fc 1-590
+Sources/Shiki/Resources/themes/dracula-soft.json
+  s_6b5f3f85d57b7b::t_8a71fe444d7a4f 1-1062
+Sources/Shiki/Resources/themes/dracula.json
+  s_6b5f3f85d57b7b::t_cb2b1a2a25ca54 1-1062
+Sources/Shiki/Resources/themes/everforest-dark.json
+  s_6b5f3f85d57b7b::t_534df3fa8e71f5 1-2157
+Sources/Shiki/Resources/themes/everforest-light.json
+  s_6b5f3f85d57b7b::t_75d9371a2bec73 1-2157
+Sources/Shiki/Resources/themes/github-dark-default.json
+  s_6b5f3f85d57b7b::t_841a8bae06a966 1-653
+Sources/Shiki/Resources/themes/github-dark-dimmed.json
+  s_6b5f3f85d57b7b::t_b5de2d226913d5 1-653
+Sources/Shiki/Resources/themes/github-dark-high-contrast.json
+  s_6b5f3f85d57b7b::t_be642f68d1729e 1-657
+Sources/Shiki/Resources/themes/github-dark.json
+  s_6b5f3f85d57b7b::t_0633acb99d4ef2 1-544
+Sources/Shiki/Resources/themes/github-light-default.json
+  s_6b5f3f85d57b7b::t_017a6ac15f76cd 1-638
+Sources/Shiki/Resources/themes/github-light-high-contrast.json
+  s_6b5f3f85d57b7b::t_cbaf7f3e81ed87 1-641
+Sources/Shiki/Resources/themes/github-light.json
+  s_6b5f3f85d57b7b::t_23e595699ef0bc 1-540
+Sources/Shiki/Resources/themes/gruvbox-dark-hard.json
+  s_6b5f3f85d57b7b::t_25a865ceec40b7 1-1218
+Sources/Shiki/Resources/themes/gruvbox-dark-medium.json
+  s_6b5f3f85d57b7b::t_a99c3cd81e84df 1-1218
+Sources/Shiki/Resources/themes/gruvbox-dark-soft.json
+  s_6b5f3f85d57b7b::t_a8dec0813b00c5 1-1218
+Sources/Shiki/Resources/themes/gruvbox-light-hard.json
+  s_6b5f3f85d57b7b::t_c7ecd5fb978577 1-1218
+Sources/Shiki/Resources/themes/gruvbox-light-medium.json
+  s_6b5f3f85d57b7b::t_9492ec320baca8 1-1218
+Sources/Shiki/Resources/themes/gruvbox-light-soft.json
+  s_6b5f3f85d57b7b::t_4f474e1408d8ae 1-1218
+Sources/Shiki/Resources/themes/horizon-bright.json
+  s_6b5f3f85d57b7b::t_a332bed53b7b02 1-418
+Sources/Shiki/Resources/themes/horizon.json
+  s_6b5f3f85d57b7b::t_c8e7b987e1489e 1-419
+Sources/Shiki/Resources/themes/houston.json
+  s_6b5f3f85d57b7b::t_180b6f3ed6e696 1-1886
+Sources/Shiki/Resources/themes/kanagawa-dragon.json
+  s_6b5f3f85d57b7b::t_29048771cac02b 1-866
+Sources/Shiki/Resources/themes/kanagawa-lotus.json
+  s_6b5f3f85d57b7b::t_b6d5a6da3ca681 1-866
+Sources/Shiki/Resources/themes/kanagawa-wave.json
+  s_6b5f3f85d57b7b::t_821c17db08d550 1-866
+Sources/Shiki/Resources/themes/laserwave.json
+  s_6b5f3f85d57b7b::t_be5c9782585ec2 1-478
+Sources/Shiki/Resources/themes/light-plus.json
+  s_6b5f3f85d57b7b::t_fc420d784f929c 1-615
+Sources/Shiki/Resources/themes/material-theme-darker.json
+  s_6b5f3f85d57b7b::t_196b17e89a409b 1-766
+Sources/Shiki/Resources/themes/material-theme-lighter.json
+  s_6b5f3f85d57b7b::t_3e86d4db6aa20d 1-766
+Sources/Shiki/Resources/themes/material-theme-ocean.json
+  s_6b5f3f85d57b7b::t_573f47e4208b7b 1-766
+Sources/Shiki/Resources/themes/material-theme-palenight.json
+  s_6b5f3f85d57b7b::t_790f34050a7ac4 1-766
+Sources/Shiki/Resources/themes/material-theme.json
+  s_6b5f3f85d57b7b::t_e4d070c32d5425 1-766
+Sources/Shiki/Resources/themes/min-dark.json
+  s_6b5f3f85d57b7b::t_12de3df9b47bf8 1-306
+Sources/Shiki/Resources/themes/min-light.json
+  s_6b5f3f85d57b7b::t_308248c4ba34d2 1-325
+Sources/Shiki/Resources/themes/monokai.json
+  s_6b5f3f85d57b7b::t_f0b5bf2f2b93d1 1-449
+Sources/Shiki/Resources/themes/night-owl-light.json
+  s_6b5f3f85d57b7b::t_ab5f97092c6f97 1-1637
+Sources/Shiki/Resources/themes/night-owl.json
+  s_6b5f3f85d57b7b::t_e76c3efb6c6dc2 1-1761
+Sources/Shiki/Resources/themes/nord.json
+  s_6b5f3f85d57b7b::t_80958c8d033285 1-1286
+Sources/Shiki/Resources/themes/one-dark-pro.json
+  s_6b5f3f85d57b7b::t_b2a62329a90248 1-2022
+Sources/Shiki/Resources/themes/one-light.json
+  s_6b5f3f85d57b7b::t_22cedc3d355378 1-1819
+Sources/Shiki/Resources/themes/plastic.json
+  s_6b5f3f85d57b7b::t_7c1cc8dfeeccd0 1-331
+Sources/Shiki/Resources/themes/poimandres.json
+  s_6b5f3f85d57b7b::t_7c3f2b412f7c2f 1-1366
+Sources/Shiki/Resources/themes/red.json
+  s_6b5f3f85d57b7b::t_e59b6344a3ca17 1-385
+Sources/Shiki/Resources/themes/rose-pine-dawn.json
+  s_6b5f3f85d57b7b::t_2bc3b7efc02e88 1-740
+Sources/Shiki/Resources/themes/rose-pine-moon.json
+  s_6b5f3f85d57b7b::t_05a4a8c8ee29b3 1-740
+Sources/Shiki/Resources/themes/rose-pine.json
+  s_6b5f3f85d57b7b::t_e06ed43a64a0a9 1-740
+Sources/Shiki/Resources/themes/slack-dark.json
+  s_6b5f3f85d57b7b::t_f5bead7a04b485 1-571
+Sources/Shiki/Resources/themes/slack-ochin.json
+  s_6b5f3f85d57b7b::t_4e15da8dd69a71 1-479
+Sources/Shiki/Resources/themes/snazzy-light.json
+  s_6b5f3f85d57b7b::t_80a13a2da7df5c 1-1446
+Sources/Shiki/Resources/themes/solarized-dark.json
+  s_6b5f3f85d57b7b::t_5aa3a8e2c6b053 1-394
+Sources/Shiki/Resources/themes/solarized-light.json
+  s_6b5f3f85d57b7b::t_8dc59a32824656 1-386
+Sources/Shiki/Resources/themes/synthwave-84.json
+  s_6b5f3f85d57b7b::t_870d10e2080de4 1-816
+Sources/Shiki/Resources/themes/tokyo-night.json
+  s_6b5f3f85d57b7b::t_fc10a24aaf5833 1-1453
+Sources/Shiki/Resources/themes/vesper.json
+  s_6b5f3f85d57b7b::t_476eb812f04b5f 1-637
+Sources/Shiki/Resources/themes/vitesse-black.json
+  s_6b5f3f85d57b7b::t_31d993637e97c0 1-693
+Sources/Shiki/Resources/themes/vitesse-dark.json
+  s_6b5f3f85d57b7b::t_6df688e077e858 1-693
+Sources/Shiki/Resources/themes/vitesse-light.json
+  s_6b5f3f85d57b7b::t_32ae6ccc81a1bb 1-691
+Sources/Shiki/ShikiHighlighter.swift
+  s_6b5f3f85d57b7b::t_f5dc655418adb4 1-1034
+Sources/ShikiCore/Oniguruma.swift
+  s_6b5f3f85d57b7b::t_514bbe9c595e7a 1-283
+Sources/ShikiCore/ShikiLineSplitting.swift
+  s_6b5f3f85d57b7b::t_b1a488d81a2584 1-53
+Sources/ShikiCore/ShikiMultiThemeTokens.swift
+  s_6b5f3f85d57b7b::t_cd281c71037945 1-326
+Sources/ShikiCore/ShikiTokens.swift
+  s_6b5f3f85d57b7b::t_8876ba5433fb06 1-407
+Sources/ShikiCore/TextMateScopeSelector.swift
+  s_6b5f3f85d57b7b::t_173737fff38eb3 1-212
+Sources/ShikiCore/TextMateTheme.swift
+  s_6b5f3f85d57b7b::t_0832bd078bc1b7 1-807
+Sources/ShikiUI/ShikiAttributedStringRenderer.swift
+  s_6b5f3f85d57b7b::t_33accbd8284487 1-105
+Sources/ShikiUI/ShikiRGBAColor.swift
+  s_6b5f3f85d57b7b::t_ad4a9e37ae8d34 1-112
+Tests/ShikiCoreTests/Fixtures/Oniguruma/LICENSE-Shiki.txt
+  s_6b5f3f85d57b7b::t_99323d3a58267e 1-22
+Tests/ShikiCoreTests/Fixtures/Oniguruma/beancount.wasm.json
+  s_6b5f3f85d57b7b::t_fd6e5f8b01162f 1-1563
+Tests/ShikiCoreTests/Fixtures/Oniguruma/html-basic.wasm.json
+  s_6b5f3f85d57b7b::t_6d832bad312000 1-2406
+Tests/ShikiCoreTests/Fixtures/Oniguruma/json-basic.wasm.json
+  s_6b5f3f85d57b7b::t_45c6c34ead2ca8 1-1383
+Tests/ShikiCoreTests/Fixtures/Oniguruma/jsonc.wasm.json
+  s_6b5f3f85d57b7b::t_12d9409216f755 1-293
+Tests/ShikiCoreTests/Fixtures/Oniguruma/markdown.wasm.json
+  s_6b5f3f85d57b7b::t_0fde5a057a13b7 1-984
+Tests/ShikiCoreTests/Fixtures/Oniguruma/sql.wasm.json
+  s_6b5f3f85d57b7b::t_95bd0639de0ed9 1-1580
+Tests/ShikiCoreTests/Fixtures/Oniguruma/toml.wasm.json
+  s_6b5f3f85d57b7b::t_afdeaab65c15e7 1-518
+Tests/ShikiCoreTests/Fixtures/Oniguruma/ts-basic.wasm.json
+  s_6b5f3f85d57b7b::t_da7bd38b373ee2 1-980
+Tests/ShikiCoreTests/Fixtures/Oniguruma/vue.wasm.json
+  s_6b5f3f85d57b7b::t_76d56a80eaf3f1 1-1382
+Tests/ShikiCoreTests/OnigurumaParityTests.swift
+  s_6b5f3f85d57b7b::t_e6c573810f8ef6 1-95
+Tests/ShikiCoreTests/ShikiMultiThemeTokensTests.swift
+  s_6b5f3f85d57b7b::t_1f0a8af2eac69a 1-276
+Tests/ShikiCoreTests/ShikiTokensTests.swift
+  s_6b5f3f85d57b7b::t_7f7ff3660fca63 1-206
+Tests/ShikiCoreTests/TextMateRulesTests.swift
+  s_6b5f3f85d57b7b::t_3db871bd907efc 1-509
+Tests/ShikiTests/DetachedTaskHighlightingTests.swift
+  s_6b5f3f85d57b7b::t_a2c3cd524de1b9 1-56
+Tests/ShikiTests/ShikiMultiThemeHighlighterTests.swift
+  s_6b5f3f85d57b7b::t_af6ad4f1c22f5e 1-275
+Tests/ShikiUITests/ShikiAttributedStringRendererTests.swift
+  s_6b5f3f85d57b7b::t_12232d6f1dfdc0 1-121
+Tests/ShikiUITests/ShikiRGBAColorTests.swift
+  s_6b5f3f85d57b7b::t_40cfd1f12dc546 1-43
+shiki-swift/ContentView.swift
+  s_6b5f3f85d57b7b::t_64d9d5f409e6fa 1-2,5-33,35-204,206-380,387
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4ef7ffff45f9e9d36965f552a037e3be4176bb84",
+  "prompts": {},
+  "sessions": {
+    "s_6b5f3f85d57b7b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fffc3-0ffc-7a11-8c0d-8acec366a6b6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
