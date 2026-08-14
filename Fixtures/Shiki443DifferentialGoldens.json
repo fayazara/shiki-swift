@@ -1,0 +1,1460 @@
+{
+  "shikiVersion": "4.4.3",
+  "cases": [
+    {
+      "name": "typescript-vitesse-dark",
+      "language": "typescript",
+      "theme": "vitesse-dark",
+      "code": "interface User { name: string }\nconst greet = (user: User) => `Hi, ${user.name} 👋`",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "interface",
+              "offset": 0,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 9,
+              "color": "#DBD7CAEE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "User",
+              "offset": 10,
+              "color": "#5DA994",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 14,
+              "color": "#DBD7CAEE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "{",
+              "offset": 15,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 16,
+              "color": "#DBD7CAEE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "name",
+              "offset": 17,
+              "color": "#BD976A",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 21,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "string",
+              "offset": 23,
+              "color": "#5DA994",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " }",
+              "offset": 29,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "const ",
+              "offset": 32,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "greet",
+              "offset": 38,
+              "color": "#80A665",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 43,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "=",
+              "offset": 44,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 45,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "(",
+              "offset": 46,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "user",
+              "offset": 47,
+              "color": "#BD976A",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 51,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "User",
+              "offset": 53,
+              "color": "#5DA994",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ")",
+              "offset": 57,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 58,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "=>",
+              "offset": 59,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 61,
+              "color": "#CB7676",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "`",
+              "offset": 62,
+              "color": "#C98A7D77",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "Hi, ",
+              "offset": 63,
+              "color": "#C98A7D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "${",
+              "offset": 67,
+              "color": "#4D9375",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "user",
+              "offset": 69,
+              "color": "#C98A7D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ".",
+              "offset": 73,
+              "color": "#666666",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "name",
+              "offset": 74,
+              "color": "#C98A7D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "}",
+              "offset": 78,
+              "color": "#4D9375",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": " 👋",
+              "offset": 79,
+              "color": "#C98A7D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "`",
+              "offset": 82,
+              "color": "#C98A7D77",
+              "fontStyle": 0,
+              "type": 2
+            }
+          ]
+        ],
+        "fg": "#dbd7caee",
+        "bg": "#121212",
+        "themeName": "vitesse-dark"
+      }
+    },
+    {
+      "name": "json-github-light",
+      "language": "json",
+      "theme": "github-light",
+      "code": "{\n  \"enabled\": true,\n  \"count\": 2,\n  \"label\": \"Café 😀\"\n}",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "{",
+              "offset": 0,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 2,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"enabled\"",
+              "offset": 4,
+              "color": "#005CC5",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 13,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "true",
+              "offset": 15,
+              "color": "#005CC5",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ",",
+              "offset": 19,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 21,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"count\"",
+              "offset": 23,
+              "color": "#005CC5",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 30,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "2",
+              "offset": 32,
+              "color": "#005CC5",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ",",
+              "offset": 33,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 35,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"label\"",
+              "offset": 37,
+              "color": "#005CC5",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 44,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"Café 😀\"",
+              "offset": 46,
+              "color": "#032F62",
+              "fontStyle": 0,
+              "type": 2
+            }
+          ],
+          [
+            {
+              "content": "}",
+              "offset": 57,
+              "color": "#24292E",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ]
+        ],
+        "fg": "#24292e",
+        "bg": "#fff",
+        "themeName": "github-light"
+      }
+    },
+    {
+      "name": "python-nord",
+      "language": "python",
+      "theme": "nord",
+      "code": "@dataclass\nclass Point:\n    x: float\n    def label(self) -> str:\n        return f\"x={self.x}\"  # coordinate",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "@",
+              "offset": 0,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "dataclass",
+              "offset": 1,
+              "color": "#D08770",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "class",
+              "offset": 11,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 16,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "Point",
+              "offset": 17,
+              "color": "#8FBCBB",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ":",
+              "offset": 22,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "    x",
+              "offset": 24,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ":",
+              "offset": 29,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 30,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "float",
+              "offset": 31,
+              "color": "#88C0D0",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "    ",
+              "offset": 37,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "def",
+              "offset": 41,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 44,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "label",
+              "offset": 45,
+              "color": "#88C0D0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "(",
+              "offset": 50,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "self",
+              "offset": 51,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ")",
+              "offset": 55,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 56,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "->",
+              "offset": 57,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 59,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "str",
+              "offset": 60,
+              "color": "#88C0D0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ":",
+              "offset": 63,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "        ",
+              "offset": 65,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "return",
+              "offset": 73,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 79,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "f",
+              "offset": 80,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "\"x=",
+              "offset": 81,
+              "color": "#A3BE8C",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "{",
+              "offset": 84,
+              "color": "#EBCB8B",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "self",
+              "offset": 85,
+              "color": "#81A1C1",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ".",
+              "offset": 89,
+              "color": "#ECEFF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "x",
+              "offset": 90,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "}",
+              "offset": 91,
+              "color": "#EBCB8B",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"",
+              "offset": 92,
+              "color": "#A3BE8C",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": "  ",
+              "offset": 93,
+              "color": "#D8DEE9FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "# coordinate",
+              "offset": 95,
+              "color": "#616E88",
+              "fontStyle": 0,
+              "type": 1
+            }
+          ]
+        ],
+        "fg": "#d8dee9ff",
+        "bg": "#2e3440ff",
+        "themeName": "nord"
+      }
+    },
+    {
+      "name": "css-dark-plus",
+      "language": "css",
+      "theme": "dark-plus",
+      "code": ":root { --accent: #ff0066; }\n.card:hover { color: var(--accent); margin: 0.5rem; }",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": ":root",
+              "offset": 0,
+              "color": "#D7BA7D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " { ",
+              "offset": 5,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "--accent",
+              "offset": 8,
+              "color": "#9CDCFE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 16,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "#ff0066",
+              "offset": 18,
+              "color": "#CE9178",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "; }",
+              "offset": 25,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": ".card:hover",
+              "offset": 29,
+              "color": "#D7BA7D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " { ",
+              "offset": 40,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "color",
+              "offset": 43,
+              "color": "#9CDCFE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 48,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "var",
+              "offset": 50,
+              "color": "#DCDCAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "(",
+              "offset": 53,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "--accent",
+              "offset": 54,
+              "color": "#9CDCFE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "); ",
+              "offset": 62,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "margin",
+              "offset": 65,
+              "color": "#9CDCFE",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 71,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "0.5rem",
+              "offset": 73,
+              "color": "#B5CEA8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "; }",
+              "offset": 79,
+              "color": "#D4D4D4",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ]
+        ],
+        "fg": "#D4D4D4",
+        "bg": "#1E1E1E",
+        "themeName": "dark-plus"
+      }
+    },
+    {
+      "name": "html-github-dark",
+      "language": "html",
+      "theme": "github-dark",
+      "code": "<main class=\"card\">\n  <h1 title=\"welcome\">Hello &amp; 👋</h1>\n</main>",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "<",
+              "offset": 0,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "main",
+              "offset": 1,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 5,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "class",
+              "offset": 6,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "=",
+              "offset": 11,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"card\"",
+              "offset": 12,
+              "color": "#9ECBFF",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ">",
+              "offset": 18,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  <",
+              "offset": 20,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "h1",
+              "offset": 23,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 25,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "title",
+              "offset": 26,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "=",
+              "offset": 31,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"welcome\"",
+              "offset": 32,
+              "color": "#9ECBFF",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ">Hello ",
+              "offset": 41,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "&amp;",
+              "offset": 48,
+              "color": "#79B8FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " 👋</",
+              "offset": 53,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "h1",
+              "offset": 58,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ">",
+              "offset": 60,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "</",
+              "offset": 62,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "main",
+              "offset": 64,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ">",
+              "offset": 68,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ]
+        ],
+        "fg": "#e1e4e8",
+        "bg": "#24292e",
+        "themeName": "github-dark"
+      }
+    },
+    {
+      "name": "bash-min-dark",
+      "language": "bash",
+      "theme": "min-dark",
+      "code": "#!/usr/bin/env bash\nname=\"world\"\nprintf 'Hello, %s\\n' \"$name\"",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "#!/usr/bin/env bash",
+              "offset": 0,
+              "color": "#6B737C",
+              "fontStyle": 0,
+              "type": 1
+            }
+          ],
+          [
+            {
+              "content": "name",
+              "offset": 20,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "=",
+              "offset": 24,
+              "color": "#F97583",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"world\"",
+              "offset": 25,
+              "color": "#FFAB70",
+              "fontStyle": 0,
+              "type": 2
+            }
+          ],
+          [
+            {
+              "content": "printf ",
+              "offset": 33,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "'Hello, %s\\n'",
+              "offset": 40,
+              "color": "#FFAB70",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": " ",
+              "offset": 53,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "\"$name\"",
+              "offset": 54,
+              "color": "#FFAB70",
+              "fontStyle": 0,
+              "type": 2
+            }
+          ]
+        ],
+        "fg": "#b392f0",
+        "bg": "#1f1f1f",
+        "themeName": "min-dark"
+      }
+    },
+    {
+      "name": "rust-rose-pine",
+      "language": "rust",
+      "theme": "rose-pine",
+      "code": "fn twice<T: Copy>(value: T) -> (T, T) {\n    (value, value) // pair\n}",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "fn",
+              "offset": 0,
+              "color": "#31748F",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 2,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "twice",
+              "offset": 3,
+              "color": "#EBBCBA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "<",
+              "offset": 8,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "T",
+              "offset": 9,
+              "color": "#9CCFD8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ":",
+              "offset": 10,
+              "color": "#31748F",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 11,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "Copy",
+              "offset": 12,
+              "color": "#9CCFD8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ">(",
+              "offset": 16,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "value",
+              "offset": 18,
+              "color": "#E0DEF4",
+              "fontStyle": 1,
+              "type": 0
+            },
+            {
+              "content": ":",
+              "offset": 23,
+              "color": "#31748F",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 24,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "T",
+              "offset": 25,
+              "color": "#9CCFD8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ")",
+              "offset": 26,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 27,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "->",
+              "offset": 28,
+              "color": "#31748F",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 30,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "(",
+              "offset": 31,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "T",
+              "offset": 32,
+              "color": "#9CCFD8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ",",
+              "offset": 33,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 34,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "T",
+              "offset": 35,
+              "color": "#9CCFD8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ")",
+              "offset": 36,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 37,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "{",
+              "offset": 38,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "    ",
+              "offset": 40,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "(",
+              "offset": 44,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "value",
+              "offset": 45,
+              "color": "#E0DEF4",
+              "fontStyle": 1,
+              "type": 0
+            },
+            {
+              "content": ",",
+              "offset": 50,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 51,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "value",
+              "offset": 52,
+              "color": "#E0DEF4",
+              "fontStyle": 1,
+              "type": 0
+            },
+            {
+              "content": ")",
+              "offset": 57,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": " ",
+              "offset": 58,
+              "color": "#E0DEF4",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "//",
+              "offset": 59,
+              "color": "#908CAA",
+              "fontStyle": 1,
+              "type": 1
+            },
+            {
+              "content": " pair",
+              "offset": 61,
+              "color": "#6E6A86",
+              "fontStyle": 1,
+              "type": 1
+            }
+          ],
+          [
+            {
+              "content": "}",
+              "offset": 67,
+              "color": "#908CAA",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ]
+        ],
+        "fg": "#e0def4",
+        "bg": "#191724",
+        "themeName": "rose-pine"
+      }
+    },
+    {
+      "name": "yaml-github-dark",
+      "language": "yaml",
+      "theme": "github-dark",
+      "code": "service: &defaults\n  image: swift:6.1\n  enabled: true\ncopy:\n  <<: *defaults",
+      "result": {
+        "tokens": [
+          [
+            {
+              "content": "service",
+              "offset": 0,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 7,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "&",
+              "offset": 9,
+              "color": "#F97583",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "defaults",
+              "offset": 10,
+              "color": "#B392F0",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 19,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "image",
+              "offset": 21,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 26,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "swift:6.1",
+              "offset": 28,
+              "color": "#9ECBFF",
+              "fontStyle": 0,
+              "type": 2
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 38,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "enabled",
+              "offset": 40,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ": ",
+              "offset": 47,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "true",
+              "offset": 49,
+              "color": "#79B8FF",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "copy",
+              "offset": 54,
+              "color": "#85E89D",
+              "fontStyle": 0,
+              "type": 2
+            },
+            {
+              "content": ":",
+              "offset": 58,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ],
+          [
+            {
+              "content": "  ",
+              "offset": 60,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "<<",
+              "offset": 62,
+              "color": "#79B8FF",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": ": ",
+              "offset": 64,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "*",
+              "offset": 66,
+              "color": "#F97583",
+              "fontStyle": 0,
+              "type": 0
+            },
+            {
+              "content": "defaults",
+              "offset": 67,
+              "color": "#E1E4E8",
+              "fontStyle": 0,
+              "type": 0
+            }
+          ]
+        ],
+        "fg": "#e1e4e8",
+        "bg": "#24292e",
+        "themeName": "github-dark"
+      }
+    }
+  ]
+}

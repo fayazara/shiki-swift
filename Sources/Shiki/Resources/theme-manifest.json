@@ -1,0 +1,466 @@
+{
+  "package": {
+    "name": "tm-themes",
+    "version": "1.12.3"
+  },
+  "schemaVersion": 1,
+  "themeNames": [
+    "andromeeda",
+    "aurora-x",
+    "ayu-dark",
+    "ayu-light",
+    "ayu-mirage",
+    "catppuccin-frappe",
+    "catppuccin-latte",
+    "catppuccin-macchiato",
+    "catppuccin-mocha",
+    "dark-plus",
+    "dracula",
+    "dracula-soft",
+    "everforest-dark",
+    "everforest-light",
+    "github-dark",
+    "github-dark-default",
+    "github-dark-dimmed",
+    "github-dark-high-contrast",
+    "github-light",
+    "github-light-default",
+    "github-light-high-contrast",
+    "gruvbox-dark-hard",
+    "gruvbox-dark-medium",
+    "gruvbox-dark-soft",
+    "gruvbox-light-hard",
+    "gruvbox-light-medium",
+    "gruvbox-light-soft",
+    "horizon",
+    "horizon-bright",
+    "houston",
+    "kanagawa-dragon",
+    "kanagawa-lotus",
+    "kanagawa-wave",
+    "laserwave",
+    "light-plus",
+    "material-theme",
+    "material-theme-darker",
+    "material-theme-lighter",
+    "material-theme-ocean",
+    "material-theme-palenight",
+    "min-dark",
+    "min-light",
+    "monokai",
+    "night-owl",
+    "night-owl-light",
+    "nord",
+    "one-dark-pro",
+    "one-light",
+    "plastic",
+    "poimandres",
+    "red",
+    "rose-pine",
+    "rose-pine-dawn",
+    "rose-pine-moon",
+    "slack-dark",
+    "slack-ochin",
+    "snazzy-light",
+    "solarized-dark",
+    "solarized-light",
+    "synthwave-84",
+    "tokyo-night",
+    "vesper",
+    "vitesse-black",
+    "vitesse-dark",
+    "vitesse-light"
+  ],
+  "themes": [
+    {
+      "displayName": "Andromeeda",
+      "id": "andromeeda",
+      "resource": "themes/andromeeda.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Aurora X",
+      "id": "aurora-x",
+      "resource": "themes/aurora-x.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Ayu Dark",
+      "id": "ayu-dark",
+      "resource": "themes/ayu-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Ayu Light",
+      "id": "ayu-light",
+      "resource": "themes/ayu-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Ayu Mirage",
+      "id": "ayu-mirage",
+      "resource": "themes/ayu-mirage.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Catppuccin Frappé",
+      "id": "catppuccin-frappe",
+      "resource": "themes/catppuccin-frappe.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Catppuccin Latte",
+      "id": "catppuccin-latte",
+      "resource": "themes/catppuccin-latte.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Catppuccin Macchiato",
+      "id": "catppuccin-macchiato",
+      "resource": "themes/catppuccin-macchiato.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Catppuccin Mocha",
+      "id": "catppuccin-mocha",
+      "resource": "themes/catppuccin-mocha.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Dark Plus",
+      "id": "dark-plus",
+      "resource": "themes/dark-plus.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Dracula Theme",
+      "id": "dracula",
+      "resource": "themes/dracula.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Dracula Theme Soft",
+      "id": "dracula-soft",
+      "resource": "themes/dracula-soft.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Everforest Dark",
+      "id": "everforest-dark",
+      "resource": "themes/everforest-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Everforest Light",
+      "id": "everforest-light",
+      "resource": "themes/everforest-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "GitHub Dark",
+      "id": "github-dark",
+      "resource": "themes/github-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "GitHub Dark Default",
+      "id": "github-dark-default",
+      "resource": "themes/github-dark-default.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "GitHub Dark Dimmed",
+      "id": "github-dark-dimmed",
+      "resource": "themes/github-dark-dimmed.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "GitHub Dark High Contrast",
+      "id": "github-dark-high-contrast",
+      "resource": "themes/github-dark-high-contrast.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "GitHub Light",
+      "id": "github-light",
+      "resource": "themes/github-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "GitHub Light Default",
+      "id": "github-light-default",
+      "resource": "themes/github-light-default.json",
+      "type": "light"
+    },
+    {
+      "displayName": "GitHub Light High Contrast",
+      "id": "github-light-high-contrast",
+      "resource": "themes/github-light-high-contrast.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Gruvbox Dark Hard",
+      "id": "gruvbox-dark-hard",
+      "resource": "themes/gruvbox-dark-hard.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Gruvbox Dark Medium",
+      "id": "gruvbox-dark-medium",
+      "resource": "themes/gruvbox-dark-medium.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Gruvbox Dark Soft",
+      "id": "gruvbox-dark-soft",
+      "resource": "themes/gruvbox-dark-soft.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Gruvbox Light Hard",
+      "id": "gruvbox-light-hard",
+      "resource": "themes/gruvbox-light-hard.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Gruvbox Light Medium",
+      "id": "gruvbox-light-medium",
+      "resource": "themes/gruvbox-light-medium.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Gruvbox Light Soft",
+      "id": "gruvbox-light-soft",
+      "resource": "themes/gruvbox-light-soft.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Horizon",
+      "id": "horizon",
+      "resource": "themes/horizon.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Horizon Bright",
+      "id": "horizon-bright",
+      "resource": "themes/horizon-bright.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Houston",
+      "id": "houston",
+      "resource": "themes/houston.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Kanagawa Dragon",
+      "id": "kanagawa-dragon",
+      "resource": "themes/kanagawa-dragon.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Kanagawa Lotus",
+      "id": "kanagawa-lotus",
+      "resource": "themes/kanagawa-lotus.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Kanagawa Wave",
+      "id": "kanagawa-wave",
+      "resource": "themes/kanagawa-wave.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "LaserWave",
+      "id": "laserwave",
+      "resource": "themes/laserwave.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Light Plus",
+      "id": "light-plus",
+      "resource": "themes/light-plus.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Material Theme",
+      "id": "material-theme",
+      "resource": "themes/material-theme.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Material Theme Darker",
+      "id": "material-theme-darker",
+      "resource": "themes/material-theme-darker.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Material Theme Lighter",
+      "id": "material-theme-lighter",
+      "resource": "themes/material-theme-lighter.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Material Theme Ocean",
+      "id": "material-theme-ocean",
+      "resource": "themes/material-theme-ocean.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Material Theme Palenight",
+      "id": "material-theme-palenight",
+      "resource": "themes/material-theme-palenight.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Min Dark",
+      "id": "min-dark",
+      "resource": "themes/min-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Min Light",
+      "id": "min-light",
+      "resource": "themes/min-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Monokai",
+      "id": "monokai",
+      "resource": "themes/monokai.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Night Owl",
+      "id": "night-owl",
+      "resource": "themes/night-owl.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Night Owl Light",
+      "id": "night-owl-light",
+      "resource": "themes/night-owl-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Nord",
+      "id": "nord",
+      "resource": "themes/nord.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "One Dark Pro",
+      "id": "one-dark-pro",
+      "resource": "themes/one-dark-pro.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "One Light",
+      "id": "one-light",
+      "resource": "themes/one-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Plastic",
+      "id": "plastic",
+      "resource": "themes/plastic.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Poimandres",
+      "id": "poimandres",
+      "resource": "themes/poimandres.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Red",
+      "id": "red",
+      "resource": "themes/red.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Rosé Pine",
+      "id": "rose-pine",
+      "resource": "themes/rose-pine.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Rosé Pine Dawn",
+      "id": "rose-pine-dawn",
+      "resource": "themes/rose-pine-dawn.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Rosé Pine Moon",
+      "id": "rose-pine-moon",
+      "resource": "themes/rose-pine-moon.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Slack Dark",
+      "id": "slack-dark",
+      "resource": "themes/slack-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Slack Ochin",
+      "id": "slack-ochin",
+      "resource": "themes/slack-ochin.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Snazzy Light",
+      "id": "snazzy-light",
+      "resource": "themes/snazzy-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Solarized Dark",
+      "id": "solarized-dark",
+      "resource": "themes/solarized-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Solarized Light",
+      "id": "solarized-light",
+      "resource": "themes/solarized-light.json",
+      "type": "light"
+    },
+    {
+      "displayName": "Synthwave '84",
+      "id": "synthwave-84",
+      "resource": "themes/synthwave-84.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Tokyo Night",
+      "id": "tokyo-night",
+      "resource": "themes/tokyo-night.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Vesper",
+      "id": "vesper",
+      "resource": "themes/vesper.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Vitesse Black",
+      "id": "vitesse-black",
+      "resource": "themes/vitesse-black.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Vitesse Dark",
+      "id": "vitesse-dark",
+      "resource": "themes/vitesse-dark.json",
+      "type": "dark"
+    },
+    {
+      "displayName": "Vitesse Light",
+      "id": "vitesse-light",
+      "resource": "themes/vitesse-light.json",
+      "type": "light"
+    }
+  ]
+}

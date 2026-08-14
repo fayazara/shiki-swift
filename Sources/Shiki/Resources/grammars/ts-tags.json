@@ -1,0 +1,21 @@
+{
+  "aliases": [
+    "lit"
+  ],
+  "displayName": "TypeScript with Tags",
+  "embeddedLangs": [
+    "typescript",
+    "es-tag-css",
+    "es-tag-glsl",
+    "es-tag-html",
+    "es-tag-sql",
+    "es-tag-xml"
+  ],
+  "name": "ts-tags",
+  "patterns": [
+    {
+      "include": "source.ts"
+    }
+  ],
+  "scopeName": "source.ts.tags"
+}

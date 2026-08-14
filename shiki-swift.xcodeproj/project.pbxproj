@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5A100001302F300000000001 /* Shiki in Frameworks */ = {isa = PBXBuildFile; productRef = 5A100005302F300000000005 /* Shiki */; };
+		5A100002302F300000000002 /* ShikiUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5A100006302F300000000006 /* ShikiUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		31A81C7C302F212400DDCCE7 /* shiki-swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "shiki-swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A100001302F300000000001 /* Shiki in Frameworks */,
+				5A100002302F300000000002 /* ShikiUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +72,8 @@
 			);
 			name = "shiki-swift";
 			packageProductDependencies = (
+				5A100005302F300000000005 /* Shiki */,
+				5A100006302F300000000006 /* ShikiUI */,
 			);
 			productName = "shiki-swift";
 			productReference = 31A81C7C302F212400DDCCE7 /* shiki-swift.app */;
@@ -96,6 +105,9 @@
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 31A81C7D302F212400DDCCE7 /* Products */;
+			packageReferences = (
+				5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -331,6 +343,26 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5A100005302F300000000005 /* Shiki */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */;
+			productName = Shiki;
+		};
+		5A100006302F300000000006 /* ShikiUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */;
+			productName = ShikiUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 31A81C74302F212400DDCCE7 /* Project object */;
 }
