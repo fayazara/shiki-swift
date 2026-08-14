@@ -375,8 +375,10 @@ public final class ShikiHighlighter: @unchecked Sendable {
         options: TokenizeWithThemeOptions = .init(),
         grammarState: (any GrammarState)? = nil
     ) throws -> ShikiMultiThemeHighlightResult {
+        try Task.checkCancellation()
         lock.lock()
         defer { lock.unlock() }
+        try Task.checkCancellation()
 
         try Self.validateThemeVariants(themes)
 
@@ -449,15 +451,17 @@ public final class ShikiHighlighter: @unchecked Sendable {
         options: TokenizeWithThemeOptions = .init(),
         grammarState: (any GrammarState)? = nil
     ) throws -> ShikiHighlightResult {
+        try Task.checkCancellation()
         lock.lock()
         defer { lock.unlock() }
+        try Task.checkCancellation()
 
         let themeName = requestedTheme ?? defaultTheme
         let effectiveLanguage = language.isEmpty ? "text" : language
         let canonicalLanguage = resolveLanguageID(effectiveLanguage) ?? effectiveLanguage
 
         if Self.isPlainLanguage(canonicalLanguage) || themeName == "none" {
-            let tokens = Self.plainTokens(code)
+            let tokens = try Self.plainTokens(code)
             if themeName == "none" {
                 return ShikiHighlightResult(
                     result: TokensResult(
@@ -784,6 +788,8 @@ public final class ShikiHighlighter: @unchecked Sendable {
         options: TokenizeWithThemeOptions,
         initialState: StateStackImpl?
     ) throws -> (tokens: [[ThemedToken]], state: StateStackImpl) {
+        try Task.checkCancellation()
+
         var state: StateStackImpl
         if let initialState {
             state = initialState
@@ -812,6 +818,10 @@ public final class ShikiHighlighter: @unchecked Sendable {
         var final: [[ThemedToken]] = []
 
         for splitLine in splitLines(code) {
+            // A TextMate line and its resulting state are one atomic unit. Stop
+            // only at this boundary so cancellation can never expose a partial
+            // line or alter successful token/state parity.
+            try Task.checkCancellation()
             let line = splitLine.content
             if line.isEmpty {
                 final.append([])
@@ -908,6 +918,7 @@ public final class ShikiHighlighter: @unchecked Sendable {
             final.append(lineTokens)
             state = binary.ruleStack
         }
+        try Task.checkCancellation()
         return (final, state)
     }
 
@@ -1007,10 +1018,14 @@ public final class ShikiHighlighter: @unchecked Sendable {
         }
     }
 
-    private static func plainTokens(_ code: String) -> [[ThemedToken]] {
-        splitLines(code).map { line in
-            [ThemedToken(content: line.content, offset: line.offset)]
+    private static func plainTokens(_ code: String) throws -> [[ThemedToken]] {
+        var result: [[ThemedToken]] = []
+        for line in splitLines(code) {
+            try Task.checkCancellation()
+            result.append([ThemedToken(content: line.content, offset: line.offset)])
         }
+        try Task.checkCancellation()
+        return result
     }
 
     private static func isPlainLanguage(_ language: String) -> Bool {
