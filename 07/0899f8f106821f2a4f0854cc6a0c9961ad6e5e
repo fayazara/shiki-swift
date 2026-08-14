@@ -1,0 +1,41 @@
+Sources/Shiki/ShikiHighlighter.swift
+  s_a38903a4b25d26::t_69af9671af8587 378,381,454,457,464,791-792,821-824,921,1021-1025,1027-1028
+Tests/ShikiTests/ShikiCancellationTests.swift
+  s_a38903a4b25d26::t_29c13736eb13d6 1-56
+shiki-swift/ContentView.swift
+  s_6b5f3f85d57b7b::t_f74fc7a7017da6 1,13,31-38,42-47,51-55,66-68,226-238,251-269,271-281,283-296,299-312,314-315,317-339,341-357,359-395,397-399,403-418,420-422,445,474,481-513,525-542,544,547-549,557-560,564,566-573,576,578
+shiki-swift/StressTestCodeView.swift
+  s_b96aa52825f541::t_707057928e60d9 1-363
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "070899f8f106821f2a4f0854cc6a0c9961ad6e5e",
+  "prompts": {},
+  "sessions": {
+    "s_6b5f3f85d57b7b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fffc3-0ffc-7a11-8c0d-8acec366a6b6",
+        "model": "unknown"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    },
+    "s_a38903a4b25d26": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ffff1-f3bb-71f2-ae5d-6d4a807fc960",
+        "model": "unknown"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    },
+    "s_b96aa52825f541": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fffcc-b549-7bc2-8118-5b9b17cf0187",
+        "model": "unknown"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
