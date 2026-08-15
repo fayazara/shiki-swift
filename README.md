@@ -4,6 +4,9 @@ A native Swift port of [Shiki](https://shiki.style): TextMate grammars, VS Code
 themes, and Oniguruma tokenization without JavaScript, WebAssembly, or a web
 view at runtime.
 
+<img width="1728" height="1084" alt="Screendrop_2026-08-14-23-08-39" src="https://github.com/user-attachments/assets/1adc95b4-5480-4fb2-92ea-5e8ea8d1628c" />
+
+
 This repository contains a native, source-faithful tokenization and presentation
 slice of Shiki. It is pinned to Shiki 4.4.3 and its exact tokenizer and asset
 dependencies.
