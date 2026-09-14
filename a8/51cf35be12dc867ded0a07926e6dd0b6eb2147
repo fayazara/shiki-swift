@@ -1,0 +1,41 @@
+README.md
+  s_6c2568a0a1d712::t_68b0b6799c5c45 133-165,211-218
+Scripts/benchmark.sh
+  s_6c2568a0a1d712::t_d3897bfdc320c6 1-18
+Scripts/benchmark.swift
+  s_6c2568a0a1d712::t_d0b115c1dc3b40 1-46
+Sources/COniguruma/ShikiOnig.c
+  s_6c2568a0a1d712::t_9c7e8a23cb67ad 9-12,16-20,28-29,69-76,128-143,161,166-176,218,220-268
+Sources/ShikiUI/ShikiAttributedStringRenderer.swift
+  s_6c2568a0a1d712::t_f5a415eda8b5c8 18,21-32,34-57,62-65
+Sources/ShikiUI/ShikiTextDocument.swift
+  s_6c2568a0a1d712::t_a9e4470e70e548 1-178
+Sources/ShikiUI/ShikiVirtualizedCodeView.swift
+  s_6c2568a0a1d712::t_df8adcf498b22f 1,3,6-7,9-18,20,22,32-34,36,38-47,50-55,60-61,66-67,69-71,73-92,96,100-120,122-130,135-171,174,176-180,182-184,188-191,193-197,199,201-203,205,211-213,216
+Tests/ShikiCoreTests/OnigurumaTests.swift
+  s_6c2568a0a1d712::t_600427b198e535 146-195
+Tests/ShikiUITests/ShikiTextDocumentTests.swift
+  s_6c2568a0a1d712::t_780c618776bb2b 1-213
+shiki-swift/ContentView.swift
+  s_6c2568a0a1d712::t_331d04cd5718bc 372,375
+Sources/COniguruma/include/ShikiOnig.h
+  s_6c2568a0a1d712::t_9935321d4c44dc 33-36
+Sources/ShikiCore/Oniguruma.swift
+  s_6c2568a0a1d712::t_8609517eea8a6a 84-89,160-163,178-179,222-225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a851cf35be12dc867ded0a07926e6dd0b6eb2147",
+  "prompts": {},
+  "sessions": {
+    "s_6c2568a0a1d712": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09ec1-35d9-7971-bd7e-9f4852c162f7",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
