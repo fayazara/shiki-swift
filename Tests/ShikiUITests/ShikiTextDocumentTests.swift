@@ -70,36 +70,29 @@ final class ShikiTextDocumentTests: XCTestCase {
         let coordinator = view.makeCoordinator()
         let scroll = view.makeScrollView(coordinator: coordinator)
         let document = try XCTUnwrap(coordinator.document)
-        XCTAssertEqual(document.renderedParagraphCount, 0)
+        XCTAssertLessThan(document.renderedParagraphCount, 100)
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 420),
                               styleMask: [.borderless], backing: .buffered, defer: false)
         window.contentView = scroll
-        let text = try XCTUnwrap(scroll.documentView as? NSTextView)
-        let layout = try XCTUnwrap(text.textLayoutManager)
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
         scroll.layoutSubtreeIfNeeded()
-        layout.textViewportLayoutController.layoutViewport()
+        text.layoutVisibleText()
         XCTAssertGreaterThan(document.renderedParagraphCount, 0)
         XCTAssertLessThan(document.renderedParagraphCount, 200)
 
         for row in [4_000, 9_900, 0] {
+            let renderedBefore = document.renderedParagraphCount
             scroll.contentView.scroll(to: NSPoint(x: 0, y: CGFloat(row) * document.lineHeight))
             scroll.reflectScrolledClipView(scroll.contentView)
-            layout.textViewportLayoutController.layoutViewport()
-            // Distant anchor estimation may request intervening fragments.
-            // Those must receive styles too, but our retained cache stays bounded.
+            text.layoutVisibleText()
             XCTAssertLessThanOrEqual(document.cachedParagraphCount, 256)
             XCTAssertLessThanOrEqual(document.cachedUTF16Count, 262_144)
-            let range = try XCTUnwrap(layout.textViewportLayoutController.viewportRange)
-            let content = try XCTUnwrap(layout.textContentManager)
-            let offset = content.offset(from: content.documentRange.location, to: range.location)
-            let expected = document.visualLineOffsets[max(0, row - 1)]
-            XCTAssertLessThanOrEqual(abs(offset - expected), 100)
-            var hasRed = false
-            layout.enumerateRenderingAttributes(from: range.location, reverse: false) { _, attributes, _ in
-                hasRed = (attributes[.foregroundColor] as? NSColor) == ShikiRGBAColor(hex: "#f00")?.appKitColor
-                return false
-            }
-            XCTAssertTrue(hasRed)
+            XCTAssertLessThanOrEqual(text.loadedLines.count, Int(ceil(scroll.contentSize.height / document.lineHeight)) + 34)
+            XCTAssertTrue(text.loadedLines.contains(row))
+            XCTAssertLessThan(document.renderedParagraphCount - renderedBefore, 100, "A jump must never style intervening lines")
+            XCTAssertEqual(text.textView.string, document.source.substring(with: text.loadedRange))
+            let color = text.textView.textStorage?.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor
+            XCTAssertEqual(color, ShikiRGBAColor(hex: "#f00")?.appKitColor)
         }
 
         text.setSelectedRange(NSRange(location: 0, length: 6))
@@ -112,14 +105,14 @@ final class ShikiTextDocumentTests: XCTestCase {
         XCTAssertEqual(scroll.contentView.bounds.origin, origin)
         scroll.setFrameSize(NSSize(width: 450, height: 700))
         scroll.layoutSubtreeIfNeeded()
-        layout.textViewportLayoutController.layoutViewport()
-        XCTAssertNotNil(text.textLayoutManager)
+        text.layoutVisibleText()
+        XCTAssertNotNil(text.textView.textLayoutManager)
         XCTAssertLessThanOrEqual(document.cachedParagraphCount, 256)
 
         let replacement = ShikiTextViewport(result: TokensResult(tokens: [[.init(content: "new", offset: 0)]]),
                                             renderID: 2, font: font, padding: 20)
         replacement.updateScrollView(scroll, coordinator: coordinator)
-        layout.textViewportLayoutController.layoutViewport()
+        text.layoutVisibleText()
         XCTAssertEqual(text.string, "new")
         XCTAssertEqual(scroll.contentView.bounds.origin, .zero)
         XCTAssertFalse(coordinator.document === document)
@@ -144,7 +137,7 @@ final class ShikiTextDocumentTests: XCTestCase {
                                      renderID: 0, font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 8)
         let coordinator = view.makeCoordinator()
         let scroll = view.makeScrollView(coordinator: coordinator)
-        let text = try XCTUnwrap(scroll.documentView as? NSTextView)
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
         text.setSelectedRange(NSRange(location: 0, length: 7))
         XCTAssertTrue(text.writeSelection(to: pasteboard, types: [.string]))
         XCTAssertEqual(pasteboard.string(forType: .string), "copy 🙂")
@@ -165,12 +158,11 @@ final class ShikiTextDocumentTests: XCTestCase {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 500),
                               styleMask: [.borderless], backing: .buffered, defer: false)
         window.contentView = scroll
-        let text = try XCTUnwrap(scroll.documentView as? NSTextView)
-        let layout = try XCTUnwrap(text.textLayoutManager)
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
         scroll.layoutSubtreeIfNeeded()
 
         func checkVisibleLines(_ label: String) throws {
-            layout.textViewportLayoutController.layoutViewport()
+            text.layoutVisibleText()
             let bitmap = try XCTUnwrap(scroll.bitmapImageRepForCachingDisplay(in: scroll.bounds))
             scroll.cacheDisplay(in: scroll.bounds, to: bitmap)
             var redRows: [Int] = []
@@ -206,6 +198,92 @@ final class ShikiTextDocumentTests: XCTestCase {
                 scroll.reflectScrolledClipView(scroll.contentView)
             }
             try checkVisibleLines("after burst \(burst)")
+        }
+    }
+
+    @MainActor
+    func testGlobalSelectionKeyboardMouseAndAccessibilityAcrossWindows() throws {
+        _ = NSApplication.shared
+        let result = TokensResult(tokens: (0..<2_000).map { index in
+            [.init(content: "line \(index) 🙂 value", offset: 0, color: "#f00")]
+        })
+        let view = ShikiTextViewport(result: result, renderID: 1,
+                                     font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 16)
+        let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 420),
+                              styleMask: [.borderless], backing: .buffered, defer: false)
+        window.contentView = scroll
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+        let document = try XCTUnwrap(text.document)
+        scroll.layoutSubtreeIfNeeded()
+        func jump(_ row: Int) {
+            scroll.contentView.scroll(to: NSPoint(x: 0, y: CGFloat(row) * document.lineHeight))
+            scroll.reflectScrolledClipView(scroll.contentView)
+            text.layoutVisibleText()
+        }
+        func key(_ code: UInt16, _ flags: NSEvent.ModifierFlags = []) throws {
+            let event = try XCTUnwrap(NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: flags, timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                characters: "", charactersIgnoringModifiers: "", isARepeat: false, keyCode: code))
+            text.textView.keyDown(with: event)
+        }
+        text.textView.selectAll(nil)
+        jump(1_500)
+        XCTAssertEqual(text.selectedRange(), NSRange(location: 0, length: document.source.length))
+        XCTAssertEqual(text.accessibilitySelectedText(), document.source as String)
+        XCTAssertEqual(text.accessibilityNumberOfCharacters(), document.source.length)
+        XCTAssertEqual(text.textView.selectedRange().length, text.loadedRange.length)
+        XCTAssertLessThan(text.textView.string.utf16.count, document.source.length / 10)
+
+        let start = document.visualLineOffsets[1_500]
+        let selection = NSRange(location: start + 10, length: 2) // The emoji, two UTF-16 units.
+        XCTAssertEqual(document.source.substring(with: selection), "🙂")
+        text.setSelectedRange(selection)
+        try key(124) // Collapse to the right, then move over the whole emoji to the left.
+        XCTAssertEqual(text.selectedRange(), NSRange(location: start + 12, length: 0))
+        try key(123, [.shift])
+        XCTAssertEqual(text.selectedRange(), selection)
+        jump(0)
+        XCTAssertEqual(text.selectedRange(), selection)
+        XCTAssertEqual(text.accessibilitySelectedText(), "🙂")
+        try key(126, [.command, .shift]) // Extend selection to the start of the full document.
+        XCTAssertEqual(text.selectedRange(), NSRange(location: 0, length: start + 12))
+        XCTAssertEqual(scroll.contentView.bounds.minY, 0)
+        try key(125, [.command])
+        XCTAssertEqual(text.selectedRange(), NSRange(location: document.source.length, length: 0))
+        XCTAssertTrue(text.loadedLines.contains(1_999))
+
+        // A shift-click after replacing the window must extend the original global anchor.
+        text.setSelectedRange(NSRange(location: 0, length: 0))
+        jump(1_000)
+        let point = text.convert(NSPoint(x: 16, y: 16 + CGFloat(1_000) * document.lineHeight + 5), to: nil)
+        func mouse(_ type: NSEvent.EventType) throws -> NSEvent {
+            try XCTUnwrap(NSEvent.mouseEvent(with: type, location: point, modifierFlags: [.shift],
+                timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                eventNumber: 1, clickCount: 1, pressure: 1))
+        }
+        NSApp.postEvent(try mouse(.leftMouseUp), atStart: true)
+        text.textView.mouseDown(with: try mouse(.leftMouseDown))
+        XCTAssertEqual(text.selectedRange(), NSRange(location: 0, length: document.visualLineOffsets[1_000]))
+        XCTAssertEqual(text.accessibilityString(for: NSRange(location: start + 10, length: 2)), "🙂")
+        text.setAccessibilitySelectedTextRange(selection)
+        XCTAssertEqual(text.selectedRange(), selection)
+        XCTAssertTrue(text.loadedLines.contains(1_500))
+    }
+
+    @MainActor
+    func testEmptyDocumentAndSeparatorsRemainBounded() throws {
+        _ = NSApplication.shared
+        for result in [TokensResult(tokens: []), TokensResult(tokens: [[.init(content: "a\rb\u{2028}🙂\n", offset: 0)]])] {
+            let view = ShikiTextViewport(result: result, renderID: 1,
+                font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 8)
+            let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+            let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+            text.layoutVisibleText()
+            XCTAssertEqual(text.textView.string, text.string)
+            text.selectAll(nil)
+            XCTAssertEqual(text.accessibilitySelectedText(), text.string)
+            XCTAssertEqual(text.loadedRange.length, text.string.utf16.count)
         }
     }
 

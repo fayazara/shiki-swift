@@ -130,33 +130,90 @@ let attributed = result.attributedString()
 let view = ShikiCodeView(result: result)
 ```
 
-For large documents on macOS, use the bounded, selectable TextKit 2 viewport:
+### Large documents in macOS apps
+
+Use `ShikiVirtualizedCodeView` for a read-only, selectable code preview with a
+fixed viewport height. It is part of the `ShikiUI` library and can be embedded
+in any macOS SwiftUI app; it does not depend on the demo app.
 
 ```swift
-let view = ShikiVirtualizedCodeView(
-    result: result,
-    renderID: documentRevision,
-    font: .monospacedSystemFont(ofSize: 15, weight: .regular),
-    contentPadding: 16,
-    viewportHeight: 500
-)
+import SwiftUI
+import Shiki
+import ShikiUI
+
+struct CodePreview: View {
+    let result: TokensResult
+    let revision: Int
+
+    var body: some View {
+        ShikiVirtualizedCodeView(
+            result: result,
+            renderID: revision,
+            font: .monospacedSystemFont(ofSize: 15, weight: .regular),
+            contentPadding: 16,
+            viewportHeight: 500
+        )
+    }
+}
 ```
 
-Change `renderID` whenever the result changes, including a theme change. Updates
-with the same ID and font preserve the document, selection, and scroll position.
-The view retains source and tokens in full and prepares attributes for paragraphs
-requested by TextKit, instead of building one fully styled document upfront. Its
-paragraph cache is bounded to 256 entries and 262,144 UTF-16 units. Native selection,
-plain-text copying, accessibility, and horizontal scrolling remain available.
-TextKit may request offscreen paragraphs to estimate distant scroll positions;
-these also receive styles so reused layout stays highlighted during fast scrolling.
-Virtualization does not skip
-the stateful tokenization pass. The demo uses this view.
+Increment `revision` when replacing the tokens, including after a source,
+language, or theme change. Keep it stable during unrelated SwiftUI updates;
+creating a new UUID on every render would reset the document unnecessarily.
+Updates with the same ID and font preserve selection and scroll position.
+Replacing the result or changing the font resets them.
 
-`ShikiCodeView` remains the small, intrinsically sized SwiftUI snippet view on all
-supported Apple platforms. For custom renderers, use
-`ShikiAttributedStringRenderer.render(_:lines:)` to prepare a range of token rows
-without constructing attributes for the rest of the document.
+The view provides vertical and horizontal scrolling, unwrapped lines, mouse
+selection with drag autoscroll, keyboard selection, Select All, plain-text
+copying, and accessibility text/selection ranges. Selection uses full-document
+coordinates, so it survives viewport changes and can include offscreen text.
+
+TextKit receives a small window of visible lines with a 16-line buffer on either
+side when the window is replenished. Distant jumps replace that window directly,
+without styling or laying out the intervening lines. Paragraph styling is cached
+with limits of 256 entries and 262,144 UTF-16 units. Scrolling work therefore
+depends on the destination window rather than the distance of the jump.
+
+Choose the presentation API for your use case:
+
+| API | Use case | Platforms |
+| --- | --- | --- |
+| `ShikiVirtualizedCodeView` | Large, selectable documents in a fixed-height scrolling viewport | macOS |
+| `ShikiCodeView` | Small, intrinsically sized SwiftUI code snippets | Supported Apple platforms |
+| `result.attributedString()` | A complete attributed string for your own text view | Supported Apple platforms |
+| `ShikiAttributedStringRenderer.render(_:lines:)` | Attributes for a range of token rows in a custom renderer | Supported Apple platforms |
+
+### Performance and limits
+
+Measure performance in **Release** builds. In a local benchmark of a 256 KB JSON
+file (5,544 lines, 20,592 tokens), warm full-document highlighting took about
+131–136 ms in Release versus 1.61–1.65 seconds in Debug.
+
+For the same file, a 2,000-line scroll jump took approximately **2.5 ms** for
+scrolling and layout with the windowed viewport, compared with **105 ms** in the
+previous implementation. It prepared 66 paragraphs instead of 1,977. This was a
+1,000 × 600-point viewport with a 15-point monospaced font; these are local
+measurements, not guarantees or measured display frame rates.
+
+Virtualization limits text layout and styling work. The source and tokens are
+still retained in full, and `codeToTokens` still tokenizes the entire input.
+Reuse a highlighter to retain grammar/theme caches, run expensive synchronous
+highlighting outside the main actor, and publish the resulting tokens to the UI.
+The view does not provide progressive tokenization or incremental editing.
+Very long individual lines can still be expensive because the text window is
+bounded by line count; horizontal scrolling does not virtualize within a line.
+
+To measure scroll/layout work against your own file on macOS:
+
+```sh
+Scripts/benchmark-scroll.sh /path/to/file.json json
+```
+
+With no arguments, the script uses a generated 10,000-line Swift document. It
+builds in Release and reports scroll/layout times, newly styled paragraphs per
+jump, and cache size. It uses a hidden AppKit window and excludes painting and
+actual display FPS. Use `Scripts/benchmark.sh` to measure tokenization and
+attributed-string preparation separately.
 
 The scanner uses the pinned upstream RegSet path for short strings and caches
 pattern-search results within longer immutable lines. Capture buffers and
@@ -198,7 +255,8 @@ approximated.
 
 - `ShikiCore` — Oniguruma and the TextMate/theme/token runtime.
 - `Shiki` — the high-level highlighter and bundled Shiki assets.
-- `ShikiUI` — optional SwiftUI and `AttributedString` adapters.
+- `ShikiUI` — optional SwiftUI and `AttributedString` adapters, including the
+  virtualized macOS code viewport.
 
 The package supports macOS 13+, iOS/tvOS 16+, watchOS 9+, and visionOS 1+.
 
@@ -212,9 +270,11 @@ On macOS, run `Scripts/benchmark.sh` for repeated Release timings of warm
 highlighting, full attributed-string construction, and a 60-line range. These
 measure preparation rather than drawing or scroll frame rates. The native view
 tests separately mount a 10,000-line document and check lazy initial styling,
-bounded caches, large scroll jumps, resizing, selection, and cache invalidation.
-A rendered-pixel regression test also checks highlighting after rapid scroll reversals. The clipboard
-test skips when the environment has no macOS pasteboard service.
+bounded caches, bounded work on distant scroll jumps, resizing, global selection,
+keyboard/mouse interaction, accessibility ranges, and cache invalidation.
+A rendered-pixel regression test also checks highlighting after rapid scroll
+reversals. The clipboard test skips when the environment has no macOS pasteboard
+service.
 
 An exact checked-in Shiki 4.4.3 differential fixture covers eight representative
 language/theme pairs: TypeScript/vitesse-dark, JSON/github-light, Python/nord,

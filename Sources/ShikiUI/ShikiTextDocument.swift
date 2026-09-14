@@ -8,6 +8,7 @@ import ShikiCore
 @MainActor
 final class ShikiTextDocument {
     let source: NSString
+    lazy var plainText = NSAttributedString(string: source as String)
     let rowRanges: [NSRange]
     let visualLineOffsets: [Int]
     let result: TokensResult
