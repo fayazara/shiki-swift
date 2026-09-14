@@ -30,6 +30,10 @@ bool shiki_onig_scanner_add_pattern(
 
 void shiki_onig_scanner_destroy(ShikiOnigScanner *scanner);
 
+// Call before searching a different immutable input string. Scanner access,
+// including cache resets, must be serialized by the caller.
+void shiki_onig_scanner_reset_search_cache(ShikiOnigScanner *scanner);
+
 size_t shiki_onig_scanner_max_capture_count(
     const ShikiOnigScanner *scanner
 );

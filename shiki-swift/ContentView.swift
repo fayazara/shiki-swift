@@ -369,10 +369,10 @@ struct ContentView: View {
 
             Group {
                 if let highlightedCode {
-                    StressTestCodeView(
+                    ShikiVirtualizedCodeView(
                         result: highlightedCode,
                         renderID: highlightRequest.id,
-                        fontSize: 15,
+                        font: .monospacedSystemFont(ofSize: 15, weight: .regular),
                         contentPadding: 22,
                         viewportHeight: outputViewportHeight
                     )

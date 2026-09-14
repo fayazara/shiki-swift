@@ -130,6 +130,39 @@ let attributed = result.attributedString()
 let view = ShikiCodeView(result: result)
 ```
 
+For large documents on macOS, use the bounded, selectable TextKit 2 viewport:
+
+```swift
+let view = ShikiVirtualizedCodeView(
+    result: result,
+    renderID: documentRevision,
+    font: .monospacedSystemFont(ofSize: 15, weight: .regular),
+    contentPadding: 16,
+    viewportHeight: 500
+)
+```
+
+Change `renderID` whenever the result changes, including a theme change. Updates
+with the same ID and font preserve the document, selection, and scroll position.
+The view retains source and tokens in full and prepares attributes for paragraphs
+requested by TextKit, instead of building one fully styled document upfront. Its
+paragraph cache is bounded to 256 entries and 262,144 UTF-16 units. Native selection,
+plain-text copying, accessibility, and horizontal scrolling remain available.
+TextKit may request offscreen paragraphs to estimate distant scroll positions;
+these also receive styles so reused layout stays highlighted during fast scrolling.
+Virtualization does not skip
+the stateful tokenization pass. The demo uses this view.
+
+`ShikiCodeView` remains the small, intrinsically sized SwiftUI snippet view on all
+supported Apple platforms. For custom renderers, use
+`ShikiAttributedStringRenderer.render(_:lines:)` to prepare a range of token rows
+without constructing attributes for the rest of the document.
+
+The scanner uses the pinned upstream RegSet path for short strings and caches
+pattern-search results within longer immutable lines. Capture buffers and
+rendering styles are reused. Search-cache invalidation preserves input identity,
+search-option changes, backward searches, and position-sensitive `\G` patterns.
+
 Offsets in `ThemedToken` use UTF-16 code units, exactly like JavaScript strings
 and `vscode-textmate`. Use `String.utf16` or `NSRange` when mapping them back to
 Swift strings.
@@ -174,6 +207,14 @@ The package supports macOS 13+, iOS/tvOS 16+, watchOS 9+, and visionOS 1+.
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 ```
+
+On macOS, run `Scripts/benchmark.sh` for repeated Release timings of warm
+highlighting, full attributed-string construction, and a 60-line range. These
+measure preparation rather than drawing or scroll frame rates. The native view
+tests separately mount a 10,000-line document and check lazy initial styling,
+bounded caches, large scroll jumps, resizing, selection, and cache invalidation.
+A rendered-pixel regression test also checks highlighting after rapid scroll reversals. The clipboard
+test skips when the environment has no macOS pasteboard service.
 
 An exact checked-in Shiki 4.4.3 differential fixture covers eight representative
 language/theme pairs: TypeScript/vitesse-dark, JSON/github-light, Python/nord,

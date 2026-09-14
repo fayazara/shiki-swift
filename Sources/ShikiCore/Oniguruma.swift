@@ -81,6 +81,12 @@ public final class OnigString: @unchecked Sendable {
         utf8Storage = Array(content.utf8) + [0]
 
         let needsOffsetMapping = utf8Length != utf16Length
+        // ASCII offsets are identical. Avoid a second scalar walk entirely.
+        if !needsOffsetMapping {
+            utf16OffsetToUTF8 = nil
+            utf8OffsetToUTF16 = nil
+            return
+        }
         var utf16ToUTF8 = needsOffsetMapping
             ? Array(repeating: 0, count: utf16Length + 1)
             : []
@@ -151,6 +157,10 @@ public final class OnigScanner: @unchecked Sendable {
     private var handle: OpaquePointer?
     private var maxCaptureCount = 0
     private let lock = NSLock()
+    private var starts: [Int32] = []
+    private var ends: [Int32] = []
+    // Weak identity prevents both stale pointer reuse and retaining old lines.
+    private weak var searchedString: OnigString?
 
     public init(patterns: [String]) throws {
         guard let handle = shiki_onig_scanner_create() else {
@@ -165,6 +175,8 @@ public final class OnigScanner: @unchecked Sendable {
             maxCaptureCount = Int(
                 shiki_onig_scanner_max_capture_count(handle)
             )
+            starts = Array(repeating: 0, count: maxCaptureCount)
+            ends = Array(repeating: 0, count: maxCaptureCount)
         } catch {
             shiki_onig_scanner_destroy(handle)
             self.handle = nil
@@ -205,11 +217,12 @@ public final class OnigScanner: @unchecked Sendable {
         let utf8Start = string.convertUTF16OffsetToUTF8(startPosition)
         var patternIndex = 0
         var captureCount = 0
-        var starts = Array(repeating: Int32(0), count: maxCaptureCount)
-        var ends = Array(repeating: Int32(0), count: maxCaptureCount)
-
         lock.lock()
         defer { lock.unlock() }
+        if searchedString !== string {
+            shiki_onig_scanner_reset_search_cache(handle)
+            searchedString = string
+        }
 
         let status = string.utf8Storage.withUnsafeBufferPointer { stringBuffer in
             starts.withUnsafeMutableBufferPointer { startsBuffer in

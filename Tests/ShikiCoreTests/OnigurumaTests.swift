@@ -143,3 +143,53 @@ private actor ConcurrentStartGate {
         }
     }
 }
+
+extension OnigurumaTests {
+    func testLongLineCacheMatchesFreshSearchesAcrossPositionsOptionsAndInputs() throws {
+        let patterns = [#"\Gx"#, #"(tail)"#, #"\Astart"#, #"(missing)"#, #"(x)?(tail)"#]
+        let scanner = try OnigScanner(patterns: patterns)
+        let inputs = [
+            OnigString("start" + String(repeating: "x", count: 1200) + "tail"),
+            OnigString("start" + String(repeating: "y", count: 1200) + "tail"),
+        ]
+        for input in [inputs[0], inputs[1], inputs[0]] {
+            for options: OnigFindOptions in [[], .notBeginPosition, .notBeginString, []] {
+                for position in [0, 5, 500, 1205, 1206, 5, 1209] {
+                    let cold = try OnigScanner(patterns: patterns)
+                    XCTAssertEqual(
+                        try scanner.findNextMatchSync(input, startPosition: position, options: options),
+                        try cold.findNextMatchSync(input, startPosition: position, options: options)
+                    )
+                }
+            }
+        }
+    }
+
+    func testRegSetAndLongLinePathsPreserveTiesAndUnmatchedCaptures() throws {
+        for padding in [10, 999, 1000, 1200] {
+            let scanner = try OnigScanner(patterns: [#"(z)?(a)"#, "a"])
+            let input = OnigString(String(repeating: "x", count: padding) + "a")
+            for position in [0, padding / 2, padding] {
+                let match = try XCTUnwrap(scanner.findNextMatchSync(input, startPosition: position))
+                XCTAssertEqual(match.index, 0)
+                XCTAssertEqual(match.captureIndices[0], .init(start: padding, end: padding + 1))
+                XCTAssertEqual(match.captureIndices[1].start, Int(UInt32.max))
+            }
+        }
+    }
+
+    func testSharedScannerSerializesReusableBuffers() async throws {
+        let scanner = try OnigScanner(patterns: [#"(🙂)([a-z]+)"#])
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for _ in 0..<64 {
+                group.addTask {
+                    let match = try XCTUnwrap(scanner.findNextMatchSync("🙂hello", startPosition: 0))
+                    XCTAssertEqual(match.captureIndices, [
+                        .init(start: 0, end: 7), .init(start: 0, end: 2), .init(start: 2, end: 7),
+                    ])
+                }
+            }
+            try await group.waitForAll()
+        }
+    }
+}

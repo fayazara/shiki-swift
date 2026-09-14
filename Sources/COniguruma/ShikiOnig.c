@@ -6,9 +6,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+// RegSet selection and long-line search caching follow vscode-oniguruma 1.7.0
+// (716aeaa229e4ae2e3b0057377b55743e9a3e995b), Copyright Microsoft Corporation.
+// See LICENSES/vscode-oniguruma.txt for its MIT license.
+
 typedef struct {
     OnigRegex regex;
     OnigRegion *region;
+    bool has_g_anchor;
+    uint64_t search_generation;
+    size_t search_position;
+    OnigOptionType search_options;
+    bool search_matched;
 } ShikiOnigPattern;
 
 struct ShikiOnigScanner {
@@ -16,6 +25,8 @@ struct ShikiOnigScanner {
     size_t count;
     size_t capacity;
     size_t max_capture_count;
+    OnigRegSet *regset; // Owns the compiled regexes, plus its own regions.
+    uint64_t search_generation;
 };
 
 static pthread_once_t shiki_onig_initialize_once = PTHREAD_ONCE_INIT;
@@ -55,7 +66,14 @@ ShikiOnigScanner *shiki_onig_scanner_create(void) {
         return NULL;
     }
 
-    return calloc(1, sizeof(ShikiOnigScanner));
+    ShikiOnigScanner *scanner = calloc(1, sizeof(ShikiOnigScanner));
+    if (scanner == NULL) return NULL;
+    if (onig_regset_new(&scanner->regset, 0, NULL) != ONIG_NORMAL) {
+        free(scanner);
+        return NULL;
+    }
+    scanner->search_generation = 1;
+    return scanner;
 }
 
 bool shiki_onig_scanner_add_pattern(
@@ -107,8 +125,22 @@ bool shiki_onig_scanner_add_pattern(
         scanner->capacity = next_capacity;
     }
 
-    scanner->patterns[scanner->count].regex = regex;
-    scanner->patterns[scanner->count].region = region;
+    status = onig_regset_add(scanner->regset, regex);
+    if (status != ONIG_NORMAL) {
+        onig_region_free(region, 1);
+        onig_free(regex);
+        return false;
+    }
+    bool has_g_anchor = false;
+    for (size_t index = 0; index + 1 < pattern_length; index += 1) {
+        if (pattern[index] == '\\' && pattern[index + 1] == 'G') {
+            has_g_anchor = true;
+            break;
+        }
+    }
+    scanner->patterns[scanner->count] = (ShikiOnigPattern){
+        .regex = regex, .region = region, .has_g_anchor = has_g_anchor
+    };
     scanner->count += 1;
 
     size_t capture_count = (size_t)onig_number_of_captures(regex) + 1;
@@ -125,10 +157,21 @@ void shiki_onig_scanner_destroy(ShikiOnigScanner *scanner) {
 
     for (size_t index = 0; index < scanner->count; index += 1) {
         onig_region_free(scanner->patterns[index].region, 1);
-        onig_free(scanner->patterns[index].regex);
     }
+    onig_regset_free(scanner->regset);
     free(scanner->patterns);
     free(scanner);
+}
+
+void shiki_onig_scanner_reset_search_cache(ShikiOnigScanner *scanner) {
+    if (scanner == NULL) return;
+    scanner->search_generation += 1;
+    if (scanner->search_generation == 0) {
+        for (size_t index = 0; index < scanner->count; index += 1) {
+            scanner->patterns[index].search_generation = 0;
+        }
+        scanner->search_generation = 1;
+    }
 }
 
 size_t shiki_onig_scanner_max_capture_count(
@@ -172,31 +215,57 @@ int shiki_onig_scanner_find_next(
     int best_location = 0;
     OnigOptionType search_options = onig_options(options);
 
-    for (size_t index = 0; index < scanner->count; index += 1) {
-        OnigRegion *region = scanner->patterns[index].region;
-        int status = onig_search(
-            scanner->patterns[index].regex,
-            string,
-            string + string_length,
-            string + start_position,
-            string + string_length,
-            region,
-            search_options
+    if (scanner->count == 0) return 0;
+
+    if (string_length < 1000) {
+        int index = onig_regset_search(
+            scanner->regset, string, string + string_length,
+            string + start_position, string + string_length,
+            ONIG_REGSET_POSITION_LEAD, search_options, &best_location
         );
+        if (index < 0) return 0;
+        best_pattern_index = (size_t)index;
+        best_region = onig_regset_get_region(scanner->regset, index);
+    } else {
+        for (size_t index = 0; index < scanner->count; index += 1) {
+            ShikiOnigPattern *pattern = &scanner->patterns[index];
+            OnigRegion *region = pattern->region;
+            bool can_reuse = !pattern->has_g_anchor
+                && pattern->search_generation == scanner->search_generation
+                && pattern->search_options == search_options
+                && pattern->search_position <= start_position;
+            if (can_reuse && !pattern->search_matched) continue;
+            bool reuse_match = can_reuse && region->num_regs > 0
+                && region->beg[0] >= 0 && (size_t)region->beg[0] >= start_position;
+            if (!reuse_match) {
+                int status = onig_search(
+                    pattern->regex,
+                    string,
+                    string + string_length,
+                    string + start_position,
+                    string + string_length,
+                    region,
+                    search_options
+                );
+                pattern->search_generation = scanner->search_generation;
+                pattern->search_position = start_position;
+                pattern->search_options = search_options;
+                pattern->search_matched = status >= 0 && region->num_regs > 0;
+            }
+            if (!pattern->search_matched) {
+                continue;
+            }
 
-        if (status < 0 || region->num_regs == 0) {
-            continue;
-        }
+            int location = region->beg[0];
+            if (best_region == NULL || location < best_location) {
+                best_region = region;
+                best_location = location;
+                best_pattern_index = index;
+            }
 
-        int location = region->beg[0];
-        if (best_region == NULL || location < best_location) {
-            best_region = region;
-            best_location = location;
-            best_pattern_index = index;
-        }
-
-        if ((size_t)location == start_position) {
-            break;
+            if ((size_t)location == start_position) {
+                break;
+            }
         }
     }
 
