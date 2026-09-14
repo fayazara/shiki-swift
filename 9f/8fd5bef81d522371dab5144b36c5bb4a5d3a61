@@ -1,0 +1,29 @@
+README.md
+  s_6c2568a0a1d712::t_9b32e8420f7463 133-137,140-209,212-216,258-259,273-277
+Scripts/benchmark-scroll.sh
+  s_6c2568a0a1d712::t_48c70b349d7ff5 1-32
+Scripts/benchmark-scroll.swift
+  s_6c2568a0a1d712::t_8592e2457596ac 1-42
+Sources/ShikiUI/ShikiTextDocument.swift
+  s_6c2568a0a1d712::t_5f3c8d101ca73e 11
+Sources/ShikiUI/ShikiVirtualizedCodeView.swift
+  s_6c2568a0a1d712::t_b8eab038394963 6-7,51-120,127,131,133-196,198-201,203-206,209-216,219-241,244,247-286,288-306,308-349,351-352,354-382,385-388,390-404,409,411-414,416-417,423-426
+Tests/ShikiUITests/ShikiTextDocumentTests.swift
+  s_6c2568a0a1d712::t_3e7df8defc4e97 73,77,79,84,87,90-95,108-109,115,140,161,165,204-289
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9f8fd5bef81d522371dab5144b36c5bb4a5d3a61",
+  "prompts": {},
+  "sessions": {
+    "s_6c2568a0a1d712": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09ec1-35d9-7971-bd7e-9f4852c162f7",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
