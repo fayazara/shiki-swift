@@ -15,6 +15,8 @@ final class ShikiTextDocument {
     let font: NSFont
     let lineHeight: CGFloat
     let estimatedWidth: CGFloat
+    /// Advance of one ASCII column in `font`.
+    let advance: CGFloat
     let baseAttributes: [NSAttributedString.Key: Any]
 
     private struct StyleKey: Hashable {
@@ -30,6 +32,19 @@ final class ShikiTextDocument {
     private(set) var renderedParagraphCount = 0
     private let paragraphLimit = 256
     private let characterLimit = 262_144
+
+    /// Lines longer than this (UTF-16 units) are laid out in horizontal slices,
+    /// so a minified line never becomes one enormous TextKit line fragment.
+    nonisolated static let sliceThreshold = 4_096
+    private static let columnChunk = 1_024
+
+    /// Chunk start offsets (source UTF-16) of one long line and their x
+    /// positions, so a slice can start at any chunk at its exact position.
+    struct ColumnIndex {
+        let offsets: [Int]
+        let x: [CGFloat]
+    }
+    private var columnIndexes: [Int: ColumnIndex] = [:]
 
     /// Widest extent the viewport lays out. Keeping coordinates below 2^22pt
     /// preserves sub-point precision in Core Animation's 32-bit float
@@ -114,6 +129,7 @@ final class ShikiTextDocument {
         self.font = font
         lineHeight = ceil(NSLayoutManager().defaultLineHeight(for: font))
         let advance = Self.metrics(for: font).advance
+        self.advance = advance
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.minimumLineHeight = lineHeight
         paragraphStyle.maximumLineHeight = lineHeight
@@ -182,6 +198,83 @@ final class ShikiTextDocument {
             cachedUTF16Count += range.length
         }
         return rendered
+    }
+
+    /// The visual line's range without its trailing line break.
+    func contentRange(ofLine line: Int) -> NSRange {
+        let start = visualLineOffsets[line]
+        var end = line + 1 < visualLineOffsets.count ? visualLineOffsets[line + 1] : source.length
+        if end > start {
+            let last = source.character(at: end - 1)
+            if last == 10 && end - 1 > start && source.character(at: end - 2) == 13 { end -= 2 }
+            else if [10, 13, 0x85, 0x2028, 0x2029].contains(last) { end -= 1 }
+        }
+        return NSRange(location: start, length: end - start)
+    }
+
+    /// Measured lazily, once per long line; ASCII chunks cost no text layout.
+    func columnIndex(forLine line: Int) -> ColumnIndex {
+        if let cached = columnIndexes[line] { return cached }
+        let content = contentRange(ofLine: line)
+        let end = NSMaxRange(content)
+        var offsets = [content.location]
+        var xs: [CGFloat] = [0]
+        var position = content.location
+        var x: CGFloat = 0
+        while position < end {
+            var next = min(end, position + Self.columnChunk)
+            if next < end {
+                // Never split a surrogate pair or grapheme cluster.
+                let composed = source.rangeOfComposedCharacterSequence(at: next)
+                if composed.location > position { next = composed.location }
+            }
+            x = advance(from: x, over: NSRange(location: position, length: next - position))
+            position = next
+            offsets.append(position)
+            xs.append(x)
+        }
+        let index = ColumnIndex(offsets: offsets, x: xs)
+        if columnIndexes.count >= 64 { columnIndexes.removeAll(keepingCapacity: true) }
+        columnIndexes[line] = index
+        return index
+    }
+
+    /// The x position (relative to the line start) of a source offset in a line.
+    func x(at offset: Int, inLine line: Int) -> CGFloat {
+        let index = columnIndex(forLine: line)
+        var lower = 0
+        var upper = index.offsets.count
+        while lower < upper {
+            let middle = (lower + upper) / 2
+            if index.offsets[middle] <= offset { lower = middle + 1 } else { upper = middle }
+        }
+        let chunk = max(0, lower - 1)
+        let start = index.offsets[chunk]
+        return advance(from: index.x[chunk], over: NSRange(location: start, length: max(0, offset - start)))
+    }
+
+    /// Mirrors TextKit: fixed columns for printable ASCII, measured glyph
+    /// runs otherwise, and tabs snapping to the paragraph's tab interval.
+    private func advance(from start: CGFloat, over range: NSRange) -> CGFloat {
+        guard range.length > 0 else { return start }
+        var units = [unichar](repeating: 0, count: range.length)
+        source.getCharacters(&units, range: range)
+        if units.allSatisfy({ $0 >= 0x20 && $0 < 0x7F }) {
+            return start + CGFloat(range.length) * advance
+        }
+        let tab = advance * 4
+        var x = start
+        var segment = 0
+        for index in 0...units.count where index == units.count || units[index] == 9 {
+            if index > segment {
+                let text = NSAttributedString(string: String(utf16CodeUnits: Array(units[segment..<index]), count: index - segment),
+                                              attributes: [.font: font])
+                x += CGFloat(CTLineGetTypographicBounds(CTLineCreateWithAttributedString(text), nil, nil, nil))
+            }
+            if index < units.count { x = (floor(x / tab) + 1) * tab }
+            segment = index + 1
+        }
+        return x
     }
 
     private func attributes(for token: ThemedToken) -> [NSAttributedString.Key: Any] {

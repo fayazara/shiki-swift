@@ -313,6 +313,82 @@ final class ShikiTextDocumentTests: XCTestCase {
     }
 
     @MainActor
+    func testLongRowsAreSlicedHorizontallyAndKeepGlobalSelection() throws {
+        _ = NSApplication.shared
+        let long = String(repeating: "abcdefghij", count: 20_000) // 200k columns.
+        let result = TokensResult(tokens: [
+            [.init(content: String(long.prefix(100_000)), offset: 0, color: "#ff0000"),
+             .init(content: String(long.dropFirst(100_000)), offset: 100_000, color: "#00ff00")],
+            [.init(content: "next", offset: 0)],
+        ])
+        let view = ShikiTextViewport(result: result, renderID: 1,
+                                     font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 8)
+        let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 300),
+                              styleMask: [.borderless], backing: .buffered, defer: false)
+        window.contentView = scroll
+        scroll.layoutSubtreeIfNeeded()
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+        let document = try XCTUnwrap(text.document)
+        text.layoutVisibleText()
+        XCTAssertNotNil(text.loadedColumns)
+        XCTAssertLessThan(text.textView.string.utf16.count, 5_000, "Only the visible columns enter TextKit")
+        XCTAssertTrue(text.textView.string.hasSuffix("\nnext"))
+
+        // Scroll to the middle: the slice follows, drawn at its true x position.
+        let column = 150_003
+        let x = 8 + CGFloat(column) * document.advance
+        scroll.contentView.scroll(to: NSPoint(x: x - 100, y: 0))
+        scroll.reflectScrolledClipView(scroll.contentView)
+        text.layoutVisibleText()
+        XCTAssertLessThan(text.textView.string.utf16.count, 5_000)
+        let local = text.textView.characterIndexForInsertion(at: text.textView.convert(NSPoint(x: x + 1, y: 8 + 5), from: text))
+        let string = text.textView.string as NSString
+        XCTAssertEqual(string.substring(with: NSRange(location: local, length: 3)), "def", "Column \(column) must be under its x")
+        let color = text.textView.textStorage?.attribute(.foregroundColor, at: local, effectiveRange: nil) as? NSColor
+        XCTAssertEqual(color, ShikiRGBAColor(hex: "#00ff00")?.appKitColor)
+
+        // Selection and copy stay in full-source coordinates.
+        text.selectAll(nil)
+        XCTAssertEqual(text.accessibilitySelectedText(), document.source as String)
+        XCTAssertEqual(text.textView.selectedRange(), NSRange(location: 0, length: text.textView.string.utf16.count))
+        text.textView.setSelectedRange(NSRange(location: local, length: 3))
+        XCTAssertEqual(text.selectedRange(), NSRange(location: column, length: 3))
+        text.setSelectedRange(NSRange(location: 10, length: 0))
+        text.setAccessibilitySelectedTextRange(NSRange(location: 190_000, length: 0))
+        XCTAssertGreaterThan(scroll.contentView.bounds.minX, 8 + 180_000 * document.advance)
+        XCTAssertEqual(text.selectedRange(), NSRange(location: 190_000, length: 0))
+    }
+
+    @MainActor
+    func testNonASCIILongRowSlicesMatchTextKitPositions() throws {
+        _ = NSApplication.shared
+        let unit = "let café = \"🙂\";\t"
+        let long = String(repeating: unit, count: 600)
+        let result = TokensResult(tokens: [[.init(content: long, offset: 0)]])
+        let font = NSFont.monospacedSystemFont(ofSize: 15, weight: .regular)
+        let view = ShikiTextViewport(result: result, renderID: 1, font: font, padding: 0)
+        let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 300),
+                              styleMask: [.borderless], backing: .buffered, defer: false)
+        window.contentView = scroll
+        scroll.layoutSubtreeIfNeeded()
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+        let document = try XCTUnwrap(text.document)
+        let offset = (long as NSString).length - 2_000
+        let aligned = (long as NSString).rangeOfComposedCharacterSequence(at: offset).location
+        let x = document.x(at: aligned, inLine: 0)
+        scroll.contentView.scroll(to: NSPoint(x: x - 50, y: 0))
+        scroll.reflectScrolledClipView(scroll.contentView)
+        text.layoutVisibleText()
+        XCTAssertNotNil(text.loadedColumns)
+        let local = text.textView.characterIndexForInsertion(at: text.textView.convert(NSPoint(x: x + 0.5, y: 5), from: text))
+        text.textView.setSelectedRange(NSRange(location: local, length: 0))
+        XCTAssertEqual(Double(abs(text.selectedRange().location - aligned)), 0, accuracy: 1,
+                       "Measured slice positions must agree with TextKit")
+    }
+
+    @MainActor
     func testTextViewPasteboardWritesUseTheFullDocumentSelection() throws {
         _ = NSApplication.shared
         let pasteboard = NSPasteboard.withUniqueName()

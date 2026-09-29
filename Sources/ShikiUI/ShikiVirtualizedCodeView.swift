@@ -142,6 +142,20 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
     private(set) var loadedLines = 0..<0
     private(set) var loadedRange = NSRange(location: 0, length: 0)
     private(set) var selection = NSRange(location: 0, length: 0)
+    /// A loaded line: the part of its source held by the text view (all of it
+    /// unless the line is long) and where that part starts in the text view.
+    private struct Segment {
+        var local: Int
+        var lineStart: Int
+        var slice: NSRange
+        var contentEnd: Int
+        var lineEnd: Int
+        var breakLength: Int
+    }
+    private var segments: [Segment] = []
+    private var localLength = 0
+    /// Container x range laid out for sliced long lines; nil when none are sliced.
+    private(set) var loadedColumns: ClosedRange<CGFloat>?
     private var selectionAnchor = 0
     private var selectionHead = 0
     private var updating = false
@@ -197,6 +211,9 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         self.padding = padding
         loadedLines = 0..<0
         loadedRange = NSRange(location: 0, length: 0)
+        loadedColumns = nil
+        segments = []
+        localLength = 0
         selection = NSRange(location: 0, length: 0)
         selectionAnchor = 0
         selectionHead = 0
@@ -223,24 +240,70 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         updating = true
         defer { updating = false }
         let visible = visibleLines
+        let bounds = enclosingScrollView?.contentView.bounds ?? visibleRect
+        let visibleColumns = max(0, bounds.minX - padding)...max(0, bounds.maxX - padding)
+        let columnsStale = loadedColumns.map {
+            visibleColumns.lowerBound < $0.lowerBound || visibleColumns.upperBound > $0.upperBound
+        } ?? false
         // Refill in batches rather than replacing text on every trackpad event.
-        // Even a jump to EOF only touches this window, never intervening rows.
+        // Even a jump to EOF only touches this window, never intervening rows,
+        // and long lines only contribute the columns around the viewport.
         if loadedLines.isEmpty || visible.lowerBound < loadedLines.lowerBound
-            || visible.upperBound > loadedLines.upperBound {
+            || visible.upperBound > loadedLines.upperBound || columnsStale {
             let first = max(0, visible.lowerBound - 16)
             let end = min(document.visualLineOffsets.count, visible.upperBound + 16)
             loadedLines = first..<end
             let startOffset = document.visualLineOffsets[first]
             let endOffset = end < document.visualLineOffsets.count ? document.visualLineOffsets[end] : document.source.length
             loadedRange = NSRange(location: startOffset, length: endOffset - startOffset)
+            let margin = max(bounds.width, 512)
+            let columns = max(0, visibleColumns.lowerBound - margin)...(visibleColumns.upperBound + margin)
+            var sliced = false
+            segments.removeAll(keepingCapacity: true)
             let attributed = NSMutableAttributedString(string: "")
             for row in loadedLines {
                 let start = document.visualLineOffsets[row]
                 let end = row + 1 < document.visualLineOffsets.count ? document.visualLineOffsets[row + 1] : document.source.length
-                if let paragraph = document.paragraph(in: NSRange(location: start, length: end - start)) {
-                    attributed.append(paragraph)
+                let content = document.contentRange(ofLine: row)
+                var slice = content
+                var indent: CGFloat = 0
+                if content.length > ShikiTextDocument.sliceThreshold {
+                    sliced = true
+                    let index = document.columnIndex(forLine: row)
+                    let firstChunk = max(0, (index.x.lastIndex { $0 <= columns.lowerBound }) ?? 0)
+                    let lastChunk = index.x[firstChunk...].firstIndex { $0 >= columns.upperBound } ?? index.x.count - 1
+                    slice = NSRange(location: index.offsets[firstChunk],
+                                    length: index.offsets[lastChunk] - index.offsets[firstChunk])
+                    indent = index.x[firstChunk]
                 }
+                let local = attributed.length
+                let breakLength: Int
+                if NSMaxRange(slice) == NSMaxRange(content) {
+                    breakLength = end - NSMaxRange(content)
+                    if let paragraph = document.paragraph(in: NSRange(location: slice.location, length: end - slice.location)) {
+                        attributed.append(paragraph)
+                    }
+                } else {
+                    // The rest of the line is off screen; end the slice with a
+                    // plain break so the next line keeps its own paragraph.
+                    breakLength = end > NSMaxRange(content) ? 1 : 0
+                    if let paragraph = document.paragraph(in: slice) { attributed.append(paragraph) }
+                    if breakLength > 0 {
+                        attributed.append(NSAttributedString(string: "\n", attributes: document.baseAttributes))
+                    }
+                }
+                if indent > 0, let base = document.baseAttributes[.paragraphStyle] as? NSParagraphStyle,
+                   let style = base.mutableCopy() as? NSMutableParagraphStyle {
+                    style.firstLineHeadIndent = indent
+                    style.headIndent = indent
+                    attributed.addAttribute(.paragraphStyle, value: style,
+                                            range: NSRange(location: local, length: attributed.length - local))
+                }
+                segments.append(Segment(local: local, lineStart: start, slice: slice,
+                                        contentEnd: NSMaxRange(content), lineEnd: end, breakLength: breakLength))
             }
+            localLength = attributed.length
+            loadedColumns = sliced ? columns : nil
             textView.font = document.font
             textView.defaultParagraphStyle = document.baseAttributes[.paragraphStyle] as? NSParagraphStyle
             textView.textStorage?.setAttributedString(attributed)
@@ -274,7 +337,8 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         guard !updating, !applyingSelection else { return }
         let range = textView.selectedRange()
         guard range.location != NSNotFound else { return }
-        setSelectedRange(NSRange(location: loadedRange.location + range.location, length: range.length))
+        let start = sourceOffset(range.location)
+        setSelectedRange(NSRange(location: start, length: sourceOffset(NSMaxRange(range)) - start))
     }
 
     private func applySelection() {
@@ -283,11 +347,44 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         let start = max(selection.location, loadedRange.location)
         let end = min(NSMaxRange(selection), NSMaxRange(loadedRange))
         if end >= start {
-            textView.setSelectedRange(NSRange(location: start - loadedRange.location, length: end - start))
+            let local = localOffset(start)
+            textView.setSelectedRange(NSRange(location: local, length: localOffset(end) - local))
         } else {
             textView.setSelectedRange(NSRange(location: 0, length: 0))
         }
         textView.needsDisplay = true
+    }
+
+    /// Maps a source offset into the text view, clamping to the loaded slice.
+    private func localOffset(_ offset: Int) -> Int {
+        guard !segments.isEmpty, offset > loadedRange.location else { return 0 }
+        guard offset < NSMaxRange(loadedRange) else { return localLength }
+        var lower = 0
+        var upper = segments.count
+        while lower < upper {
+            let middle = (lower + upper) / 2
+            if segments[middle].lineStart <= offset { lower = middle + 1 } else { upper = middle }
+        }
+        let segment = segments[max(0, lower - 1)]
+        if offset <= segment.slice.location { return segment.local }
+        if offset <= NSMaxRange(segment.slice) { return segment.local + offset - segment.slice.location }
+        if offset < segment.contentEnd { return segment.local + segment.slice.length }
+        return segment.local + segment.slice.length + min(segment.breakLength, offset - segment.contentEnd)
+    }
+
+    /// Maps a text view offset back to the full source.
+    private func sourceOffset(_ local: Int) -> Int {
+        guard !segments.isEmpty else { return loadedRange.location }
+        var lower = 0
+        var upper = segments.count
+        while lower < upper {
+            let middle = (lower + upper) / 2
+            if segments[middle].local <= local { lower = middle + 1 } else { upper = middle }
+        }
+        let segment = segments[max(0, lower - 1)]
+        let delta = max(0, local - segment.local)
+        if delta <= segment.slice.length { return segment.slice.location + delta }
+        return min(segment.lineEnd, segment.contentEnd + delta - segment.slice.length)
     }
 
     func writeSelection(to pasteboard: NSPasteboard, types: [NSPasteboard.PasteboardType]) -> Bool {
@@ -307,7 +404,7 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         if point.y >= padding + CGFloat(document.visualLineOffsets.count) * document.lineHeight { return document.source.length }
         let local = textView.convert(event.locationInWindow, from: nil)
         let index = textView.characterIndexForInsertion(at: local)
-        return min(document.source.length, loadedRange.location + min(index, loadedRange.length))
+        return min(document.source.length, sourceOffset(min(index, localLength)))
     }
 
     override func mouseDown(with event: NSEvent) { trackSelection(with: event) }
@@ -421,11 +518,17 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
     }
     private func revealSelection() {
         guard let document else { return }
-        let y = padding + CGFloat(lineIndex(at: selectionHead)) * document.lineHeight
-        scrollToVisible(NSRect(x: enclosingScrollView?.contentView.bounds.minX ?? 0, y: y, width: 1, height: document.lineHeight))
+        let line = lineIndex(at: selectionHead)
+        let y = padding + CGFloat(line) * document.lineHeight
+        var x = enclosingScrollView?.contentView.bounds.minX ?? 0
+        let content = document.contentRange(ofLine: line)
+        if content.length > ShikiTextDocument.sliceThreshold {
+            // The caret may be outside the loaded slice; scroll to it first.
+            x = padding + document.x(at: min(selectionHead, NSMaxRange(content)), inLine: line)
+        }
+        scrollToVisible(NSRect(x: x, y: y, width: 1, height: document.lineHeight))
         layoutVisibleText()
-        let index = min(loadedRange.length, max(0, selectionHead - loadedRange.location))
-        textView.scrollRangeToVisible(NSRange(location: index, length: 0))
+        textView.scrollRangeToVisible(NSRange(location: localOffset(selectionHead), length: 0))
     }
 
     override func accessibilityValue() -> Any? { string }
