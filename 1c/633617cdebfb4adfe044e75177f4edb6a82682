@@ -1,0 +1,51 @@
+Fixtures/ShikiNotationGoldens.json
+  s_6d3a898784554c::t_7f35ca14c38687 1
+README.md
+  s_6d3a898784554c::t_59c0f1a27c2c8b 193-226,400,402-407,429-430,436-438,440-443,453-455,462,468,501-505
+Scripts/generate-notation-goldens.mjs
+  s_6d3a898784554c::t_b0ae3826280ecb 1-135
+Sources/ShikiCore/ShikiNotation.swift
+  s_6d3a898784554c::t_8019044d3a7944 1-703
+Tests/ShikiCoreTests/ShikiNotationTests.swift
+  s_6d3a898784554c::t_7adbd69e9aed01 1-175
+Tests/ShikiTests/ShikiNotationGoldenTests.swift
+  s_6d3a898784554c::t_a10e5adfa985ec 1-113
+shiki-swift/AppTheme.swift
+  s_6d3a898784554c::t_b0786e655bedfc 42,53-62,103,115-132,163-275,375-376
+shiki-swift/CodeBlock.swift
+  s_6d3a898784554c::t_cbfa5a055f9a7b 9-17,19,21-27,32-44,46,61-63,71-86,103-108,137,146,149,155,160,166,171,177,203-204,220,257-265
+shiki-swift/ContentView.swift
+  s_6d3a898784554c::t_b98a296e19da6a 7,23,39,46,95
+shiki-swift/DemoSamples.swift
+  s_6d3a898784554c::t_a7b0c219edab0a 375-383
+shiki-swift/Demos/AnnotationsDemo.swift
+  s_6d3a898784554c::t_bdea575b11525a 3,11,55-56
+shiki-swift/Demos/InspectorDemo.swift
+  s_6d3a898784554c::t_58fc0b21318cc3 62,75
+shiki-swift/Demos/LargeDiffDemo.swift
+  s_6d3a898784554c::t_0c2d5d20464532 1-275
+shiki-swift/Demos/LargeFileDemo.swift
+  s_6d3a898784554c::t_80d4de8cfc558b 78,132
+shiki-swift/Demos/PlaygroundDemo.swift
+  s_6d3a898784554c::t_d8bfe31b7ac3c8 92,117
+shiki-swift/Demos/TerminalDemo.swift
+  s_6d3a898784554c::t_b47da94a4bc4bb 45
+shiki-swift/LineDiff.swift
+  s_6d3a898784554c::t_96dfbff97741f9 1-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1c633617cdebfb4adfe044e75177f4edb6a82682",
+  "prompts": {},
+  "sessions": {
+    "s_6d3a898784554c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b5d0fe38-885c-4387-a0e0-603578ddf2f7",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
