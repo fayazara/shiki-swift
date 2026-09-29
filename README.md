@@ -34,6 +34,7 @@ Shiki, byte for byte (see [Parity with Shiki](#parity-with-shiki)).
 - [Package products](#package-products)
 - [Verification](#verification)
 - [Upstream pins and licensing](#upstream-pins-and-licensing)
+- [Releases](#releases)
 
 ## Installation
 
@@ -41,7 +42,7 @@ Add the package with Swift Package Manager (Swift 6.1+):
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fayazara/shiki-swift.git", branch: "main"),
+    .package(url: "https://github.com/fayazara/shiki-swift.git", from: "0.1.0"),
 ],
 targets: [
     .target(
@@ -55,7 +56,9 @@ targets: [
 ]
 ```
 
-In Xcode, use **File ▸ Add Package Dependencies…** with the same URL.
+In Xcode, use **File ▸ Add Package Dependencies…** with the same URL. Before
+1.0, minor versions may change public API; see [CHANGELOG.md](CHANGELOG.md) for
+what changed in each release.
 
 Supported platforms: macOS 13+, iOS/tvOS 16+, watchOS 9+, and visionOS 1+.
 `ShikiVirtualizedCodeView` and the ShikiDiffs views are macOS only.
@@ -608,3 +611,15 @@ The asset importer is deterministic and offline. See
 
 See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md), [`LICENSES`](LICENSES),
 and the generated resource provenance for the retained upstream notices.
+
+## Releases
+
+Versions are tagged `MAJOR.MINOR.PATCH` and listed in [CHANGELOG.md](CHANGELOG.md).
+[RELEASING.md](RELEASING.md) describes the versioning policy and the release
+checklist (`Scripts/release.sh`).
+
+## License
+
+ShikiSwift is available under the [MIT License](LICENSE). Bundled and adapted
+third-party code keeps its own license; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
