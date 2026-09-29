@@ -75,7 +75,7 @@ struct LargeFileDemo: View {
                     if let result {
                         ShikiVirtualizedCodeView(
                             result: result, renderID: generation,
-                            font: .monospacedSystemFont(ofSize: 13, weight: .regular),
+                            font: appTheme.codeNSFont(size: 13),
                             contentPadding: 14, viewportHeight: proxy.size.height
                         )
                     } else {
@@ -129,7 +129,7 @@ struct LargeFileDemo: View {
         }
     }
 
-    nonisolated private static func generate(sample: String, language: String, lines: Int, minified: Bool) -> String {
+    nonisolated static func generate(sample: String, language: String, lines: Int, minified: Bool) -> String {
         if minified {
             // ~200k characters on a single line.
             let unit: String

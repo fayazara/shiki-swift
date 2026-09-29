@@ -372,6 +372,15 @@ enum DemoSamples {
             let unused = 42; // [!code warning]
             input.parse().unwrap() // [!code error]
         }
+
+        fn main() {
+            println!("{}", parse_port("8080")); // [!code info]
+        }
+        """#),
+        CodeSample(language: "swift", title: "Word highlight", code: #"""
+        let session = URLSession.shared // [!code word:session]
+        let (data, _) = try await session.data(from: url)
+        print(data.count)
         """#),
     ]
 

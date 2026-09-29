@@ -89,7 +89,7 @@ struct PlaygroundDemo: View {
         VStack(alignment: .leading, spacing: 0) {
             paneHeader("Input", palette: palette)
             TextEditor(text: $code, selection: $selection)
-                .font(.system(size: fontSize, design: .monospaced))
+                .font(appTheme.codeFont(size: fontSize))
                 .autocorrectionDisabled()
                 .scrollContentBackground(.hidden)
                 .padding(8)
@@ -114,7 +114,7 @@ struct PlaygroundDemo: View {
                     GeometryReader { proxy in
                         ShikiVirtualizedCodeView(
                             result: result, renderID: generation,
-                            font: .monospacedSystemFont(ofSize: fontSize, weight: .regular),
+                            font: appTheme.codeNSFont(size: fontSize),
                             contentPadding: 12, viewportHeight: proxy.size.height
                         )
                     }

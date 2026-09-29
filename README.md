@@ -190,6 +190,40 @@ let custom = try highlighter.codeToTokens(
 `registerLanguage(s)` also accept batches and resolved themes. Language batches
 can declare custom or bundled embedded dependencies and injection targets.
 
+### Code annotations (`// [!code ++]`)
+
+Shiki's comment notations work on tokens, so they render natively without any
+HTML. `applyShikiNotations` removes the notation comments and reports what they
+marked:
+
+```swift
+let result = try highlighter.codeToTokens(source, language: "swift")
+let annotated = result.applyingNotations(language: "swift")
+
+annotated.tokens          // token lines with the notation comments removed
+annotated.lineNotations   // [Set<ShikiLineNotation>] per line
+annotated.wordHighlights  // [ShikiWordHighlight] (line + UTF-16 range)
+annotated.code            // the cleaned source
+```
+
+| Notation | Marks lines as |
+| --- | --- |
+| `[!code ++]`, `[!code --]` | `.added`, `.removed` |
+| `[!code highlight]`, `[!code hl]` | `.highlighted` |
+| `[!code focus]` | `.focused` |
+| `[!code error]`, `[!code warning]`, `[!code info]` | `.error`, `.warning`, `.info` |
+| `[!code word:text]` | ranges in `wordHighlights` |
+
+Append `:N` to apply a notation to `N` lines (`[!code ++:3]`). A comment that
+holds only notations applies to the next line and disappears; a comment that
+also holds text keeps its text and marks its own line. Pass `notations:` to
+apply only some families, and `matchAlgorithm: .v1` for Shiki's older matcher.
+
+It follows `@shikijs/transformers` exactly, including its comment matching,
+JSX comments (`language: "jsx"` or `"tsx"`), nested-comment splitting, and
+whitespace merging. Token offsets in the result index into `annotated.code`.
+Source without a `[!code` marker is returned untouched.
+
 ### Terminal output (ANSI)
 
 `language: "ansi"` parses SGR escape codes (16 colors, 256 colors, true color,
@@ -363,9 +397,14 @@ by token (time limit disabled on both sides):
 | Single theme: content, UTF-16 offset, color, font style, result `fg`/`bg` (238 languages; every sample with `github-dark` and one of the 65 themes in rotation) | 472 | 70,113 | **0** |
 | Dual theme (`light` + `dark`): per-token CSS-variable `htmlStyle` | 238 | 40,402 | **0** |
 | Scope explanations (`includeExplanation: .scopeName`) | 238 | 40,402 | **0** |
+| Comment notations vs `@shikijs/transformers` (diff, highlight, focus, error level, word highlight; both match algorithms): line text, line annotations, word ranges | 450 | 16,723 lines (1,901 annotated, 742 with word highlights) | **0** |
 
-This sweep was run locally and is not part of `swift test`; the checked-in
-differential fixture below is smaller.
+The sweeps were run locally and are not part of `swift test`; the checked-in
+fixtures below are smaller. The notation reference includes upstream's
+[#1308](https://github.com/shikijs/shiki/pull/1308), which is newer than the
+published 4.4.3 package. Without it (a whole-line comment that also contains
+text applies its notation to the *next* line), the Swift output matches the
+published package on all 450 cases as well; ShikiSwift keeps the fixed behavior.
 
 ### Implemented
 
@@ -387,19 +426,21 @@ differential fixture below is smaller.
 - Shiki-compatible token options: explanations, per-line time limits, maximum
   line length, context priming (`grammarContextCode`), and color replacements.
 - ANSI input (`language: "ansi"`), plain text, and the `none` theme.
+- Comment notations (`[!code ++]`, `--`, `highlight`, `focus`, `error`,
+  `warning`, `info`, `word:`) as typed line annotations and word ranges.
 - Native `AttributedString` and SwiftUI rendering, including foreground,
   background, bold, italic, underline, and strikethrough styles.
 
 ### Not yet ported
 
-Shiki's HTML layer is not ported yet. It is kept separate from the native
-tokenization core instead of being approximated:
+ShikiSwift is a native SDK, so Shiki's HTML layer (`codeToHtml`, `codeToHast`,
+and HAST-based transformer hooks) is intentionally out of scope. Still to come,
+as native APIs:
 
-- `codeToHtml` / `codeToHast` and their rendering options (`mergeWhitespaces`,
-  `mergeSameStyleTokens`, `structure`, `tabindex`, `rootStyle` output)
-- Transformers, including `@shikijs/transformers` notations such as
-  `// [!code ++]`, focus, and highlight
-- Decorations
+- Decorations: offset-based ranges that split tokens and carry a style
+- A transformer protocol with token-level hooks
+- Rendering of line annotations and word highlights in `ShikiUI`
+  (diff gutters, line backgrounds, focus dimming)
 
 Browser-specific parts of Shiki (the JavaScript regex engine, WASM loading,
 bundle factories) have no equivalent here because Oniguruma runs natively.
@@ -409,19 +450,22 @@ bundle factories) have no equivalent here because Oniguruma runs natively.
 `shiki-swift.xcodeproj` contains a macOS demo app (requires Xcode 26 and
 macOS 26.4). It restyles its whole window from the selected VS Code theme, and
 follows the system light/dark appearance by default with a separate light and
-dark theme (toolbar and **Theme** menu, ⇧⌘L to toggle).
+dark theme (toolbar and **Theme** menu, ⇧⌘L to toggle). The **Aa** toolbar
+button opens a searchable list of the monospaced fonts installed on your Mac,
+each previewed in its own face, and applies the choice to every code view.
 
 | Screen | Shows |
 | --- | --- |
 | Playground | Live, debounced highlighting of any input in any bundled language; copy as HTML, JSON tokens, or plain text |
 | Languages / Themes | Galleries of every bundled grammar and theme |
 | Light & Dark | Multi-theme tokens rendered as light and dark variants |
-| Diffs & Focus | Diff, highlight, and focus line annotations built on tokens |
+| Diffs & Focus | `[!code …]` notations (diff, highlight, focus, error, warning, info, word) applied with `applyingNotations` |
 | Docs & Markdown | Markdown with embedded fenced languages |
 | Terminal (ANSI) | ANSI escape codes mapped to theme terminal colors |
 | Streaming Chat | Incremental highlighting with `grammarState` continuation |
 | Token Inspector | Scopes and matching theme rules for each token |
 | Large Files | Timed tokenization of up to 100k lines or a 200k-character minified line in `ShikiVirtualizedCodeView`, with Shiki's 500 ms line limit toggle |
+| Large File Diff | A line diff of two generated versions of a 1k–100k line file, highlighted with Shiki and shown as one unified view in `ShikiVirtualizedCodeView`, with hunks folded to 3 lines of context |
 
 Build it in the **Release** configuration to judge performance.
 
@@ -453,6 +497,11 @@ CSS/dark-plus, HTML/github-dark, Bash/min-dark, Rust/rose-pine, and
 YAML/github-dark. Its 185 tokens are compared line by line for content, absolute
 UTF-16 offset, color, font style, token type, and result `fg`, `bg`, and
 `themeName`.
+
+`Fixtures/ShikiNotationGoldens.json` holds 58 cases of real `@shikijs/transformers`
+output on samples with injected notations (regenerate with
+`Scripts/generate-notation-goldens.mjs`); unit tests cover the individual
+behaviors.
 
 Separate coverage compiles all 65 bundled normalized themes with usable
 defaults. A full execution smoke test compiles and tokenizes every one of the

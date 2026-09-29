@@ -42,7 +42,7 @@ struct TerminalDemo: View {
                 if showRaw {
                     ScrollView(.horizontal) {
                         Text(sample.text.replacingOccurrences(of: "\u{1B}", with: "␛"))
-                            .font(.system(size: 12, design: .monospaced))
+                            .font(appTheme.codeFont(size: 12))
                             .foregroundStyle(palette.secondaryText)
                             .textSelection(.enabled)
                             .padding(14)

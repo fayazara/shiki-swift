@@ -3,65 +3,47 @@ import Shiki
 import ShikiUI
 import SwiftUI
 
-// MARK: - Line decorations (Shiki transformer notation)
-
-enum LineDecoration: Hashable {
-    case added, removed, highlighted, focused, error, warning
-}
-
-/// Parses Shiki's `// [!code ++]`, `[!code --]`, `[!code highlight]`,
-/// `[!code focus:N]`, `[!code error]`, and `[!code warning]` comments,
-/// returning the cleaned source and per-line decorations.
-enum CodeAnnotations {
-    struct Parsed {
-        let code: String
-        let decorations: [Int: LineDecoration]
-    }
-
-    private static let pattern = #/\s*(?://|#|--|<!--|/\*|;)\s*\[!code\s+(\+\+|--|highlight|hl|focus|error|warning)(?::(\d+))?\]\s*(?:-->|\*/)?\s*$/#
-
-    static func parse(_ source: String) -> Parsed {
-        var lines = source.components(separatedBy: "\n")
-        var decorations: [Int: LineDecoration] = [:]
-        for index in lines.indices {
-            guard let match = lines[index].firstMatch(of: pattern) else { continue }
-            let kind: LineDecoration = switch match.output.1 {
-            case "++": .added
-            case "--": .removed
-            case "focus": .focused
-            case "error": .error
-            case "warning": .warning
-            default: .highlighted
-            }
-            let count = match.output.2.flatMap { Int($0) } ?? 1
-            lines[index].removeSubrange(match.range)
-            for line in index..<min(lines.count, index + max(1, count)) {
-                decorations[line] = kind
-            }
-        }
-        return Parsed(code: lines.joined(separator: "\n"), decorations: decorations)
-    }
-}
-
 // MARK: - Token rendering
 
 enum TokenText {
-    static func attributed(_ tokens: [ThemedToken], font: Font, fallback: Color) -> AttributedString {
+    /// - Parameter highlights: UTF-16 ranges within the line (Shiki's
+    ///   `[!code word:…]`) drawn with `highlightColor` behind the text.
+    static func attributed(
+        _ tokens: [ThemedToken],
+        font: Font,
+        fallback: Color,
+        highlights: [Range<Int>] = [],
+        highlightColor: Color = .yellow.opacity(0.3)
+    ) -> AttributedString {
         var output = AttributedString()
+        var position = 0
         for token in tokens {
-            var piece = AttributedString(token.content)
+            let units = Array(token.content.utf16)
+            var cuts = Set([0, units.count])
+            for range in highlights {
+                for edge in [range.lowerBound - position, range.upperBound - position] where edge > 0 && edge < units.count {
+                    cuts.insert(edge)
+                }
+            }
             let style = token.fontStyle == .notSet ? FontStyle.none : (token.fontStyle ?? .none)
             var tokenFont = font
             if style.contains(.bold) { tokenFont = tokenFont.bold() }
             if style.contains(.italic) { tokenFont = tokenFont.italic() }
-            piece.font = tokenFont
-            piece.foregroundColor = token.color.flatMap(Color.init(shikiHex:)) ?? fallback
-            if let background = token.bgColor.flatMap(Color.init(shikiHex:)) {
-                piece.backgroundColor = background
+            let sorted = cuts.sorted()
+            for (start, end) in zip(sorted, sorted.dropFirst()) {
+                var piece = AttributedString(String(decoding: units[start..<end], as: UTF16.self))
+                piece.font = tokenFont
+                piece.foregroundColor = token.color.flatMap(Color.init(shikiHex:)) ?? fallback
+                if highlights.contains(where: { $0.lowerBound <= position + start && position + end <= $0.upperBound }) {
+                    piece.backgroundColor = highlightColor
+                } else if let background = token.bgColor.flatMap(Color.init(shikiHex:)) {
+                    piece.backgroundColor = background
+                }
+                if style.contains(.underline) { piece.underlineStyle = .single }
+                if style.contains(.strikethrough) { piece.strikethroughStyle = .single }
+                output.append(piece)
             }
-            if style.contains(.underline) { piece.underlineStyle = .single }
-            if style.contains(.strikethrough) { piece.strikethroughStyle = .single }
-            output.append(piece)
+            position += units.count
         }
         // Empty lines still need a line's height.
         if output.characters.isEmpty {
@@ -76,7 +58,9 @@ enum TokenText {
 struct CodeLines: View {
     let lines: [[ThemedToken]]
     let palette: Palette
-    var decorations: [Int: LineDecoration] = [:]
+    /// Notations per line (from `applyingNotations`), parallel to `lines`.
+    var notations: [Set<ShikiLineNotation>] = []
+    var wordHighlights: [ShikiWordHighlight] = []
     var showsLineNumbers = true
     var fontSize: CGFloat = 13
     /// Content appended after the last line, e.g. a streaming cursor.
@@ -84,8 +68,22 @@ struct CodeLines: View {
 
     @State private var hovering = false
 
-    private var font: Font { .system(size: fontSize, design: .monospaced) }
-    private var hasFocus: Bool { decorations.values.contains(.focused) }
+    @Environment(AppTheme.self) private var appTheme
+
+    private var font: Font { appTheme.codeFont(size: fontSize) }
+    private var hasFocus: Bool { notations.contains { $0.contains(.focused) } }
+
+    /// The notation that decides a line's marker and tint; focus only dims the rest.
+    private static let priority: [ShikiLineNotation] = [.error, .warning, .added, .removed, .info, .highlighted]
+
+    private func decoration(at index: Int) -> ShikiLineNotation? {
+        guard index < notations.count else { return nil }
+        return Self.priority.first { notations[index].contains($0) }
+    }
+
+    private func words(on index: Int) -> [Range<Int>] {
+        wordHighlights.filter { $0.line == index }.map(\.range)
+    }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -102,9 +100,12 @@ struct CodeLines: View {
     }
 
     private func line(_ index: Int) -> some View {
-        let decoration = decorations[index]
-        let dimmed = hasFocus && decoration != .focused && !hovering
-        var text = TokenText.attributed(lines[index], font: font, fallback: palette.foreground)
+        let decoration = decoration(at: index)
+        let focused = index < notations.count && notations[index].contains(.focused)
+        let dimmed = hasFocus && !focused && !hovering
+        var text = TokenText.attributed(lines[index], font: font, fallback: palette.foreground,
+                                        highlights: words(on: index),
+                                        highlightColor: palette.accent.opacity(0.35))
         if trailingCursor && index == lines.count - 1 {
             var cursor = AttributedString("▍")
             cursor.foregroundColor = palette.accent
@@ -133,7 +134,7 @@ struct CodeLines: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(background(for: decoration))
         .overlay(alignment: .leading) {
-            if let decoration, decoration != .focused {
+            if let decoration {
                 Rectangle().fill(markerColor(for: decoration)).frame(width: 3)
             }
         }
@@ -142,36 +143,38 @@ struct CodeLines: View {
     }
 
     private var gutterWidth: CGFloat {
-        CGFloat(String(lines.count).count) * fontSize * 0.62
+        CGFloat(String(lines.count).count) * appTheme.codeAdvance(size: fontSize)
     }
 
-    private func marker(for decoration: LineDecoration?) -> String {
+    private func marker(for decoration: ShikiLineNotation?) -> String {
         switch decoration {
         case .added: "+"
         case .removed: "-"
         case .error: "✕"
         case .warning: "!"
+        case .info: "i"
         default: " "
         }
     }
 
-    private func markerColor(for decoration: LineDecoration?) -> Color {
+    private func markerColor(for decoration: ShikiLineNotation?) -> Color {
         switch decoration {
         case .added: .green
         case .removed: .red
         case .error: palette.error
         case .warning: palette.warning
-        case .highlighted: palette.accent
+        case .info, .highlighted: palette.accent
         default: .clear
         }
     }
 
-    private func background(for decoration: LineDecoration?) -> Color {
+    private func background(for decoration: ShikiLineNotation?) -> Color {
         switch decoration {
         case .added: palette.inserted
         case .removed: palette.removed
         case .error: palette.error.opacity(0.14)
         case .warning: palette.warning.opacity(0.14)
+        case .info: palette.accent.opacity(0.12)
         case .highlighted: palette.lineHighlight.opacity(1)
         default: .clear
         }
@@ -197,7 +200,8 @@ struct CodeBlock: View {
     private struct Rendered {
         let key: String
         let lines: [[ThemedToken]]
-        let decorations: [Int: LineDecoration]
+        let notations: [Set<ShikiLineNotation>]
+        let words: [ShikiWordHighlight]
         let code: String
         let palette: Palette
     }
@@ -213,7 +217,7 @@ struct CodeBlock: View {
             Group {
                 if let rendered {
                     CodeLines(lines: rendered.lines, palette: rendered.palette,
-                              decorations: rendered.decorations,
+                              notations: rendered.notations, wordHighlights: rendered.words,
                               showsLineNumbers: showsLineNumbers, fontSize: fontSize)
                 } else if let failure {
                     Text(failure).foregroundStyle(.red).padding()
@@ -249,11 +253,16 @@ struct CodeBlock: View {
     }
 
     private func render() async {
-        let parsed = parsesAnnotations ? CodeAnnotations.parse(code) : .init(code: code, decorations: [:])
         do {
-            let result = try await DemoEngine.shared.tokens(parsed.code, language: language, theme: themeID)
-            rendered = Rendered(key: key, lines: result.tokens, decorations: parsed.decorations,
-                                code: parsed.code, palette: Palette(themeID: themeID))
+            // Highlight the source as written, comments included, then let the
+            // library strip the `[!code …]` notations and report what they marked.
+            let result = try await DemoEngine.shared.tokens(code, language: language, theme: themeID)
+            let annotated = parsesAnnotations ? result.applyingNotations(language: language) : nil
+            rendered = Rendered(
+                key: key, lines: annotated?.tokens ?? result.tokens,
+                notations: annotated?.lineNotations ?? [], words: annotated?.wordHighlights ?? [],
+                code: annotated?.code ?? code, palette: Palette(themeID: themeID)
+            )
             failure = nil
         } catch is CancellationError {
         } catch {

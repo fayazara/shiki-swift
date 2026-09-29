@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shiki transformer notation: comments in the source become line decorations.
+/// Shiki's comment notations: `applyingNotations` turns them into typed line annotations.
 struct AnnotationsDemo: View {
     @Environment(AppTheme.self) private var appTheme
     @State private var showSource = true
@@ -8,7 +8,7 @@ struct AnnotationsDemo: View {
     var body: some View {
         let palette = appTheme.palette
         DemoPage(title: "Diffs & Focus",
-                 subtitle: "Write Shiki's transformer notation in code comments — the comments are stripped before highlighting and turned into diff, highlight, focus, error, and warning decorations. Great for docs, blog posts, and code review UIs.") {
+                 subtitle: "Write Shiki's notation in code comments. The source is highlighted as written; then result.applyingNotations() removes the comments and reports which lines are added, removed, highlighted, focused, or flagged as errors, warnings, and info, plus highlighted words. Great for docs, blog posts, and code review UIs.") {
             Toggle("Show source next to the result", isOn: $showSource).toggleStyle(.switch)
             FlowLayout {
                 ForEach(legend, id: \.0) { item in
@@ -52,5 +52,7 @@ struct AnnotationsDemo: View {
         ("[!code focus:N]", "Focus N lines, blur the rest"),
         ("[!code error]", "Error line"),
         ("[!code warning]", "Warning line"),
+        ("[!code info]", "Info line"),
+        ("[!code word:text]", "Highlight every occurrence of text"),
     ]
 }

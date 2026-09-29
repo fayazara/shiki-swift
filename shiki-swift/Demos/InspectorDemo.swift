@@ -59,7 +59,7 @@ struct InspectorDemo: View {
                     }
                 }
             }
-            .font(.system(size: 13, design: .monospaced))
+            .font(appTheme.codeFont(size: 13))
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -72,7 +72,7 @@ struct InspectorDemo: View {
         let token = lines[position.line][position.token]
         let isSelected = selected == position
         let isHovered = hovered == position
-        return Text(TokenText.attributed([token], font: .system(size: 13, design: .monospaced),
+        return Text(TokenText.attributed([token], font: appTheme.codeFont(size: 13),
                                          fallback: palette.foreground))
             .fixedSize()
             .background(

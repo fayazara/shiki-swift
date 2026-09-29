@@ -39,6 +39,7 @@ final class AppTheme {
         static let light = "appLightThemeID"
         static let dark = "appDarkThemeID"
         static let legacy = "appThemeID"
+        static let codeFont = "codeFontFamily"
     }
 
     var appearance: Appearance {
@@ -49,6 +50,16 @@ final class AppTheme {
     }
 
     /// Theme shown in light mode / dark mode.
+    /// The family used for code, or `nil` for the system monospaced font.
+    /// Only fixed-pitch families from `CodeFonts.families` are accepted.
+    var codeFontFamily: String? {
+        didSet {
+            UserDefaults.standard.set(codeFontFamily, forKey: Key.codeFont)
+            fontCache.removeAll()
+        }
+    }
+    @ObservationIgnored private var fontCache: [CGFloat: NSFont] = [:]
+
     private(set) var lightThemeID: String { didSet { UserDefaults.standard.set(lightThemeID, forKey: Key.light) } }
     private(set) var darkThemeID: String { didSet { UserDefaults.standard.set(darkThemeID, forKey: Key.dark) } }
 
@@ -89,6 +100,7 @@ final class AppTheme {
             ?? valid(legacy, light: false) ?? Self.dark.first { $0.id == "github-dark" }?.id ?? Self.dark[0].id
         appearance = defaults.string(forKey: Key.appearance).flatMap(Appearance.init) ?? .system
         systemIsDark = Self.systemPrefersDark()
+        codeFontFamily = defaults.string(forKey: Key.codeFont).flatMap { CodeFonts.families.contains($0) ? $0 : nil }
         applyAppearance()
 
         // Re-read the system setting whenever the app's appearance changes;
@@ -99,6 +111,24 @@ final class AppTheme {
     }
 
     var info: ShikiThemeInfo? { Self.all.first { $0.id == themeID } }
+
+    /// The code font at `size`; the same instance is returned while the family
+    /// is unchanged, so views can pass it to AppKit without triggering rebuilds.
+    func codeNSFont(size: CGFloat) -> NSFont {
+        if let cached = fontCache[size] { return cached }
+        let font = CodeFonts.font(family: codeFontFamily, size: size)
+        fontCache[size] = font
+        return font
+    }
+
+    func codeFont(size: CGFloat) -> Font {
+        Font(codeNSFont(size: size) as CTFont)
+    }
+
+    /// Width of one column, for gutters and alignment.
+    func codeAdvance(size: CGFloat) -> CGFloat {
+        ("0" as NSString).size(withAttributes: [.font: codeNSFont(size: size)]).width
+    }
 
     /// Drives window chrome; `nil` lets AppKit follow the system.
     private func applyAppearance() {
@@ -127,6 +157,119 @@ final class AppTheme {
 
     func shuffle() {
         themeID = current.filter { $0.id != themeID }.randomElement()?.id ?? themeID
+    }
+}
+
+/// The system's monospaced font families.
+enum CodeFonts {
+    static let systemName = "System Mono"
+
+    /// Every installed family whose regular face is monospaced, sorted by
+    /// name: either flagged fixed-pitch, or measured (so coding fonts with a
+    /// missing flag still appear) with equal advances for `i M W . l 0`.
+    /// Hidden system families and symbol-only faces are left out.
+    static let families: [String] = {
+        let manager = NSFontManager.shared
+        return manager.availableFontFamilies
+            .filter { !$0.hasPrefix(".") }
+            .filter { family in
+                guard let font = manager.font(withFamily: family, traits: [], weight: 5, size: 16) else { return false }
+                return drawsLetters(font) && (font.isFixedPitch || hasEqualAdvances(font))
+            }
+            .sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+    }()
+
+    private static func glyph(_ character: String, in font: NSFont) -> CGGlyph? {
+        var glyph = CGGlyph(0)
+        let units = Array(character.utf16)
+        return CTFontGetGlyphsForCharacters(font as CTFont, units, &glyph, 1) && glyph != 0 ? glyph : nil
+    }
+
+    private static func drawsLetters(_ font: NSFont) -> Bool {
+        ["A", "a", "0"].allSatisfy { glyph($0, in: font) != nil }
+    }
+
+    private static func hasEqualAdvances(_ font: NSFont) -> Bool {
+        var widths: [CGFloat] = []
+        for character in ["i", "M", "W", ".", "l", "0"] {
+            guard var glyph = glyph(character, in: font) else { return false }
+            var advance = CGSize.zero
+            CTFontGetAdvancesForGlyphs(font as CTFont, .horizontal, &glyph, &advance, 1)
+            widths.append(advance.width)
+        }
+        return widths[0] > 0 && widths.allSatisfy { abs($0 - widths[0]) < 0.01 }
+    }
+
+    /// The regular face of `family`, or the system monospaced font.
+    static func font(family: String?, size: CGFloat, weight: NSFont.Weight = .regular) -> NSFont {
+        if let family,
+           let font = NSFontManager.shared.font(withFamily: family, traits: [], weight: 5, size: size),
+           font.isFixedPitch {
+            return font
+        }
+        return .monospacedSystemFont(ofSize: size, weight: weight)
+    }
+}
+
+/// Toolbar button that opens a searchable list of monospaced system fonts,
+/// each row previewed in its own face.
+struct CodeFontPicker: View {
+    @Environment(AppTheme.self) private var appTheme
+    @State private var showing = false
+    @State private var query = ""
+
+    private var families: [String] {
+        let all = [CodeFonts.systemName] + CodeFonts.families
+        guard !query.isEmpty else { return all }
+        return all.filter { $0.localizedCaseInsensitiveContains(query) }
+    }
+
+    private var selection: String { appTheme.codeFontFamily ?? CodeFonts.systemName }
+
+    var body: some View {
+        Button { showing.toggle() } label: {
+            Label("Code Font", systemImage: "textformat")
+        }
+        .help("Code font: \(selection)")
+        .popover(isPresented: $showing, arrowEdge: .bottom) { content }
+    }
+
+    private var content: some View {
+        VStack(spacing: 0) {
+            TextField("Search \(CodeFonts.families.count) monospaced fonts", text: $query)
+                .textFieldStyle(.roundedBorder)
+                .padding(10)
+            Divider()
+            ScrollViewReader { proxy in
+                List(families, id: \.self) { family in
+                    row(family)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            appTheme.codeFontFamily = family == CodeFonts.systemName ? nil : family
+                        }
+                }
+                .listStyle(.plain)
+                .onAppear { proxy.scrollTo(selection, anchor: .center) }
+            }
+        }
+        .frame(width: 360, height: 440)
+    }
+
+    private func row(_ family: String) -> some View {
+        let previewFont = CodeFonts.font(family: family == CodeFonts.systemName ? nil : family, size: 13)
+        return HStack(spacing: 10) {
+            Image(systemName: "checkmark")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.tint)
+                .opacity(family == selection ? 1 : 0)
+            Text(family)
+            Spacer(minLength: 8)
+            Text("Aa 0O1lI {}=>")
+                .font(Font(previewFont as CTFont))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .padding(.vertical, 2)
     }
 }
 
@@ -228,6 +371,8 @@ struct ThemeSwitcher: View {
             }
         }
         .help("Theme (⌘[ / ⌘] to cycle)")
+
+        CodeFontPicker()
 
         Button { appTheme.shuffle() } label: {
             Label("Random Theme", systemImage: "shuffle")

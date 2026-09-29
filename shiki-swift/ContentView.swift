@@ -4,7 +4,7 @@ import SwiftUI
 enum DemoScreen: String, CaseIterable, Identifiable, Hashable {
     case playground, languages, themes
     case lightDark, annotations, docs, terminal
-    case streaming, inspector, largeFiles
+    case streaming, inspector, largeFiles, largeDiff
 
     var id: String { rawValue }
 
@@ -20,6 +20,7 @@ enum DemoScreen: String, CaseIterable, Identifiable, Hashable {
         case .streaming: "Streaming Chat"
         case .inspector: "Token Inspector"
         case .largeFiles: "Large Files"
+        case .largeDiff: "Large File Diff"
         }
     }
 
@@ -35,13 +36,14 @@ enum DemoScreen: String, CaseIterable, Identifiable, Hashable {
         case .streaming: "bubble.left.and.text.bubble.right"
         case .inspector: "scope"
         case .largeFiles: "gauge.with.dots.needle.67percent"
+        case .largeDiff: "arrow.left.arrow.right"
         }
     }
 
     static let sections: [(String, [DemoScreen])] = [
         ("Basics", [.playground, .languages, .themes]),
         ("Rendering", [.lightDark, .annotations, .docs, .terminal]),
-        ("Advanced", [.streaming, .inspector, .largeFiles]),
+        ("Advanced", [.streaming, .inspector, .largeFiles, .largeDiff]),
     ]
 }
 
@@ -90,6 +92,7 @@ struct ContentView: View {
         case .streaming: StreamingDemo()
         case .inspector: InspectorDemo()
         case .largeFiles: LargeFileDemo()
+        case .largeDiff: LargeDiffDemo()
         }
     }
 
