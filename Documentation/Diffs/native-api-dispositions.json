@@ -1,0 +1,1123 @@
+{
+  "version": 1,
+  "scope": "Only explicitly listed origin/export contracts are reviewed; unlisted exports remain unreviewed. internalModuleExports identify source-only helpers and are excluded from public package coverage.",
+  "contracts": [
+    {
+      "upstream": "src/components/CodeView.ts",
+      "exports": [
+        "CodeView",
+        "CodeViewOptions",
+        "CodeViewCreateEditorOptions",
+        "CodeViewItemEditCompleteHandler",
+        "CodeViewItemEditCompleteEventMap",
+        "CodeViewRenderedItem",
+        "CodeViewRenderedFileItem",
+        "CodeViewRenderedDiffItem",
+        "CodeViewLineSelection",
+        "CodeViewScrollListener"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/CodeView.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/ManagedReviewEditingTests.swift",
+        "Tests/SwiftDiffsTests/ReviewCollapseTests.swift",
+        "Tests/SwiftDiffsTests/ReviewLifecycleCallbackTests.swift",
+        "Documentation/COMPONENT-CONTRACTS.md"
+      ],
+      "differences": [
+        "AppKit owns containers/slots; no React portal coordinator.",
+        "Completion notification and accepted highlighting are asynchronous; native onItemsChange supplies prepared replacements.",
+        "Native instance geometry queries require a currently mounted instance."
+      ]
+    },
+    {
+      "upstream": "src/editor/EditStateManager.ts",
+      "exports": [
+        "EditStateManager",
+        "ClearEditStateOptions"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditStateManager.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditStateManagerTests.swift"
+      ],
+      "differences": [
+        "Use .shared or a window-owned manager. Lifecycle claims/releases are internal to DiffEditor.",
+        "get returns a Swift value snapshot; developer mutation of live internal history is not exposed."
+      ]
+    },
+    {
+      "upstream": "src/editor/marker.ts",
+      "exports": [
+        "Marker",
+        "MarkerSeverity",
+        "MarkerRenderer",
+        "MarkerRenderOptions"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditorOverlays.swift",
+        "Sources/SwiftDiffs/NativeDiffView.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditorOverlayTests.swift"
+      ],
+      "differences": [
+        "DiffEditor.setMarkers owns the canvas renderer; no separately constructible DOM overlay renderer.",
+        "Plain messages and custom NSView popover content replace HTML strings/elements.",
+        "NSPopover owns popup chrome and dismissal; physical hover interaction remains unverified."
+      ]
+    },
+    {
+      "upstream": "src/editor/types.ts",
+      "exports": [
+        "CaretMetadata",
+        "EditorCaret",
+        "EditState",
+        "EditorType",
+        "EditCompletionDecision",
+        "EditorInitialState"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditorOverlays.swift",
+        "Sources/SwiftDiffs/EditStateManager.swift",
+        "Sources/SwiftDiffs/CodeView.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditorOverlayTests.swift",
+        "Tests/SwiftDiffsTests/EditStateManagerTests.swift",
+        "Tests/SwiftDiffsTests/InitialEditStateTests.swift"
+      ],
+      "differences": [
+        "Native reference metadata boxes carry caller payloads.",
+        "CodeViewEditDecision expresses accept/reject; DiffEditor completion handlers return Bool.",
+        "Initial state is an independent Swift value snapshot; private native undo grouping is discarded if callers modify imported document history."
+      ]
+    },
+    {
+      "upstream": "src/editor/editor.ts",
+      "exports": [
+        "Editor",
+        "EditorOptions",
+        "EditorFocusOptions"
+      ],
+      "status": "partial",
+      "native": [
+        "Sources/SwiftDiffs/DiffEditor.swift",
+        "Sources/SwiftDiffs/NativeEditor.swift",
+        "Sources/SwiftDiffs/BracketMatching.swift",
+        "Sources/SwiftDiffs/MultipleSelections.swift",
+        "Sources/SwiftDiffs/EditorKeymap.swift",
+        "Sources/SwiftDiffs/EditHistory.swift",
+        "Sources/SwiftDiffs/EditorPredictionController.swift",
+        "Sources/SwiftDiffs/EditorClipboard.swift",
+        "Sources/SwiftDiffs/EditorWidgets.swift",
+        "Sources/SwiftDiffs/NativeEditorNavigation.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/AttachedEditorTests.swift",
+        "Documentation/COMPONENT-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/BracketMatchingTests.swift",
+        "Tests/SwiftDiffsTests/EditorFocusTests.swift",
+        "Tests/SwiftDiffsTests/MultipleSelectionTests.swift",
+        "Tests/SwiftDiffsTests/EditorKeymapTests.swift",
+        "Tests/SwiftDiffsTests/EditHistoryTests.swift",
+        "Documentation/EDITOR-INPUT.md",
+        "Tests/SwiftDiffsTests/InitialEditStateTests.swift",
+        "Tests/SwiftDiffsTests/EditorPredictionIntegrationTests.swift",
+        "Tests/SwiftDiffsTests/EditorHostCustomizationTests.swift",
+        "Documentation/EDITOR-HOST-CUSTOMIZATION.md",
+        "Tests/SwiftDiffsTests/NativeEditorNavigationTests.swift"
+      ],
+      "missing": [
+        "Full input-method/focus and keyboard verification."
+      ],
+      "differences": [
+        "Identity-retained AppKit renderers replace DOM element callbacks; selection contexts are weak and expire with their mounted widget.",
+        "Async Sendable clipboard reads use Task cancellation plus document, selection, provider and session validation; stale results never paste into a later state.",
+        "Browser-native word and paragraph navigation uses Foundation linguistic segmentation and AppKit selectors, compared against NSTextView. Cross-locale and bidirectional visual equivalence is not claimed."
+      ]
+    },
+    {
+      "upstream": "src/components/FileStream.ts",
+      "exports": [
+        "FileStream",
+        "FileStreamOptions"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/FileStreamView.swift",
+        "Sources/SwiftDiffs/Streaming.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/FileStreamViewTests.swift",
+        "swift-diffs/DemoStreamingView.swift"
+      ],
+      "differences": [
+        "AsyncThrowingStream/Task cancellation replaces browser streams/controllers.",
+        "Actor token snapshots and an owned AppKit/SwiftUI view are separate entry points.",
+        "Adaptive streams keep two cached token snapshots; write callbacks consistently expose light-theme tokens instead of CSS-variable variants."
+      ]
+    },
+    {
+      "upstream": "src/editor/command.ts",
+      "exports": [
+        "EditorCommand",
+        "EditorKeymap",
+        "resolveEditorCommandFromKeyboardEvent",
+        "resolveFindAgainShortcut"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditorKeymap.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditorKeymapTests.swift",
+        "Documentation/EDITOR-INPUT.md"
+      ],
+      "differences": [
+        "NSEvent replaces KeyboardEvent; only macOS groups are evaluated.",
+        "Swift dictionaries accept shortcut strings; malformed shortcuts are ignored."
+      ]
+    },
+    {
+      "upstream": "src/editor/editStack.ts",
+      "exports": [],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditHistory.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditHistoryTests.swift",
+        "Scripts/generate-history-oracle.ts",
+        "Documentation/EDITOR-INPUT.md"
+      ],
+      "differences": [
+        "Swift value snapshots replace JavaScript live mutable objects.",
+        "internalModuleExports are source-module helpers, not public package entry-point exports; they do not count toward public API coverage."
+      ],
+      "internalModuleExports": [
+        "EditStack",
+        "createEditStackEntry",
+        "shouldCoalesceEditStackEntry",
+        "coalesceEditStackEntries"
+      ]
+    },
+    {
+      "upstream": "src/editor/textDocument.ts",
+      "exports": [
+        "TextDocument"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/TextDocument.swift",
+        "Sources/SwiftDiffs/EditHistory.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditingTests.swift",
+        "Tests/SwiftDiffsTests/EditHistoryTests.swift",
+        "Documentation/EDITOR-INPUT.md",
+        "Tests/SwiftDiffsTests/TextDocumentContractTests.swift"
+      ],
+      "differences": [
+        "UTF-16 piece-table document and transferable value history; raw invalid Unicode is represented by Swift replacement characters.",
+        "Native coalescing:false supports provisional IME transactions grouped by NSUndoManager.",
+        "getLineTextChecked provides upstream line validation; getLineText retains the existing clamping native convenience.",
+        "undoResult/redoResult expose full replay metadata; undo/redo retain their change-only native return type.",
+        "utf16CodeUnit(at:) exposes raw units; charAt returns a Swift String with replacement characters for isolated surrogates."
+      ]
+    },
+    {
+      "upstream": "src/editor/selection.ts",
+      "exports": [],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/MultipleSelections.swift",
+        "Sources/SwiftDiffs/TextDocument.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/MultipleSelectionTests.swift",
+        "Scripts/generate-multiselection-oracle.ts",
+        "Documentation/EDITOR-INPUT.md"
+      ],
+      "differences": [
+        "Foundation word segmentation replaces Intl.Segmenter; all-locale equivalence is not claimed.",
+        "internalModuleExports are source-module helpers, not public package entry-point exports; they do not count toward public API coverage."
+      ],
+      "internalModuleExports": [
+        "selectionIntersects",
+        "mergeOverlappingSelections",
+        "expandCollapsedSelectionToWord",
+        "findNextMatch"
+      ]
+    },
+    {
+      "upstream": "src/editor/editPrediction.ts",
+      "exports": [
+        "EditPredictRequest",
+        "EditPredictResponse",
+        "EditPredictProvider",
+        "EditPredictContext"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditPrediction.swift",
+        "Sources/SwiftDiffs/TextDocument.swift",
+        "Sources/CSDRegex/Bridge.c",
+        "Sources/SwiftDiffs/EditorPredictionController.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditPredictionTests.swift",
+        "Scripts/generate-prediction-oracle.ts",
+        "Documentation/EDIT-PREDICTION.md",
+        "Tests/SwiftDiffsTests/EditorPredictionIntegrationTests.swift"
+      ],
+      "differences": [
+        "Swift values replace JavaScript objects; String replaces isolated surrogate units.",
+        "TextDocument.lastChangeTransaction replaces the weak association used for transaction metadata.",
+        "Invalid regex patterns and execution-limited patterns return no match.",
+        "A Sendable async provider closure and Task cancellation replace the Promise/AbortSignal transport; stale results are rejected independently of cancellation compliance.",
+        "internalModuleExports are source-module helpers, not public package entry-point exports; they do not count toward public API coverage."
+      ],
+      "internalModuleExports": [
+        "EditPredictionHistoryRecord",
+        "buildEditPredictionRequest",
+        "recordEditPrediction",
+        "matchesEditPredictionPattern"
+      ]
+    },
+    {
+      "upstream": "src/editor/selectionAction.ts",
+      "exports": [],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/EditorWidgets.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift",
+        "Sources/SwiftDiffs/NativeDiffView.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/EditorHostCustomizationTests.swift",
+        "Documentation/EDITOR-HOST-CUSTOMIZATION.md"
+      ],
+      "differences": [
+        "Weak live primary-selection access and copy-on-write TextDocument snapshots replace JavaScript getters and mutable object references. Expired callbacks return nil/empty/false.",
+        "AppKit frame observation and explicit invalidateWidgetLayout replace ResizeObserver; native layer shadows replace CSS box-shadow.",
+        "internalModuleExports are source-module helpers, not public package entry-point exports; they do not count toward public API coverage."
+      ],
+      "internalModuleExports": [
+        "SelectionActionContext"
+      ]
+    },
+    {
+      "upstream": "src/highlighter/shared_highlighter.ts",
+      "exports": [
+        "getSharedHighlighter",
+        "isHighlighterLoaded",
+        "getHighlighterIfLoaded",
+        "isHighlighterLoading",
+        "isHighlighterNull",
+        "preloadHighlighter",
+        "disposeHighlighter"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/StreamConfigurationTests.swift",
+        "Documentation/SHARED-HIGHLIGHTER-CONTRACTS.md"
+      ],
+      "differences": [
+        "Native Oniguruma replaces the JavaScript/WASM engine choice.",
+        "Actor readiness replaces predicates over arbitrary Promise/object/undefined values. Engine initialization is synchronous and has no separately observable loading state; null is the inverse of isHighlighterLoaded.",
+        "Existing value snapshots and stream configurations survive disposal through native ownership; new requests reload."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/areLanguagesAttached.ts",
+      "exports": [
+        "areLanguagesAttached"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/attachResolvedLanguages.ts",
+      "exports": [
+        "attachResolvedLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/cleanUpResolvedLanguages.ts",
+      "exports": [
+        "cleanUpResolvedLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/constants.ts",
+      "exports": [
+        "AttachedLanguages",
+        "RegisteredCustomLanguages",
+        "ResolvedLanguages",
+        "ResolvingLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/getResolvedLanguages.ts",
+      "exports": [
+        "getResolvedLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/getResolvedOrResolveLanguage.ts",
+      "exports": [
+        "getResolvedOrResolveLanguage"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/hasResolvedLanguages.ts",
+      "exports": [
+        "hasResolvedLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/registerCustomLanguage.ts",
+      "exports": [
+        "registerCustomLanguage"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/resolveLanguage.ts",
+      "exports": [
+        "resolveLanguage"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/languages/resolveLanguages.ts",
+      "exports": [
+        "resolveLanguages"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyLanguageTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/areThemesAttached.ts",
+      "exports": [
+        "areThemesAttached"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/attachResolvedThemes.ts",
+      "exports": [
+        "attachResolvedThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/cleanUpResolvedThemes.ts",
+      "exports": [
+        "cleanUpResolvedThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/constants.ts",
+      "exports": [
+        "AttachedThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/getResolvedOrResolveTheme.ts",
+      "exports": [
+        "getResolvedOrResolveTheme"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/getResolvedThemes.ts",
+      "exports": [
+        "getResolvedThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/hasResolvedThemes.ts",
+      "exports": [
+        "hasResolvedThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/registerCustomCSSVariableTheme.ts",
+      "exports": [
+        "registerCustomCSSVariableTheme"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/CSSVariablesTheme.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/registerCustomTheme.ts",
+      "exports": [
+        "CustomThemeLoader",
+        "registerCustomTheme"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/resolveTheme.ts",
+      "exports": [
+        "resolveTheme"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/highlighter/themes/resolveThemes.ts",
+      "exports": [
+        "resolveThemes"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/RESOURCE-RESOLVER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/LazyThemeTests.swift",
+        "Tests/SwiftDiffsTests/BulkResolutionTests.swift"
+      ],
+      "differences": [
+        "Actor-owned snapshots and async methods replace mutable module globals and Promise unions.",
+        "Native Shiki owns grammar batches and concrete theme colors; browser Worker restrictions and CSS cascade are not exposed."
+      ]
+    },
+    {
+      "upstream": "src/components/File.ts",
+      "exports": [
+        "File",
+        "FileEditChangeHandler",
+        "FileEditCompleteHandler",
+        "FileHydrateProps",
+        "FileOptions",
+        "FileRenderProps"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/NativeFileView.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Documentation/COMPONENT-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/ComponentControlTests.swift",
+        "Tests/SwiftDiffsTests/AttachedEditorTests.swift",
+        "Tests/SwiftDiffsTests/HeaderTests.swift",
+        "Tests/SwiftDiffsTests/HydrationTests.swift"
+      ],
+      "differences": [
+        "Prepared native values replace HTML hydration and mutable HAST caches; the clip view determines render range.",
+        "Native views and typed renderer callbacks replace DOM containers, CSS injection and manager flags.",
+        "Completion requires explicit native modes and can await highlighting; browser frozen-event and synchronous return contracts are adapted."
+      ]
+    },
+    {
+      "upstream": "src/components/FileDiff.ts",
+      "exports": [
+        "FileDiff",
+        "FileDiffEditChangeHandler",
+        "FileDiffEditCompleteHandler",
+        "FileDiffHydrationProps",
+        "FileDiffOptions",
+        "FileDiffRenderBaseProps",
+        "FileDiffRenderProps",
+        "FileDiffType"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/NativeDiffView.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Documentation/COMPONENT-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/ComponentControlTests.swift",
+        "Tests/SwiftDiffsTests/AttachedEditorTests.swift",
+        "Tests/SwiftDiffsTests/HeaderTests.swift",
+        "Tests/SwiftDiffsTests/HydrationTests.swift"
+      ],
+      "differences": [
+        "Prepared native values replace HTML hydration and mutable HAST caches; the clip view determines render range.",
+        "Native views and typed renderer callbacks replace DOM containers, CSS injection and manager flags.",
+        "Completion requires explicit native modes and can await highlighting; browser frozen-event and synchronous return contracts are adapted."
+      ]
+    },
+    {
+      "upstream": "src/types.ts",
+      "exports": [
+        "AnnotationSide",
+        "ChangeContent",
+        "ChangeTypes",
+        "CodeColumnType",
+        "ConflictResolverTypes",
+        "ContextContent",
+        "DiffAcceptRejectHunkConfig",
+        "DiffAcceptRejectHunkType",
+        "DiffFileInput",
+        "DiffIndicators",
+        "DiffsThemeNames",
+        "ExpansionDirections",
+        "FileContents",
+        "FileDiffContentsLoader",
+        "FileDiffLoadedChangedFiles",
+        "FileDiffLoadedFiles",
+        "FileDiffLoadedPureRenamedFile",
+        "FileDiffMetadata",
+        "Hunk",
+        "HunkData",
+        "HunkExpansionRegion",
+        "HunkSeparators",
+        "LineDiffTypes",
+        "MaybeDiffFileInput",
+        "MergeConflictMarkerRow",
+        "MergeConflictMarkerRowType",
+        "MergeConflictRegion",
+        "MergeConflictResolution",
+        "ParsedPatch",
+        "PostRenderPhase",
+        "RenderRange",
+        "RenderWindow",
+        "SelectedLineRange",
+        "SelectionSide",
+        "SmoothScrollSettings",
+        "SupportedLanguages",
+        "ThemeTypes",
+        "ThemesType",
+        "VirtualWindowSpecs"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/Models.swift",
+        "Sources/SwiftDiffs/RenderingModel.swift",
+        "Sources/SwiftDiffs/FileLoading.swift",
+        "Sources/SwiftDiffs/MergeConflicts.swift",
+        "Sources/SwiftDiffs/Resolution.swift",
+        "Sources/SwiftDiffs/HunkData.swift",
+        "Sources/SwiftDiffs/FileAnnotations.swift",
+        "Sources/SwiftDiffs/VirtualWindow.swift",
+        "Sources/SwiftDiffs/ThemedDiffView.swift",
+        "Sources/SwiftDiffs/ScrollSpring.swift",
+        "Sources/SwiftDiffs/PostRenderPhase.swift"
+      ],
+      "evidence": [
+        "Documentation/DATA-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/CoreTests.swift",
+        "Tests/SwiftDiffsTests/HydrationTests.swift",
+        "Tests/SwiftDiffsTests/ResolutionValidationTests.swift",
+        "Tests/SwiftDiffsTests/HunkDataTests.swift",
+        "Tests/SwiftDiffsTests/SelectionTests.swift",
+        "Tests/SwiftDiffsTests/ThemeEqualityTests.swift",
+        "Tests/SwiftDiffsTests/ScrollSpringTests.swift"
+      ],
+      "differences": [
+        "Swift value records and typed enum cases replace JavaScript object unions; optional fields use nil.",
+        "Renamed cases and fields and native async loader/error contracts are mapped individually in DATA-CONTRACTS.md."
+      ]
+    },
+    {
+      "upstream": "src/types.ts",
+      "exports": [
+        "BaseCodeOptions",
+        "BaseDiffOptions",
+        "BaseDiffOptionsWithDefaults"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderingModel.swift",
+        "Sources/SwiftDiffs/NativeDiffView.swift",
+        "Sources/SwiftDiffs/ThemedDiffView.swift"
+      ],
+      "evidence": [
+        "Documentation/BASE-OPTIONS-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/StandaloneHeaderTests.swift",
+        "Tests/SwiftDiffsTests/HydrationTests.swift",
+        "Tests/SwiftDiffsTests/InlineParityTests.swift"
+      ],
+      "differences": [
+        "Theme appearance and parser options are separate typed native inputs.",
+        "DOM spacer nodes, CSS classes, CSS injection and browser engine selection are explicitly adapted; no HTML/CSS output compatibility is claimed."
+      ]
+    },
+    {
+      "upstream": "src/utils/areDiffLineAnnotationsEqual.ts",
+      "exports": [
+        "areDiffLineAnnotationsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/FileAnnotations.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/AnnotationEqualityTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areLineAnnotationsEqual.ts",
+      "exports": [
+        "areLineAnnotationsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/FileAnnotations.swift",
+        "Sources/SwiftDiffs/AnnotationShape.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/AnnotationEqualityTests.swift",
+        "Tests/SwiftDiffsTests/AnnotationShapeTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areHunkDataEqual.ts",
+      "exports": [
+        "areHunkDataEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/HunkData.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/HunkDataTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areRenderRangesEqual.ts",
+      "exports": [
+        "areRenderRangesEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/VirtualWindow.swift",
+        "Sources/SwiftDiffs/FileAnnotations.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/VirtualWindowTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areSelectionsEqual.ts",
+      "exports": [
+        "areSelectionsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/Selection.swift",
+        "Sources/SwiftDiffs/RenderingModel.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/SelectionTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areVirtualWindowSpecsEqual.ts",
+      "exports": [
+        "areVirtualWindowSpecsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/VirtualWindow.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/VirtualWindowTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areThemesEqual.ts",
+      "exports": [
+        "areThemesEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/ThemeEquality.swift",
+        "Sources/SwiftDiffs/ThemedDiffView.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/ThemeEqualityTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areFileRenderOptionsEqual.ts",
+      "exports": [
+        "areFileRenderOptionsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderOptionEquality.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/RenderOptionEqualityTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/utils/areDiffRenderOptionsEqual.ts",
+      "exports": [
+        "areDiffRenderOptionsEqual"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/RenderOptionEquality.swift"
+      ],
+      "evidence": [
+        "Documentation/EQUALITY-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/RenderOptionEqualityTests.swift"
+      ],
+      "differences": [
+        "Typed Swift records exclude missing required properties and invalid enum values; see the focused field-by-field map."
+      ]
+    },
+    {
+      "upstream": "src/renderers/FileRenderer.ts",
+      "exports": [
+        "FileRenderer",
+        "FileRendererOptions",
+        "FileRenderResult"
+      ],
+      "status": "native-adaptation",
+      "native": [
+        "Sources/SwiftDiffs/NativeFileView.swift",
+        "Sources/SwiftDiffs/NativeDiffView.swift",
+        "Sources/SwiftDiffs/RenderingModel.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift"
+      ],
+      "evidence": [
+        "Documentation/RENDERER-CONTRACTS.md",
+        "Documentation/BASE-OPTIONS-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/ComponentControlTests.swift",
+        "Tests/SwiftDiffsTests/AttachedEditorTests.swift"
+      ],
+      "differences": [
+        "Actor preparation, value snapshots and CoreText presentation replace worker callbacks and HAST/HTML caches; no HTML serialization or DOM adoption.",
+        "Native cleanup, view ownership and highlighting resource lifetimes are separate APIs; renderer construction does not attach a global worker pool."
+      ]
+    },
+    {
+      "upstream": "src/renderers/DiffHunksRenderer.ts",
+      "exports": [
+        "DiffHunksRenderer",
+        "DiffHunksRendererOptions",
+        "DiffHunksRendererOptionsWithDefaults",
+        "UnifiedLineDecorationProps",
+        "SplitLineDecorationProps",
+        "LineDecoration",
+        "RenderedLineContext",
+        "InjectedRow",
+        "SplitInjectedRow",
+        "UnifiedInjectedRowPlacement",
+        "SplitInjectedRowPlacement",
+        "HunksRenderResult"
+      ],
+      "status": "partial",
+      "native": [
+        "Sources/SwiftDiffs/NativeDiffView.swift",
+        "Sources/SwiftDiffs/RenderingModel.swift",
+        "Sources/SwiftDiffs/DiffEditor.swift",
+        "Sources/SwiftDiffs/CodeView.swift"
+      ],
+      "evidence": [
+        "Documentation/RENDERER-CONTRACTS.md",
+        "Tests/SwiftDiffsTests/ExpansionStateTests.swift",
+        "Tests/SwiftDiffsTests/ComponentControlTests.swift"
+      ],
+      "missing": [
+        "Public native equivalents of arbitrary per-source-row decoration and before/after row injection hooks; built-in annotations/conflicts alone do not close this extension surface."
+      ],
+      "differences": [
+        "Expanded-hunk maps are copy-on-write Swift snapshots; mutations use explicit whole-map replacement.",
+        "Typed native rendering does not emit HAST nodes, HTML fragments or CSS properties."
+      ]
+    }
+  ]
+}

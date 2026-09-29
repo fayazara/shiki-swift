@@ -15,6 +15,8 @@ let package = Package(
         .library(name: "ShikiCore", targets: ["ShikiCore"]),
         .library(name: "Shiki", targets: ["Shiki"]),
         .library(name: "ShikiUI", targets: ["ShikiUI"]),
+        // macOS only: native AppKit diff, file, review, and editor views.
+        .library(name: "ShikiDiffs", targets: ["ShikiDiffs"]),
     ],
     targets: [
         .target(
@@ -110,6 +112,17 @@ let package = Package(
             name: "ShikiUI",
             dependencies: ["ShikiCore"]
         ),
+        // QuickJS libregexp/libunicode, for JavaScript-compatible search in ShikiDiffs.
+        .target(
+            name: "CSDRegex",
+            exclude: ["Vendor"],
+            publicHeadersPath: "include"
+        ),
+        .target(
+            name: "ShikiDiffs",
+            dependencies: ["CSDRegex", "Shiki", "ShikiUI"],
+            resources: [.process("Resources")]
+        ),
         // Release benchmarks: `swift run -c release shiki-benchmark`.
         .executableTarget(
             name: "shiki-benchmark",
@@ -130,6 +143,11 @@ let package = Package(
         .testTarget(
             name: "ShikiUITests",
             dependencies: ["ShikiUI", "ShikiCore"]
+        ),
+        .testTarget(
+            name: "ShikiDiffsTests",
+            dependencies: ["ShikiDiffs"],
+            resources: [.copy("Fixtures")]
         ),
     ]
 )
