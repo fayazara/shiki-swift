@@ -1,4 +1,5 @@
 import Shiki
+import ShikiDiffs
 import SwiftUI
 
 enum DemoScreen: String, CaseIterable, Identifiable, Hashable {
@@ -47,18 +48,54 @@ enum DemoScreen: String, CaseIterable, Identifiable, Hashable {
     ]
 }
 
+/// A sidebar entry: a Shiki demo screen or a ShikiDiffs example.
+enum SidebarItem: Hashable, RawRepresentable {
+    case screen(DemoScreen)
+    case diff(DemoSample)
+
+    // Stored in SceneStorage; plain screen names keep earlier saved values valid.
+    init?(rawValue: String) {
+        if rawValue.hasPrefix("diff:") {
+            guard let sample = DemoSample(rawValue: String(rawValue.dropFirst(5))) else { return nil }
+            self = .diff(sample)
+        } else {
+            guard let screen = DemoScreen(rawValue: rawValue) else { return nil }
+            self = .screen(screen)
+        }
+    }
+
+    var rawValue: String {
+        switch self {
+        case let .screen(screen): screen.rawValue
+        case let .diff(sample): "diff:" + sample.rawValue
+        }
+    }
+
+    var title: String {
+        switch self {
+        case let .screen(screen): screen.title
+        case let .diff(sample): sample.title
+        }
+    }
+}
+
 struct ContentView: View {
     @Environment(AppTheme.self) private var appTheme
-    @SceneStorage("screen") private var screen: DemoScreen = .playground
+    @SceneStorage("screen") private var screen: SidebarItem = .screen(.playground)
 
     var body: some View {
         NavigationSplitView {
-            List(selection: Binding<DemoScreen?>(get: { screen }, set: { if let s = $0 { screen = s } })) {
+            List(selection: Binding<SidebarItem?>(get: { screen }, set: { if let s = $0 { screen = s } })) {
                 ForEach(DemoScreen.sections, id: \.0) { section in
                     Section(section.0) {
                         ForEach(section.1) { item in
-                            Label(item.title, systemImage: item.symbol).tag(item)
+                            Label(item.title, systemImage: item.symbol).tag(SidebarItem.screen(item))
                         }
+                    }
+                }
+                Section("Diffs") {
+                    ForEach(DemoSample.allCases) { sample in
+                        Label(sample.title, systemImage: sample.icon).tag(SidebarItem.diff(sample))
                     }
                 }
             }
@@ -81,6 +118,14 @@ struct ContentView: View {
 
     @ViewBuilder
     private var detail: some View {
+        switch screen {
+        case let .diff(sample): DiffsWorkbench(sample: sample)
+        case let .screen(screen): screenView(screen)
+        }
+    }
+
+    @ViewBuilder
+    private func screenView(_ screen: DemoScreen) -> some View {
         switch screen {
         case .playground: PlaygroundDemo()
         case .languages: LanguageGalleryDemo()

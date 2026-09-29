@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5A100001302F300000000001 /* Shiki in Frameworks */ = {isa = PBXBuildFile; productRef = 5A100005302F300000000005 /* Shiki */; };
 		5A100002302F300000000002 /* ShikiUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5A100006302F300000000006 /* ShikiUI */; };
+		5A100007302F300000000007 /* ShikiDiffs in Frameworks */ = {isa = PBXBuildFile; productRef = 5A100008302F300000000008 /* ShikiDiffs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 			files = (
 				5A100001302F300000000001 /* Shiki in Frameworks */,
 				5A100002302F300000000002 /* ShikiUI in Frameworks */,
+				5A100007302F300000000007 /* ShikiDiffs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +76,7 @@
 			packageProductDependencies = (
 				5A100005302F300000000005 /* Shiki */,
 				5A100006302F300000000006 /* ShikiUI */,
+				5A100008302F300000000008 /* ShikiDiffs */,
 			);
 			productName = "shiki-swift";
 			productReference = 31A81C7C302F212400DDCCE7 /* shiki-swift.app */;
@@ -365,6 +368,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */;
 			productName = ShikiUI;
+		};
+		5A100008302F300000000008 /* ShikiDiffs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A100004302F300000000004 /* XCLocalSwiftPackageReference "." */;
+			productName = ShikiDiffs;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
