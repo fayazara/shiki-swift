@@ -1,0 +1,19 @@
+README.md
+  s_6d3a898784554c::t_29244b8139d924 9-35,37-50,52-90,193-202,257-269,280-310,312-314,316,318-328,339-340,352-370,379,385-389,393-426,430-432,441-448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6d3312dc8acc7a98485cc49d83fff337c3e2324b",
+  "prompts": {},
+  "sessions": {
+    "s_6d3a898784554c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b5d0fe38-885c-4387-a0e0-603578ddf2f7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
