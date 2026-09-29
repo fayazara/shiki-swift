@@ -281,8 +281,8 @@ private func captureCommandEnd(
     let capture = decimalInteger(units[digitStart..<cursor])
     cursor += 2
 
-    let downcase = Array("downcase".utf16)
-    let upcase = Array("upcase".utf16)
+    let downcase = downcaseUnits
+    let upcase = upcaseUnits
     let command: CaptureCommand
     if units[cursor...].starts(with: downcase) {
         command = .downcase
@@ -300,16 +300,32 @@ private func captureCommandEnd(
     return (capture, command, cursor + 1)
 }
 
-private func javascriptSubstring(_ source: String, start: Int, end: Int) -> String {
-    let units = Array(source.utf16)
-    var lower = min(max(0, start), units.count)
-    var upper = min(max(0, end), units.count)
+private let downcaseUnits = Array("downcase".utf16)
+private let upcaseUnits = Array("upcase".utf16)
+private let regExpPunctuation = CharacterSet(charactersIn: "-\\{}*+?|^$.,[]()#")
+
+/// JavaScript `substring` over UTF-16 offsets.
+///
+/// Uses the string's UTF-16 view directly. Native Swift strings keep UTF-16
+/// breadcrumbs, so offsetting is fast and no copy of the whole line is made
+/// (the previous implementation copied the entire line per capture).
+func javascriptSubstring(_ source: String, start: Int, end: Int) -> String {
+    let utf16 = source.utf16
+    let count = utf16.count
+    var lower = min(max(0, start), count)
+    var upper = min(max(0, end), count)
     if lower > upper { swap(&lower, &upper) }
-    return String(decoding: units[lower..<upper], as: UTF16.self)
+    if lower == upper { return "" }
+    let lowerIndex = utf16.index(utf16.startIndex, offsetBy: lower)
+    let upperIndex = utf16.index(lowerIndex, offsetBy: upper - lower)
+    let slice = utf16[lowerIndex..<upperIndex]
+    // Fails only when a boundary splits a surrogate pair; decode losslessly
+    // like JavaScript (lone surrogates become U+FFFD when bridged).
+    return String(slice) ?? String(decoding: Array(slice), as: UTF16.self)
 }
 
 private func escapeRegExpCharacters(_ value: String) -> String {
-    let punctuation = CharacterSet(charactersIn: "-\\{}*+?|^$.,[]()#")
+    let punctuation = regExpPunctuation
     var result = ""
     result.reserveCapacity(value.utf8.count)
     for scalar in value.unicodeScalars {
@@ -500,10 +516,6 @@ public final class RegExpSource {
     }
 }
 
-private struct AnchorCombination: Hashable {
-    let allowA: Bool
-    let allowG: Bool
-}
 
 /// Mutable scanner-source collection with the same four-way anchor cache as
 /// `vscode-textmate`.
@@ -511,7 +523,9 @@ public final class RegExpSourceList {
     private var items: [RegExpSource] = []
     private var hasAnchors = false
     private var cached: CompiledRule?
-    private var anchorCache: [AnchorCombination: CompiledRule] = [:]
+    // Four fixed slots (A/G allowed or not), as upstream; avoids hashing a
+    // key on every scanner lookup.
+    private var anchorCache: [CompiledRule?] = [nil, nil, nil, nil]
 
     public init() {}
 
@@ -520,8 +534,8 @@ public final class RegExpSourceList {
     public func dispose() {
         cached?.dispose()
         cached = nil
-        for compiled in anchorCache.values { compiled.dispose() }
-        anchorCache.removeAll(keepingCapacity: false)
+        for compiled in anchorCache { compiled?.dispose() }
+        anchorCache = [nil, nil, nil, nil]
     }
 
     public func push(_ item: RegExpSource) {
@@ -557,7 +571,7 @@ public final class RegExpSourceList {
         allowG: Bool
     ) throws -> CompiledRule {
         guard hasAnchors else { return try compile(onigLibrary) }
-        let key = AnchorCombination(allowA: allowA, allowG: allowG)
+        let key = (allowA ? 2 : 0) | (allowG ? 1 : 0)
         if let compiled = anchorCache[key] { return compiled }
         let compiled = try CompiledRule(
             onigLibrary: onigLibrary,
@@ -855,14 +869,25 @@ public final class MatchRule: Rule {
     }
 }
 
-private protocol RuleWithPatterns: AnyObject {
+protocol RuleWithPatterns: AnyObject {
     var patterns: [RuleID] { get }
     var hasMissingPatterns: Bool { get }
+
+    /// Replaces the compiled child list after a previously missing external
+    /// grammar becomes available. Existing rule IDs stay valid, so persisted
+    /// state stacks created before the change can continue tokenizing.
+    func replacePatterns(_ compiledPatterns: CompilePatternsResult)
 }
 
 public final class IncludeOnlyRule: Rule, RuleWithPatterns {
-    public let hasMissingPatterns: Bool
-    public let patterns: [RuleID]
+    func replacePatterns(_ compiledPatterns: CompilePatternsResult) {
+        patterns = compiledPatterns.patterns
+        hasMissingPatterns = compiledPatterns.hasMissingPatterns
+        dispose()
+    }
+
+    public private(set) var hasMissingPatterns: Bool
+    public private(set) var patterns: [RuleID]
     private var cachedCompiledPatterns: RegExpSourceList?
 
     public init(
@@ -926,14 +951,20 @@ public final class IncludeOnlyRule: Rule, RuleWithPatterns {
 }
 
 public final class BeginEndRule: Rule, RuleWithPatterns {
+    func replacePatterns(_ compiledPatterns: CompilePatternsResult) {
+        patterns = compiledPatterns.patterns
+        hasMissingPatterns = compiledPatterns.hasMissingPatterns
+        dispose()
+    }
+
     private let beginSource: RegExpSource
     public let beginCaptures: [CaptureRule?]
     private let endSource: RegExpSource
     public let endHasBackReferences: Bool
     public let endCaptures: [CaptureRule?]
     public let applyEndPatternLast: Bool
-    public let hasMissingPatterns: Bool
-    public let patterns: [RuleID]
+    public private(set) var hasMissingPatterns: Bool
+    public private(set) var patterns: [RuleID]
     private var cachedCompiledPatterns: RegExpSourceList?
 
     public init(
@@ -1043,13 +1074,19 @@ public final class BeginEndRule: Rule, RuleWithPatterns {
 }
 
 public final class BeginWhileRule: Rule, RuleWithPatterns {
+    func replacePatterns(_ compiledPatterns: CompilePatternsResult) {
+        patterns = compiledPatterns.patterns
+        hasMissingPatterns = compiledPatterns.hasMissingPatterns
+        dispose()
+    }
+
     private let beginSource: RegExpSource
     public let beginCaptures: [CaptureRule?]
     public let whileCaptures: [CaptureRule?]
     private let whileSource: RegExpSource
     public let whileHasBackReferences: Bool
-    public let hasMissingPatterns: Bool
-    public let patterns: [RuleID]
+    public private(set) var hasMissingPatterns: Bool
+    public private(set) var patterns: [RuleID]
     private var cachedCompiledPatterns: RegExpSourceList?
     private var cachedCompiledWhilePatterns: RegExpSourceList?
 
@@ -1195,8 +1232,58 @@ public final class RuleFactory {
     // Preserve identity objects for the factory lifetime so ObjectIdentifier
     // values cannot be reused after callers pass temporary RawRule values.
     private var retainedIdentities: [ObjectIdentifier: AnyObject] = [:]
+    /// Raw inputs of aggregate rules compiled while some includes were missing.
+    /// They are recompiled when a new grammar is registered.
+    private var incompletePatternInputs: [RuleID: (patterns: [RawRule]?, repository: RawRepository)] = [:]
 
     public init() {}
+
+    /// Recompiles the child lists of aggregate rules whose includes were
+    /// previously unresolved. Rule IDs are append-only, so persisted state
+    /// stacks stay valid. Returns true when any compiled pattern list changed.
+    @discardableResult
+    public func refreshIncompletePatterns(
+        helper: any TextMateRuleFactoryHelper
+    ) -> Bool {
+        var changedAny = false
+        while true {
+            var changed = false
+            // Sorted for deterministic rule ID allocation.
+            for ruleID in incompletePatternInputs.keys.sorted() {
+                guard
+                    let inputs = incompletePatternInputs[ruleID],
+                    let rule = helper.rule(with: ruleID) as? any RuleWithPatterns
+                else { continue }
+                let result = compilePatterns(
+                    inputs.patterns,
+                    helper: helper,
+                    repository: inputs.repository
+                )
+                if result.patterns != rule.patterns
+                    || result.hasMissingPatterns != rule.hasMissingPatterns
+                {
+                    rule.replacePatterns(result)
+                    changed = true
+                }
+                if !result.hasMissingPatterns {
+                    incompletePatternInputs.removeValue(forKey: ruleID)
+                }
+            }
+            if !changed { break }
+            changedAny = true
+        }
+        return changedAny
+    }
+
+    private func recordPatternInputs(
+        _ rule: Rule,
+        patterns: [RawRule]?,
+        repository: RawRepository
+    ) {
+        if let aggregate = rule as? any RuleWithPatterns, aggregate.hasMissingPatterns {
+            incompletePatternInputs[rule.id] = (patterns, repository)
+        }
+    }
 
     public func createCaptureRule(
         helper: any TextMateRuleFactoryHelper,
@@ -1273,7 +1360,7 @@ public final class RuleFactory {
             if patterns == nil, let include = descriptor.include, !include.isEmpty {
                 patterns = [RawRule(include: include)]
             }
-            return IncludeOnlyRule(
+            let rule = IncludeOnlyRule(
                 location: descriptor.location,
                 id: id,
                 name: descriptor.name,
@@ -1284,6 +1371,8 @@ public final class RuleFactory {
                     repository: repository
                 )
             )
+            recordPatternInputs(rule, patterns: patterns, repository: repository)
+            return rule
         }
 
         if let whilePattern = descriptor.whilePattern, !whilePattern.isEmpty {
@@ -1302,7 +1391,7 @@ public final class RuleFactory {
                 helper: helper,
                 repository: originalRepository
             )
-            return BeginWhileRule(
+            let rule = BeginWhileRule(
                 location: descriptor.location,
                 id: id,
                 name: descriptor.name,
@@ -1313,6 +1402,12 @@ public final class RuleFactory {
                 whileCaptures: whileCaptures,
                 compiledPatterns: patterns
             )
+            recordPatternInputs(
+                rule,
+                patterns: descriptor.patterns,
+                repository: originalRepository
+            )
+            return rule
         }
 
         let beginCaptures = compileCaptures(
@@ -1330,7 +1425,7 @@ public final class RuleFactory {
             helper: helper,
             repository: originalRepository
         )
-        return BeginEndRule(
+        let rule = BeginEndRule(
             location: descriptor.location,
             id: id,
             name: descriptor.name,
@@ -1342,6 +1437,12 @@ public final class RuleFactory {
             applyEndPatternLast: descriptor.applyEndPatternLast,
             compiledPatterns: patterns
         )
+        recordPatternInputs(
+            rule,
+            patterns: descriptor.patterns,
+            repository: originalRepository
+        )
+        return rule
     }
 
     private func compileCaptures(

@@ -462,6 +462,44 @@ public struct RawGrammar: Codable, Equatable, Sendable {
     public var firstLineMatch: String?
     public var location: TextMateLocation?
 
+    /// Source order of the `injections` object keys. JavaScript preserves
+    /// object insertion order, which decides ties between injections with the
+    /// same priority. `JSONDecoder` cannot observe it, so it is recovered by
+    /// ``decodePreservingKeyOrder(from:)``. Keys missing from this list are
+    /// ordered lexicographically, keeping results deterministic.
+    public var injectionKeyOrder: [String]?
+
+    /// Injections in deterministic source order.
+    public var orderedInjections: [(selector: String, rule: RawRule)] {
+        guard let injections else { return [] }
+        return orderedKeys(of: injections, preferredOrder: injectionKeyOrder)
+            .map { ($0, injections[$0]!) }
+    }
+
+    public static func == (lhs: RawGrammar, rhs: RawGrammar) -> Bool {
+        lhs.repository == rhs.repository
+            && lhs.scopeName == rhs.scopeName
+            && lhs.patterns == rhs.patterns
+            && lhs.injections == rhs.injections
+            && lhs.injectionSelector == rhs.injectionSelector
+            && lhs.fileTypes == rhs.fileTypes
+            && lhs.name == rhs.name
+            && lhs.firstLineMatch == rhs.firstLineMatch
+            && lhs.location == rhs.location
+    }
+
+    /// Decodes a grammar and records JSON object key order where it matters.
+    public static func decodePreservingKeyOrder(
+        from data: Data,
+        decoder: JSONDecoder = JSONDecoder()
+    ) throws -> RawGrammar {
+        var grammar = try decoder.decode(RawGrammar.self, from: data)
+        if grammar.injections != nil {
+            grammar.injectionKeyOrder = JSONKeyOrder.keys(atPath: ["injections"], in: data)
+        }
+        return grammar
+    }
+
     public init(
         scopeName: String,
         repository: RawRepository = [:],
@@ -578,6 +616,22 @@ public struct LanguageRegistration: Codable, Equatable, Sendable, RawGrammarRepr
         var registeredGrammar = grammar
         registeredGrammar.name = name
         self.grammar = registeredGrammar
+    }
+
+    /// Decodes a registration and records JSON object key order where it
+    /// matters (see ``RawGrammar/injectionKeyOrder``).
+    public static func decodePreservingKeyOrder(
+        from data: Data,
+        decoder: JSONDecoder = JSONDecoder()
+    ) throws -> LanguageRegistration {
+        var registration = try decoder.decode(LanguageRegistration.self, from: data)
+        if registration.grammar.injections != nil {
+            registration.grammar.injectionKeyOrder = JSONKeyOrder.keys(
+                atPath: ["injections"],
+                in: data
+            )
+        }
+        return registration
     }
 
     public init(from decoder: Decoder) throws {

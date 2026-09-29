@@ -38,5 +38,20 @@ import Shiki
    let layoutMS=ms(layoutStart)
    print(String(format:"row=%d scroll_ms=%.2f layout_ms=%.2f new_paragraphs=%d cache=%d",row,scrollMS,layoutMS,doc.renderedParagraphCount-count,doc.cachedParagraphCount))
   }
+  // Horizontal jumps matter for long (e.g. minified) lines.
+  print(String(format:"document width=%.0f", text.frame.width))
+  for fraction in [0.25, 0.5, 0.99, 0.0] {
+   let x = max(0, (text.frame.width - scroll.contentSize.width) * fraction)
+   let start=now()
+   scroll.contentView.scroll(to: NSPoint(x: x, y: 0))
+   scroll.reflectScrolledClipView(scroll.contentView)
+   scroll.layoutSubtreeIfNeeded()
+   layout.textViewportLayoutController.layoutViewport()
+   var visible = 0
+   layout.enumerateTextLayoutFragments(from: layout.documentRange.location, options: []) { fragment in
+    visible += fragment.textLineFragments.count; return true
+   }
+   print(String(format:"x=%.0f total_ms=%.2f line_fragments=%d", x, ms(start), visible))
+  }
  }
 }

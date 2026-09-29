@@ -66,18 +66,17 @@ public enum ScopeSelector {
 }
 
 private func scopeName(_ actualScope: String, matches selectorScope: String) -> Bool {
+    // Code-unit comparison (JavaScript semantics), without the O(n)
+    // `Character` counting and canonical-equivalence checks of `String`.
     guard !actualScope.isEmpty else {
         return false
     }
-    if actualScope == selectorScope {
-        return true
+    var actual = actualScope.utf8.makeIterator()
+    for selectorByte in selectorScope.utf8 {
+        guard actual.next() == selectorByte else { return false }
     }
-    guard actualScope.count > selectorScope.count,
-          actualScope.hasPrefix(selectorScope) else {
-        return false
-    }
-    let boundary = actualScope.index(actualScope.startIndex, offsetBy: selectorScope.count)
-    return actualScope[boundary] == "."
+    guard let next = actual.next() else { return true }
+    return next == 0x2E
 }
 
 private final class TextMateScopeSelectorParser<Input> {

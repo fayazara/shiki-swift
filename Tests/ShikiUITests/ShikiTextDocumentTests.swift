@@ -1,4 +1,4 @@
-#if canImport(AppKit)
+#if os(macOS)
 import AppKit
 import ShikiCore
 import SwiftUI
@@ -285,6 +285,79 @@ final class ShikiTextDocumentTests: XCTestCase {
             XCTAssertEqual(text.accessibilitySelectedText(), text.string)
             XCTAssertEqual(text.loadedRange.length, text.string.utf16.count)
         }
+    }
+
+    @MainActor
+    func testLongRowsClipInsteadOfWrappingOverTheNextRow() throws {
+        _ = NSApplication.shared
+        let long = String(repeating: "abcdefghij", count: 20_000) // 200k columns.
+        let result = TokensResult(tokens: [[.init(content: long, offset: 0)], [.init(content: "next", offset: 0)]])
+        let view = ShikiTextViewport(result: result, renderID: 1,
+                                     font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 8)
+        let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 300),
+                              styleMask: [.borderless], backing: .buffered, defer: false)
+        window.contentView = scroll
+        scroll.layoutSubtreeIfNeeded()
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+        XCTAssertGreaterThan(text.frame.width, 1_000_000, "The full row must be reachable")
+        XCTAssertLessThanOrEqual(text.frame.width, ShikiTextDocument.maximumWidth)
+        let layout = try XCTUnwrap(text.textView.textLayoutManager)
+        layout.ensureLayout(for: layout.documentRange)
+        var lines = 0
+        layout.enumerateTextLayoutFragments(from: layout.documentRange.location, options: []) { fragment in
+            lines += fragment.textLineFragments.filter { $0.characterRange.length > 0 }.count
+            return true
+        }
+        XCTAssertEqual(lines, 2)
+    }
+
+    @MainActor
+    func testTextViewPasteboardWritesUseTheFullDocumentSelection() throws {
+        _ = NSApplication.shared
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        pasteboard.declareTypes([.string], owner: nil)
+        guard pasteboard.types?.contains(.string) == true else {
+            throw XCTSkip("The macOS pasteboard service is unavailable in this environment.")
+        }
+        let result = TokensResult(tokens: (0..<2_000).map { [.init(content: "row \($0)", offset: 0)] })
+        let view = ShikiTextViewport(result: result, renderID: 1,
+                                     font: .monospacedSystemFont(ofSize: 15, weight: .regular), padding: 8)
+        let scroll = view.makeScrollView(coordinator: view.makeCoordinator())
+        let text = try XCTUnwrap(scroll.documentView as? ShikiCodeDocumentView)
+        text.layoutVisibleText()
+        text.selectAll(nil)
+        XCTAssertLessThan(text.textView.string.utf16.count, text.string.utf16.count)
+        XCTAssertTrue(text.textView.writeSelection(to: pasteboard, types: [.string]))
+        XCTAssertEqual(pasteboard.string(forType: .string), text.string)
+        XCTAssertEqual(text.textView.writablePasteboardTypes, [.string])
+    }
+
+    @MainActor
+    func testLargeResultsBuildOffTheMainThreadAndIgnoreStaleBuilds() async throws {
+        _ = NSApplication.shared
+        let font = NSFont.monospacedSystemFont(ofSize: 15, weight: .regular)
+        let count = ShikiTextViewport.backgroundTokenThreshold + 1
+        let large = TokensResult(tokens: (0..<count).map { [.init(content: "t\($0)", offset: 0)] })
+        let view = ShikiTextViewport(result: large, renderID: 1, font: font, padding: 8)
+        let coordinator = view.makeCoordinator()
+        let scroll = view.makeScrollView(coordinator: coordinator)
+        XCTAssertNil(coordinator.document, "Large documents must not be built synchronously")
+        let build = try XCTUnwrap(coordinator.build)
+        await build.value
+        let document = try XCTUnwrap(coordinator.document)
+        XCTAssertEqual(document.rowRanges.count, count)
+
+        // A newer small result supersedes an in-flight large build.
+        ShikiTextViewport(result: large, renderID: 2, font: font, padding: 8)
+            .updateScrollView(scroll, coordinator: coordinator)
+        let stale = try XCTUnwrap(coordinator.build)
+        ShikiTextViewport(result: TokensResult(tokens: [[.init(content: "small", offset: 0)]]),
+                          renderID: 3, font: font, padding: 8)
+            .updateScrollView(scroll, coordinator: coordinator)
+        await stale.value
+        XCTAssertEqual(coordinator.document?.source, "small")
     }
 
 }

@@ -68,31 +68,39 @@ public final class OnigString: @unchecked Sendable {
     public let utf8Length: Int
 
     let utf8Storage: [UInt8]
-    private let utf16OffsetToUTF8: [Int]?
-    private let utf8OffsetToUTF16: [Int]?
+    // Int32 halves the memory of the maps for long non-ASCII lines; lines are
+    // far below 2 GiB.
+    private let utf16OffsetToUTF8: [Int32]?
+    private let utf8OffsetToUTF16: [Int32]?
 
     public init(_ content: String) {
         self.content = content
-        utf16Length = content.utf16.count
-        utf8Length = content.utf8.count
+        let utf8Length = content.utf8.count
+        self.utf8Length = utf8Length
 
         // The trailing byte guarantees a non-null pointer for an empty string;
         // it is not included in `utf8Length` or passed to Oniguruma.
-        utf8Storage = Array(content.utf8) + [0]
+        var storage: [UInt8] = []
+        storage.reserveCapacity(utf8Length + 1)
+        storage.append(contentsOf: content.utf8)
+        storage.append(0)
+        utf8Storage = storage
 
-        let needsOffsetMapping = utf8Length != utf16Length
-        // ASCII offsets are identical. Avoid a second scalar walk entirely.
-        if !needsOffsetMapping {
+        // Pure ASCII: offsets are identical, so skip the scalar walk (and the
+        // UTF-16 count, which equals the byte count).
+        if storage.withUnsafeBufferPointer({ buffer in
+            !buffer.prefix(utf8Length).contains(where: { $0 >= 0x80 })
+        }) {
+            self.utf16Length = utf8Length
             utf16OffsetToUTF8 = nil
             utf8OffsetToUTF16 = nil
             return
         }
-        var utf16ToUTF8 = needsOffsetMapping
-            ? Array(repeating: 0, count: utf16Length + 1)
-            : []
-        var utf8ToUTF16 = needsOffsetMapping
-            ? Array(repeating: 0, count: utf8Length + 1)
-            : []
+
+        let utf16Count = content.utf16.count
+        self.utf16Length = utf16Count
+        var utf16ToUTF8 = [Int32](repeating: 0, count: utf16Count + 1)
+        var utf8ToUTF16 = [Int32](repeating: 0, count: utf8Length + 1)
         var utf16Offset = 0
         var utf8Offset = 0
 
@@ -110,42 +118,35 @@ public final class OnigString: @unchecked Sendable {
                 utf8Width = 4
             }
 
-            if needsOffsetMapping {
-                for index in 0..<utf16Width {
-                    utf16ToUTF8[utf16Offset + index] = utf8Offset
-                }
-                for index in 0..<utf8Width {
-                    utf8ToUTF16[utf8Offset + index] = utf16Offset
-                }
+            for index in 0..<utf16Width {
+                utf16ToUTF8[utf16Offset + index] = Int32(utf8Offset)
+            }
+            for index in 0..<utf8Width {
+                utf8ToUTF16[utf8Offset + index] = Int32(utf16Offset)
             }
 
             utf16Offset += utf16Width
             utf8Offset += utf8Width
         }
 
-        if needsOffsetMapping {
-            utf16ToUTF8[utf16Length] = utf8Length
-            utf8ToUTF16[utf8Length] = utf16Length
-            utf16OffsetToUTF8 = utf16ToUTF8
-            utf8OffsetToUTF16 = utf8ToUTF16
-        } else {
-            utf16OffsetToUTF8 = nil
-            utf8OffsetToUTF16 = nil
-        }
+        utf16ToUTF8[utf16Count] = Int32(utf8Length)
+        utf8ToUTF16[utf8Length] = Int32(utf16Count)
+        utf16OffsetToUTF8 = utf16ToUTF8
+        utf8OffsetToUTF16 = utf8ToUTF16
     }
 
     public func convertUTF16OffsetToUTF8(_ offset: Int) -> Int {
         guard let utf16OffsetToUTF8 else { return offset }
         if offset < 0 { return 0 }
         if offset > utf16Length { return utf8Length }
-        return utf16OffsetToUTF8[offset]
+        return Int(utf16OffsetToUTF8[offset])
     }
 
     public func convertUTF8OffsetToUTF16(_ offset: Int) -> Int {
         guard let utf8OffsetToUTF16 else { return offset }
         if offset < 0 { return 0 }
         if offset > utf8Length { return utf16Length }
-        return utf8OffsetToUTF16[offset]
+        return Int(utf8OffsetToUTF16[offset])
     }
 }
 
@@ -250,15 +251,17 @@ public final class OnigScanner: @unchecked Sendable {
             guard captureCount <= starts.count else {
                 throw OnigurumaError.searchFailed
             }
-            let captures = (0..<captureCount).map { index in
+            var captures: [OnigCaptureIndex] = []
+            captures.reserveCapacity(captureCount)
+            for index in 0..<captureCount {
                 // vscode-oniguruma reads the C int array through Uint32Array.
                 // Preserve that wraparound for unmatched captures (-1).
                 let start = Int(UInt32(bitPattern: starts[index]))
                 let end = Int(UInt32(bitPattern: ends[index]))
-                return OnigCaptureIndex(
+                captures.append(OnigCaptureIndex(
                     start: string.convertUTF8OffsetToUTF16(start),
                     end: string.convertUTF8OffsetToUTF16(end)
-                )
+                ))
             }
             return OnigMatch(index: patternIndex, captureIndices: captures)
         default:

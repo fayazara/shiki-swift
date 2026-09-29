@@ -624,7 +624,7 @@ def build_languages(
             )
 
         output_path = f"grammars/{content_name}.json"
-        resources[output_path] = canonical_json(registration)
+        resources[output_path] = source_ordered_json(registration)
         aliases = _string_list(registration, "aliases", f"registration {content_name!r}")
         embedded = _string_list(
             registration, "embeddedLangs", f"registration {content_name!r}"
@@ -713,7 +713,7 @@ def build_themes(
             raise ImportFailure(f"{source_path} has invalid or missing type")
 
         output_path = source_path
-        resources[output_path] = canonical_json(content)
+        resources[output_path] = source_ordered_json(content)
         entries.append(
             {
                 "displayName": display_name,
@@ -740,6 +740,26 @@ def build_themes(
         "themes": entries,
     }
     return manifest, resources, provenance
+
+
+def source_ordered_json(value: Any) -> bytes:
+    """Compact JSON that keeps upstream object key order.
+
+    JavaScript object iteration follows insertion order, and a few TextMate
+    fields depend on it (injection priority ties, theme color replacement
+    numbering). Grammar and theme payloads therefore keep source order; the
+    Swift runtime recovers it with `JSONKeyOrder`. Compact output also keeps
+    the bundle small and fast to decode.
+    """
+    return (
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
 
 
 def canonical_json(value: Any) -> bytes:

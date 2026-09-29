@@ -218,11 +218,12 @@ public func tokenizeString(
         anchorPosition = result.anchorPosition
     }
 
-    let startTime = Date().timeIntervalSince1970
+    // Monotonic clock: wall-clock time can jump and is slower to read.
+    let startTime = DispatchTime.now().uptimeNanoseconds
     while true {
         if timeLimit != 0 {
             let elapsedMilliseconds = Int(
-                (Date().timeIntervalSince1970 - startTime) * 1_000
+                (DispatchTime.now().uptimeNanoseconds &- startTime) / 1_000_000
             )
             if elapsedMilliseconds > timeLimit {
                 return TokenizeStringResult(stack: stack, stoppedEarly: true)
@@ -857,7 +858,5 @@ private func handleCaptures(
 }
 
 private func utf16Prefix(_ source: String, endingAt end: Int) -> String {
-    let units = Array(source.utf16)
-    let boundedEnd = min(max(0, end), units.count)
-    return String(decoding: units[..<boundedEnd], as: UTF16.self)
+    javascriptSubstring(source, start: 0, end: end)
 }

@@ -86,7 +86,8 @@ public final class ScopeStack: @unchecked Sendable, CustomStringConvertible {
             result.append(current.scopeName)
             item = current.parent
         }
-        return result.reversed()
+        result.reverse()
+        return result
     }
 
     public var description: String {
@@ -712,18 +713,16 @@ private func scopePathMatchesParentScopes(
     return true
 }
 
+/// `scopeName === pattern || scopeName.startsWith(pattern + '.')`, compared
+/// by code units (JavaScript semantics) without allocating. A UTF-8 prefix
+/// followed by an ASCII `.` is equivalent to the UTF-16 check.
 private func matchesScope(_ scopeName: ScopeName, _ scopePattern: ScopeName) -> Bool {
-    if scopePattern == scopeName {
-        return true
+    var scopeUTF8 = scopeName.utf8.makeIterator()
+    for patternByte in scopePattern.utf8 {
+        guard scopeUTF8.next() == patternByte else { return false }
     }
-
-    let scopeUnits = Array(scopeName.utf16)
-    let patternUnits = Array(scopePattern.utf16)
-    guard scopeUnits.count > patternUnits.count,
-          scopeUnits.starts(with: patternUnits) else {
-        return false
-    }
-    return scopeUnits[patternUnits.count] == 0x2E
+    guard let next = scopeUTF8.next() else { return true }
+    return next == 0x2E
 }
 
 private func splitFirstScopeSegment(_ scope: ScopeName) -> (head: String, tail: String) {

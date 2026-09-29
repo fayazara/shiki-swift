@@ -115,9 +115,14 @@ final class TextMateGrammarTests: XCTestCase {
         )
         let continued = grammar.stateForTokenizingLine(previousState: pushed)
         XCTAssertFalse(continued.isFirstLine)
-        XCTAssertTrue(continued.state === pushed)
-        XCTAssertEqual(pushed.getEnterPos(), -1)
-        XCTAssertEqual(pushed.getAnchorPos(), -1)
+        // Line positions are cleared on a copy; the caller's stack (which may
+        // be shared through a GrammarState) is never mutated.
+        XCTAssertTrue(continued.state.equals(pushed))
+        XCTAssertEqual(continued.state.getEnterPos(), -1)
+        XCTAssertEqual(continued.state.getAnchorPos(), -1)
+        XCTAssertEqual(pushed.getEnterPos(), 8)
+        XCTAssertEqual(pushed.getAnchorPos(), 3)
+        XCTAssertTrue(continued.state.parent === initial.state)
         XCTAssertEqual(initial.state.getEnterPos(), -1)
     }
 

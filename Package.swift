@@ -91,13 +91,30 @@ let package = Package(
         .target(
             name: "Shiki",
             dependencies: ["ShikiCore"],
+            exclude: [
+                // Build-time audit records; not needed at runtime.
+                "Resources/asset-manifest.json",
+                "Resources/provenance.json",
+            ],
             resources: [
-                .process("Resources"),
+                // `.copy` keeps the directory layout, so grammar and theme
+                // files cannot collide and are found on the first lookup.
+                .copy("Resources/grammars"),
+                .copy("Resources/themes"),
+                .copy("Resources/licenses"),
+                .process("Resources/language-manifest.json"),
+                .process("Resources/theme-manifest.json"),
             ]
         ),
         .target(
             name: "ShikiUI",
             dependencies: ["ShikiCore"]
+        ),
+        // Release benchmarks: `swift run -c release shiki-benchmark`.
+        .executableTarget(
+            name: "shiki-benchmark",
+            dependencies: ["Shiki", "ShikiUI"],
+            path: "Scripts/Benchmark"
         ),
         .testTarget(
             name: "ShikiCoreTests",

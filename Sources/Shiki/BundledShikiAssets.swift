@@ -78,6 +78,12 @@ public final class BundledShikiAssets: @unchecked Sendable {
     private let languagesByID: [String: ShikiLanguageInfo]
     private let themesByID: [String: ShikiThemeInfo]
 
+    // Decoded payloads are immutable values, so they are shared by every
+    // highlighter using this catalog instead of being decoded per instance.
+    private let cacheLock = NSLock()
+    private var decodedLanguages: [String: LanguageRegistration] = [:]
+    private var decodedThemes: [String: ShikiResolvedTheme] = [:]
+
     /// Creates a catalog from an arbitrary resource bundle. This is public so
     /// apps can package a curated asset subset with the same manifest format.
     public init(bundle: Bundle) throws {
@@ -110,8 +116,35 @@ public final class BundledShikiAssets: @unchecked Sendable {
         languages = languageManifest.languages
         themes = themeManifest.themes
         aliases = languageManifest.aliases
-        languagesByID = Dictionary(uniqueKeysWithValues: languages.map { ($0.id, $0) })
-        themesByID = Dictionary(uniqueKeysWithValues: themes.map { ($0.id, $0) })
+        languagesByID = try Self.index(languages, path: "language-manifest.json")
+        themesByID = try Self.index(themes, path: "theme-manifest.json")
+    }
+
+    /// Indexes manifest entries, throwing (rather than trapping) on duplicates
+    /// so a malformed custom asset bundle is reported as an error.
+    private static func index<Entry: Identifiable>(
+        _ entries: [Entry],
+        path: String
+    ) throws -> [String: Entry] where Entry.ID == String {
+        var result: [String: Entry] = [:]
+        result.reserveCapacity(entries.count)
+        for entry in entries {
+            guard result.updateValue(entry, forKey: entry.id) == nil else {
+                throw ShikiAssetError.invalidResource(
+                    path: path,
+                    message: "duplicate id \(String(reflecting: entry.id))"
+                )
+            }
+        }
+        return result
+    }
+
+    /// Drops cached decoded grammars and themes.
+    public func purgeDecodedCache() {
+        cacheLock.lock()
+        decodedLanguages.removeAll()
+        decodedThemes.removeAll()
+        cacheLock.unlock()
     }
 
     /// Resolves a canonical ID or any Shiki alias such as `js`, `ts`, or `sh`.
@@ -136,7 +169,32 @@ public final class BundledShikiAssets: @unchecked Sendable {
         guard let info = languageInfo(named: name) else {
             throw ShikiAssetError.unknownLanguage(name)
         }
-        return try decode(LanguageRegistration.self, resource: info.resource)
+        return try decodeLanguage(info)
+    }
+
+    private func decodeLanguage(_ info: ShikiLanguageInfo) throws -> LanguageRegistration {
+        cacheLock.lock()
+        if let cached = decodedLanguages[info.id] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        let data = try data(for: info.resource)
+        let registration: LanguageRegistration
+        do {
+            registration = try LanguageRegistration.decodePreservingKeyOrder(from: data)
+        } catch {
+            throw ShikiAssetError.invalidResource(
+                path: info.resource,
+                message: String(describing: error)
+            )
+        }
+
+        cacheLock.lock()
+        decodedLanguages[info.id] = registration
+        cacheLock.unlock()
+        return registration
     }
 
     /// Decodes and normalizes one raw VS Code theme on demand.
@@ -144,7 +202,28 @@ public final class BundledShikiAssets: @unchecked Sendable {
         guard let info = themeInfo(named: name) else {
             throw ShikiAssetError.unknownTheme(name)
         }
-        return normalizeTheme(try decode(ShikiTheme.self, resource: info.resource))
+        cacheLock.lock()
+        if let cached = decodedThemes[info.id] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        let data = try data(for: info.resource)
+        let theme: ShikiResolvedTheme
+        do {
+            theme = normalizeTheme(try ShikiTheme.decodePreservingKeyOrder(from: data))
+        } catch {
+            throw ShikiAssetError.invalidResource(
+                path: info.resource,
+                message: String(describing: error)
+            )
+        }
+
+        cacheLock.lock()
+        decodedThemes[info.id] = theme
+        cacheLock.unlock()
+        return theme
     }
 
     /// Returns the eager dependency closure in deterministic depth-first order,
@@ -188,18 +267,24 @@ public final class BundledShikiAssets: @unchecked Sendable {
         return result
     }
 
+    /// Decodes the dependency closure of `name`. Languages whose canonical
+    /// ID is in `excluded` (for example ones a highlighter already loaded)
+    /// are skipped without being decoded.
     public func loadLanguageClosure(
         named name: String,
-        includingLazyDependencies: Bool = false
+        includingLazyDependencies: Bool = false,
+        excluding excluded: Set<String> = []
     ) throws -> [LanguageRegistration] {
         let infos = try dependencyOrder(
             for: name,
             includingLazyDependencies: includingLazyDependencies
         )
-        return try infos.map { try decode(LanguageRegistration.self, resource: $0.resource) }
+        return try infos
+            .filter { !excluded.contains($0.id) }
+            .map(decodeLanguage)
     }
 
-    private func decode<Value: Decodable>(_ type: Value.Type, resource: String) throws -> Value {
+    private func data(for resource: String) throws -> Data {
         let resourcePath = resource as NSString
         let file = resourcePath.lastPathComponent as NSString
         let subdirectory = resourcePath.deletingLastPathComponent
@@ -220,7 +305,7 @@ public final class BundledShikiAssets: @unchecked Sendable {
         }
 
         do {
-            return try JSONDecoder().decode(type, from: Data(contentsOf: url))
+            return try Data(contentsOf: url)
         } catch {
             throw ShikiAssetError.invalidResource(path: resource, message: String(describing: error))
         }

@@ -68,6 +68,10 @@ struct ContentView: View {
         let code: String
         let language: String
         let theme: String
+
+        /// Every request gets a fresh `id`, so identity is enough; this keeps
+        /// `.task(id:)` from comparing potentially large code strings.
+        static func == (lhs: Self, rhs: Self) -> Bool { lhs.id == rhs.id }
     }
 
     private static let demos: [DemoLanguage] = [

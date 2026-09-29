@@ -28,6 +28,10 @@ public final class LineTokens {
     private var lastTokenEndIndex = 0
     private let tokenTypeOverrides: [TokenTypeMatcher]
     private let balancedBracketSelectors: BalancedBracketSelectors?
+    /// Binary tokens only need scope names for token-type overrides or
+    /// partial bracket selectors. Computed once instead of per token.
+    private let binaryNeedsScopeNames: Bool
+    private let alwaysContainsBalancedBrackets: Bool
 
     public init(
         emitBinaryTokens: Bool,
@@ -38,8 +42,68 @@ public final class LineTokens {
         self.emitBinaryTokens = emitBinaryTokens
         self.tokenTypeOverrides = tokenTypeOverrides
         self.balancedBracketSelectors = balancedBracketSelectors
+        binaryNeedsScopeNames = !tokenTypeOverrides.isEmpty
+            || balancedBracketSelectors.map {
+                !$0.matchesAlways && !$0.matchesNever
+            } == true
+        alwaysContainsBalancedBrackets = balancedBracketSelectors?.matchesAlways ?? false
         // `lineText` is retained by upstream only while debug logging is on.
         _ = lineText
+    }
+
+    /// Scanner hot path: emits from an attributed scope stack, resolving the
+    /// scope-name array only when it is actually needed (after the early
+    /// return, and in binary mode only for overrides/partial brackets).
+    public func produceFromScopes(
+        _ scopesList: AttributedScopeStack?,
+        endIndex: Int
+    ) {
+        guard lastTokenEndIndex < endIndex else {
+            return
+        }
+        let tokenAttributes = scopesList?.tokenAttributes ?? 0
+        if emitBinaryTokens {
+            produceBinary(
+                scopeNames: binaryNeedsScopeNames ? (scopesList?.getScopeNames() ?? []) : [],
+                tokenAttributes: tokenAttributes,
+                endIndex: endIndex
+            )
+        } else {
+            tokens.append(
+                TextMateToken(
+                    startIndex: lastTokenEndIndex,
+                    endIndex: endIndex,
+                    scopes: scopesList?.getScopeNames() ?? []
+                )
+            )
+            lastTokenEndIndex = endIndex
+        }
+    }
+
+    public func getResult(_ stack: StateStackImpl, lineLength: Int) -> [TextMateToken] {
+        if tokens.last?.startIndex == lineLength - 1 {
+            tokens.removeLast()
+        }
+        if tokens.isEmpty {
+            lastTokenEndIndex = -1
+            produceFromScopes(stack.contentNameScopesList, endIndex: lineLength)
+            tokens[tokens.count - 1].startIndex = 0
+        }
+        return tokens
+    }
+
+    public func getBinaryResult(_ stack: StateStackImpl, lineLength: Int) -> [UInt32] {
+        if binaryTokens.count >= 2,
+           binaryTokens[binaryTokens.count - 2] == UInt32(truncatingIfNeeded: lineLength - 1)
+        {
+            binaryTokens.removeLast(2)
+        }
+        if binaryTokens.isEmpty {
+            lastTokenEndIndex = -1
+            produceFromScopes(stack.contentNameScopesList, endIndex: lineLength)
+            binaryTokens[binaryTokens.count - 2] = 0
+        }
+        return binaryTokens
     }
 
     /// Emits through an attributed scope stack after its names and metadata
@@ -121,14 +185,9 @@ public final class LineTokens {
         endIndex: Int
     ) {
         var metadata = tokenAttributes
-        var containsBalancedBrackets = balancedBracketSelectors?.matchesAlways ?? false
+        var containsBalancedBrackets = alwaysContainsBalancedBrackets
 
-        let mustEvaluateScopes = !tokenTypeOverrides.isEmpty
-            || balancedBracketSelectors.map {
-                !$0.matchesAlways && !$0.matchesNever
-            } == true
-
-        if mustEvaluateScopes {
+        if binaryNeedsScopeNames {
             for tokenType in tokenTypeOverrides where tokenType.matcher(scopeNames) {
                 metadata = EncodedTokenMetadata.set(
                     metadata,
@@ -162,39 +221,5 @@ public extension LineTokens {
     /// Scanner-facing compatibility overload matching `vscode-textmate`.
     func produce(_ stack: StateStackImpl, endIndex: Int) {
         produceFromScopes(stack.contentNameScopesList, endIndex: endIndex)
-    }
-
-    /// Scanner-facing compatibility overload matching `vscode-textmate`.
-    func produceFromScopes(
-        _ scopesList: AttributedScopeStack?,
-        endIndex: Int
-    ) {
-        produceFromScopes(
-            scopeNames: scopesList?.getScopeNames() ?? [],
-            tokenAttributes: scopesList?.tokenAttributes ?? 0,
-            endIndex: endIndex
-        )
-    }
-
-    func getResult(
-        _ stack: StateStackImpl,
-        lineLength: Int
-    ) -> [TextMateToken] {
-        getResult(
-            fallbackScopeNames: stack.contentNameScopesList?.getScopeNames() ?? [],
-            fallbackTokenAttributes: stack.contentNameScopesList?.tokenAttributes ?? 0,
-            lineLength: lineLength
-        )
-    }
-
-    func getBinaryResult(
-        _ stack: StateStackImpl,
-        lineLength: Int
-    ) -> [UInt32] {
-        getBinaryResult(
-            fallbackScopeNames: stack.contentNameScopesList?.getScopeNames() ?? [],
-            fallbackTokenAttributes: stack.contentNameScopesList?.tokenAttributes ?? 0,
-            lineLength: lineLength
-        )
     }
 }

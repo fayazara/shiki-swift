@@ -27,9 +27,8 @@ public final class TextMateRegistry: TextMateGrammarRepositoryWithTheme {
     }
 
     public func dispose() {
-        for grammar in grammars.values {
-            grammar.dispose()
-        }
+        // Compiled grammars may still be referenced by persisted state stacks;
+        // they release their scanners through ARC when the last state goes.
         grammars.removeAll(keepingCapacity: false)
     }
 
@@ -47,6 +46,32 @@ public final class TextMateRegistry: TextMateGrammarRepositoryWithTheme {
     ) {
         rawGrammars[grammar.scopeName] = grammar
         injectionGrammars[grammar.scopeName] = injectionScopeNames
+    }
+
+    /// Adds raw grammars without discarding compiled grammars.
+    ///
+    /// Compiled grammars that previously referenced one of the new scopes (for
+    /// example Markdown fences for a lazily embedded language), or whose
+    /// injection contributions changed, are refreshed in place so that rule
+    /// IDs held by existing state stacks remain valid. A scope whose raw
+    /// grammar is replaced has its compiled grammar evicted; states created
+    /// from the evicted grammar keep it alive and remain self-consistent.
+    public func addGrammars(
+        _ newGrammars: [RawGrammar],
+        injections: [ScopeName: [ScopeName]]
+    ) {
+        var added: Set<ScopeName> = []
+        for grammar in newGrammars {
+            if rawGrammars[grammar.scopeName] != nil {
+                grammars.removeValue(forKey: grammar.scopeName)
+            }
+            rawGrammars[grammar.scopeName] = grammar
+            added.insert(grammar.scopeName)
+        }
+        injectionGrammars = injections
+        for scopeName in grammars.keys.sorted() {
+            grammars[scopeName]?.refreshAfterRepositoryChange(addedScopeNames: added)
+        }
     }
 
     public func removeCompiledGrammar(scopeName: ScopeName) {
@@ -84,14 +109,16 @@ public final class TextMateRegistry: TextMateGrammarRepositoryWithTheme {
         guard let rawGrammar = rawGrammars[scopeName] else {
             return nil
         }
-        let grammar = createGrammar(
+        // The registry owns its grammars; a weak back-reference avoids a
+        // registry <-> grammar retain cycle that would leak every scanner.
+        let grammar = Grammar(
             scopeName: scopeName,
             grammar: rawGrammar,
             initialLanguage: initialLanguage,
             embeddedLanguages: embeddedLanguages,
             tokenTypes: tokenTypes,
             balancedBracketSelectors: balancedBracketSelectors,
-            grammarRepository: self,
+            repositoryReference: GrammarRepositoryReference(weak: self),
             onigLibrary: onigLibrary
         )
         grammars[scopeName] = grammar

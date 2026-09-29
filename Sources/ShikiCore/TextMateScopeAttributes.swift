@@ -21,10 +21,44 @@ public struct BasicScopeAttributes: Equatable, Sendable {
     }
 }
 
+/// Memoizes per-scope attributes, like upstream's `CachedFn`.
+private final class BasicScopeAttributesCache: @unchecked Sendable {
+    private let lock = NSLock()
+    private var values: [ScopeName: BasicScopeAttributes] = [:]
+
+    func value(
+        for scopeName: ScopeName,
+        compute: (ScopeName) -> BasicScopeAttributes
+    ) -> BasicScopeAttributes {
+        lock.lock()
+        if let cached = values[scopeName] {
+            lock.unlock()
+            return cached
+        }
+        lock.unlock()
+        let computed = compute(scopeName)
+        lock.lock()
+        values[scopeName] = computed
+        lock.unlock()
+        return computed
+    }
+}
+
+private let standardTokenTypeCandidates: [(units: [UInt16], type: OptionalStandardTokenType)] = [
+    (Array("comment".utf16), .comment),
+    (Array("string".utf16), .string),
+    (Array("regex".utf16), .regex),
+    (Array("meta.embedded".utf16), .other),
+]
+
 /// Infers embedded-language IDs and standard token types from scope names.
+///
+/// Results are cached per scope name (the upstream provider memoizes with a
+/// `CachedFn`), because attributes are requested on every scope push.
 public struct BasicScopeAttributesProvider: Sendable {
     private let defaultAttributes: BasicScopeAttributes
-    private let embeddedLanguages: [(scope: ScopeName, languageID: Int)]
+    private let embeddedLanguages: [(scope: ScopeName, prefix: ScopeName, languageID: Int)]
+    private let cache = BasicScopeAttributesCache()
 
     public init(
         initialLanguageID: Int,
@@ -36,7 +70,7 @@ public struct BasicScopeAttributesProvider: Sendable {
         // before building its regular expression. Scope names are ASCII in
         // TextMate grammars, so descending String order is equivalent here.
         self.embeddedLanguages = (embeddedLanguages ?? [:])
-            .map { (scope: $0.key, languageID: $0.value) }
+            .map { (scope: $0.key, prefix: $0.key + ".", languageID: $0.value) }
             .sorted { $0.scope > $1.scope }
     }
 
@@ -62,15 +96,18 @@ public struct BasicScopeAttributesProvider: Sendable {
             return BasicScopeAttributes(0, .other)
         }
 
-        return BasicScopeAttributes(
-            languageID(for: scopeName),
-            standardTokenType(for: scopeName)
-        )
+        return cache.value(for: scopeName) { scopeName in
+            BasicScopeAttributes(
+                languageID(for: scopeName),
+                standardTokenType(for: scopeName)
+            )
+        }
     }
 
     private func languageID(for scopeName: ScopeName) -> Int {
+        let units = scopeName.utf16
         for entry in embeddedLanguages {
-            if scopeName == entry.scope || scopeName.hasPrefix("\(entry.scope).") {
+            if units.elementsEqual(entry.scope.utf16) || units.starts(with: entry.prefix.utf16) {
                 return entry.languageID
             }
         }
@@ -81,12 +118,7 @@ public struct BasicScopeAttributesProvider: Sendable {
         for scopeName: ScopeName
     ) -> OptionalStandardTokenType {
         let source = Array(scopeName.utf16)
-        let candidates: [(units: [UInt16], type: OptionalStandardTokenType)] = [
-            (Array("comment".utf16), .comment),
-            (Array("string".utf16), .string),
-            (Array("regex".utf16), .regex),
-            (Array("meta.embedded".utf16), .other),
-        ]
+        let candidates = standardTokenTypeCandidates
 
         for start in source.indices {
             for candidate in candidates {

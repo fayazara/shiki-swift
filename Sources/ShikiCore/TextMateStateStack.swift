@@ -54,8 +54,8 @@ public struct StateStackFrame: Codable, Equatable, Sendable {
 
 /// A persistent pushed TextMate rule state.
 ///
-/// The stack is structurally immutable except for line-local enter and anchor
-/// positions, which `reset()` clears recursively before tokenizing a new line.
+/// The stack is immutable in normal use. The tokenizer clears line-local enter
+/// and anchor positions by copying (see ``resettingLinePositions()``).
 public final class StateStackImpl: @unchecked Sendable,
     StateStack, CustomStringConvertible
 {
@@ -150,6 +150,38 @@ public final class StateStackImpl: @unchecked Sendable,
         self
     }
 
+    /// Returns a stack whose line-local enter/anchor positions are cleared.
+    ///
+    /// Unlike ``reset()``, this never mutates `self`, so a stack held by a
+    /// caller (for example inside a `GrammarState` shared between threads)
+    /// is never written to. Frames that are already reset are shared.
+    public func resettingLinePositions() -> StateStackImpl {
+        var needsCopy = false
+        var element: StateStackImpl? = self
+        while let current = element {
+            if current.enterPos != -1 || current.anchorPos != -1 {
+                needsCopy = true
+                break
+            }
+            element = current.parent
+        }
+        guard needsCopy else { return self }
+
+        let resetParent = parent?.resettingLinePositions()
+        return StateStackImpl(
+            parent: resetParent,
+            ruleID: ruleID,
+            enterPos: -1,
+            anchorPos: -1,
+            beginRuleCapturedEOL: beginRuleCapturedEOL,
+            endRule: endRule,
+            nameScopesList: nameScopesList,
+            contentNameScopesList: contentNameScopesList
+        )
+    }
+
+    /// Mutating reset matching `vscode-textmate`. Prefer
+    /// ``resettingLinePositions()``, which leaves shared stacks untouched.
     public func reset() {
         var element: StateStackImpl? = self
         while let current = element {

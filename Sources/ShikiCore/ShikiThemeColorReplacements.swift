@@ -92,16 +92,30 @@ private func resolveColorReplacements(
 ) -> [String: String] {
     var replacements = themeReplacements
 
-    for (key, value) in overrides {
-        switch value {
-        case let .color(color):
+    // Shiki applies options in object insertion order. Swift dictionaries
+    // have no stable order, so apply global string replacements first (in
+    // sorted key order) and then the active theme's scoped object. A theme-
+    // specific replacement therefore wins over a global one for the same key
+    // in every run.
+    for key in overrides.keys.sorted() {
+        if case let .color(color) = overrides[key]! {
             replacements[key] = color
-        case let .theme(scopedReplacements):
-            if key == themeName {
-                replacements.merge(scopedReplacements) { _, new in new }
-            }
         }
+    }
+    if let themeName, case let .theme(scopedReplacements)? = overrides[themeName] {
+        replacements.merge(scopedReplacements) { _, new in new }
     }
 
     return replacements
+}
+
+/// Precomputes replaced colors for a whole color map so tokenization can apply
+/// replacements with one array lookup per token instead of lowercasing and
+/// hashing each token's color.
+public func applyColorReplacements(
+    toColorMap colorMap: [String?],
+    replacements: [String: String]
+) -> [String?] {
+    guard !replacements.isEmpty else { return colorMap }
+    return colorMap.map { applyColorReplacements($0, replacements: replacements) }
 }

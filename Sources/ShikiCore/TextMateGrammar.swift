@@ -27,6 +27,35 @@ public protocol TextMateGrammarRepository {
 public protocol TextMateGrammarRepositoryWithTheme:
     TextMateGrammarRepository, TextMateThemeProvider {}
 
+/// Holds a grammar's repository either strongly (standalone grammars) or
+/// weakly (grammars owned by a ``TextMateRegistry``, which would otherwise
+/// form a retain cycle with the registry).
+final class GrammarRepositoryReference {
+    private let strong: (any TextMateGrammarRepositoryWithTheme)?
+    private weak var weak: (AnyObject & TextMateGrammarRepositoryWithTheme)?
+
+    init(strong repository: any TextMateGrammarRepositoryWithTheme) {
+        strong = repository
+    }
+
+    init(weak repository: AnyObject & TextMateGrammarRepositoryWithTheme) {
+        strong = nil
+        weak = repository
+    }
+
+    var value: (any TextMateGrammarRepositoryWithTheme)? {
+        strong ?? weak
+    }
+}
+
+/// Theme provider used after an owning registry has been released.
+private struct DetachedThemeProvider: TextMateThemeProvider {
+    func themeMatch(_ scopePath: ScopeStack) -> StyleAttributes? { nil }
+    func getDefaults() -> StyleAttributes {
+        StyleAttributes(fontStyle: .none, foregroundID: 0, backgroundID: 0)
+    }
+}
+
 /// One compiled injection selector and the rule it activates.
 public struct Injection {
     public let debugSelector: String
@@ -88,19 +117,27 @@ public final class Grammar:
     private var lastRuleID = 0
     private var ruleIDToDescriptor: [Rule?] = [nil]
     private var includedGrammars: [ScopeName: RawGrammar] = [:]
-    private let grammarRepository: any TextMateGrammarRepositoryWithTheme
+    /// External scopes that were referenced but not registered when a rule
+    /// was compiled. Registering one of them refreshes the affected rules.
+    private var unresolvedExternalScopes: Set<ScopeName> = []
+    private let repositoryReference: GrammarRepositoryReference
     private let grammar: RawGrammar
     private var cachedInjections: [Injection]?
+    private var cachedInjectionScopeNames: [ScopeName] = []
     private let basicScopeAttributesProvider: BasicScopeAttributesProvider
     private let onigLibrary: any TextMateOnigLibrary
     private let ruleFactory = RuleFactory()
     private let tokenTypeMatchers: [TokenTypeMatcher]
 
-    public var themeProvider: any TextMateThemeProvider {
-        grammarRepository
+    private var grammarRepository: (any TextMateGrammarRepositoryWithTheme)? {
+        repositoryReference.value
     }
 
-    public init(
+    public var themeProvider: any TextMateThemeProvider {
+        grammarRepository ?? DetachedThemeProvider()
+    }
+
+    public convenience init(
         scopeName: ScopeName,
         grammar: RawGrammar,
         initialLanguage: Int,
@@ -110,9 +147,31 @@ public final class Grammar:
         grammarRepository: any TextMateGrammarRepositoryWithTheme,
         onigLibrary: any TextMateOnigLibrary = NativeTextMateOnigLibrary()
     ) {
+        self.init(
+            scopeName: scopeName,
+            grammar: grammar,
+            initialLanguage: initialLanguage,
+            embeddedLanguages: embeddedLanguages,
+            tokenTypes: tokenTypes,
+            balancedBracketSelectors: balancedBracketSelectors,
+            repositoryReference: GrammarRepositoryReference(strong: grammarRepository),
+            onigLibrary: onigLibrary
+        )
+    }
+
+    init(
+        scopeName: ScopeName,
+        grammar: RawGrammar,
+        initialLanguage: Int,
+        embeddedLanguages: EmbeddedLanguagesMap?,
+        tokenTypes: TokenTypeMap?,
+        balancedBracketSelectors: BalancedBracketSelectors?,
+        repositoryReference: GrammarRepositoryReference,
+        onigLibrary: any TextMateOnigLibrary
+    ) {
         rootScopeName = scopeName
         self.balancedBracketSelectors = balancedBracketSelectors
-        self.grammarRepository = grammarRepository
+        self.repositoryReference = repositoryReference
         self.grammar = initializeGrammar(grammar, base: nil)
         self.onigLibrary = onigLibrary
         basicScopeAttributesProvider = BasicScopeAttributesProvider(
@@ -121,7 +180,10 @@ public final class Grammar:
         )
 
         var compiledTokenTypes: [TokenTypeMatcher] = []
-        for (selector, type) in tokenTypes ?? [:] {
+        // Sorted so overlapping selectors resolve identically in every run.
+        let tokenTypes = tokenTypes ?? [:]
+        for selector in orderedKeys(of: tokenTypes, preferredOrder: nil) {
+            let type = tokenTypes[selector]!
             for parsed in createMatchers(selector, matchesName: matchesScopeNames) {
                 compiledTokenTypes.append(
                     TokenTypeMatcher(matcher: parsed.matcher, type: type)
@@ -219,8 +281,7 @@ public final class Grammar:
         previousState: StateStackImpl?
     ) -> (state: StateStackImpl, isFirstLine: Bool) {
         if let previousState, previousState !== StateStackImpl.NULL {
-            previousState.reset()
-            return (previousState, false)
+            return (previousState.resettingLinePositions(), false)
         }
 
         let rootRuleID = prepareForTokenization()
@@ -256,6 +317,37 @@ public final class Grammar:
             ),
             true
         )
+    }
+
+    /// Updates an already compiled grammar after its repository gained new
+    /// raw grammars or injection contributions.
+    ///
+    /// Unlike recompiling from scratch, this keeps every existing rule ID
+    /// valid: previously dropped includes are resolved into newly allocated
+    /// rules and scanners are rebuilt lazily. Grammar states created before
+    /// the change can therefore continue tokenizing with this grammar.
+    public func refreshAfterRepositoryChange(addedScopeNames: Set<ScopeName>) {
+        let resolvable = unresolvedExternalScopes.intersection(addedScopeNames)
+        if !resolvable.isEmpty {
+            unresolvedExternalScopes.subtract(resolvable)
+            if ruleFactory.refreshIncompletePatterns(helper: self) {
+                // Parent rules flatten included rules into their scanners, so
+                // every cached scanner may be stale. They are rebuilt lazily.
+                for rule in ruleIDToDescriptor.compactMap({ $0 }) {
+                    rule.dispose()
+                }
+            }
+        }
+
+        if cachedInjections != nil {
+            let current = grammarRepository?.injections(scopeName: rootScopeName) ?? []
+            if current != cachedInjectionScopeNames
+                || !resolvable.isDisjoint(with: current)
+            {
+                cachedInjections = nil
+                _ = getInjections()
+            }
+        }
     }
 
     public func getInjections() -> [Injection] {
@@ -311,7 +403,8 @@ public final class Grammar:
         if let cached = includedGrammars[scopeName] {
             return cached
         }
-        guard let raw = grammarRepository.lookup(scopeName: scopeName) else {
+        guard let raw = grammarRepository?.lookup(scopeName: scopeName) else {
+            unresolvedExternalScopes.insert(scopeName)
             return nil
         }
 
@@ -343,13 +436,15 @@ public final class Grammar:
             }
         }
 
-        for (selector, rule) in grammar.injections ?? [:] {
+        for (selector, rule) in grammar.orderedInjections {
             append(selector: selector, rule: rule, source: grammar)
         }
 
-        for injectionScopeName in grammarRepository.injections(
+        let injectionScopeNames = grammarRepository?.injections(
             scopeName: rootScopeName
-        ) {
+        ) ?? []
+        cachedInjectionScopeNames = injectionScopeNames
+        for injectionScopeName in injectionScopeNames {
             guard
                 let injectionGrammar = getExternalGrammar(injectionScopeName),
                 let selector = injectionGrammar.injectionSelector

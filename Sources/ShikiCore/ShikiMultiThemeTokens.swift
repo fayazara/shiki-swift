@@ -1,7 +1,7 @@
 import Foundation
 
 /// One Shiki token carrying a named style variant for every requested theme.
-public struct ThemedTokenWithVariants: Codable, Equatable, Sendable {
+public struct ThemedTokenWithVariants: Equatable, Sendable {
     public var content: String
 
     /// Absolute zero-based UTF-16 offset into the original source.
@@ -9,20 +9,29 @@ public struct ThemedTokenWithVariants: Codable, Equatable, Sendable {
 
     public var type: StandardTokenType?
     public var explanation: [ThemedTokenExplanation]?
-    public var variants: [String: TokenStyles]
+    public var variants: [String: TokenStyles] {
+        didSet { variantNames = Self.reconcile(variantNames, with: variants) }
+    }
+
+    /// Variant names in the caller's theme order. JavaScript objects keep
+    /// insertion order and renderers treat the first entry as the default
+    /// color, so this order is preserved here and when encoding.
+    public private(set) var variantNames: [String]
 
     public init(
         content: String,
         offset: Int,
         type: StandardTokenType? = nil,
         explanation: [ThemedTokenExplanation]? = nil,
-        variants: [String: TokenStyles]
+        variants: [String: TokenStyles],
+        variantNames: [String]? = nil
     ) {
         self.content = content
         self.offset = offset
         self.type = type
         self.explanation = explanation
         self.variants = variants
+        self.variantNames = Self.reconcile(variantNames ?? [], with: variants)
     }
 
     public init(base: TokenBase, variants: [String: TokenStyles]) {
@@ -42,6 +51,66 @@ public struct ThemedTokenWithVariants: Codable, Equatable, Sendable {
             type: type,
             explanation: explanation
         )
+    }
+
+    /// Variants in theme order.
+    public var orderedVariants: [(name: String, styles: TokenStyles)] {
+        variantNames.map { ($0, variants[$0]!) }
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.content == rhs.content
+            && lhs.offset == rhs.offset
+            && lhs.type == rhs.type
+            && lhs.explanation == rhs.explanation
+            && lhs.variants == rhs.variants
+    }
+
+    private static func reconcile(
+        _ names: [String],
+        with variants: [String: TokenStyles]
+    ) -> [String] {
+        orderedKeys(of: variants, preferredOrder: names)
+    }
+}
+
+extension ThemedTokenWithVariants: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case content, offset, type, explanation, variants
+    }
+
+    private struct VariantKey: CodingKey {
+        let stringValue: String
+        var intValue: Int? { nil }
+        init(_ value: String) { stringValue = value }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { nil }
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            content: try container.decode(String.self, forKey: .content),
+            offset: try container.decode(Int.self, forKey: .offset),
+            type: try container.decodeIfPresent(StandardTokenType.self, forKey: .type),
+            explanation: try container.decodeIfPresent(
+                [ThemedTokenExplanation].self,
+                forKey: .explanation
+            ),
+            variants: try container.decode([String: TokenStyles].self, forKey: .variants)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(content, forKey: .content)
+        try container.encode(offset, forKey: .offset)
+        try container.encodeIfPresent(type, forKey: .type)
+        try container.encodeIfPresent(explanation, forKey: .explanation)
+        var nested = container.nestedContainer(keyedBy: VariantKey.self, forKey: .variants)
+        for name in variantNames {
+            try nested.encode(variants[name]!, forKey: VariantKey(name))
+        }
     }
 }
 
@@ -110,69 +179,103 @@ public enum MultiThemeTokenizationError:
 /// This is the native port of Shiki's `alignThemesTokenization`. Content
 /// lengths, slices, and offsets deliberately use UTF-16 code units. Styles,
 /// token types, and explanations are retained on every split fragment.
+///
+/// Each line is processed in O(line length + token count): boundaries are
+/// merged once and fragments are sliced from a single UTF-16 buffer, instead
+/// of repeatedly copying the remainder of a long token for every split.
 public func alignThemesTokenization(
     _ themes: [[[ThemedToken]]]
 ) throws -> [[[ThemedToken]]] {
     try validateThemeTokenizations(themes)
 
-    var output = themes.map { _ in [[ThemedToken]]() }
     let themeCount = themes.count
     let lineCount = themes[0].count
+    var output = themes.map { _ in [[ThemedToken]]() }
+    for index in output.indices { output[index].reserveCapacity(lineCount) }
 
+    var lineUnits: [UInt16] = []
     for lineIndex in 0..<lineCount {
-        let lines = themes.map { $0[lineIndex] }
-        var outputLines = themes.map { _ in [ThemedToken]() }
-
         // A grammar-backed theme represents an empty source line as `[]`,
         // while `none`/plain themes represent it as one empty token. Upstream
         // stops alignment as soon as any current stream is absent, yielding an
         // empty line for every theme in this mixed case.
-        if lines.contains(where: \.isEmpty) {
+        if themes.contains(where: { $0[lineIndex].isEmpty }) {
             for themeIndex in 0..<themeCount {
-                output[themeIndex].append(outputLines[themeIndex])
+                output[themeIndex].append([])
             }
             continue
         }
 
-        var indexes = Array(repeating: 0, count: themeCount)
-        var current: [ThemedToken?] = lines.map(\.first)
+        // Union of relative token end positions across every theme.
+        var boundaries: [Int] = []
+        var lengthsByTheme: [[Int]] = []
+        lengthsByTheme.reserveCapacity(themeCount)
+        for themeIndex in 0..<themeCount {
+            var position = 0
+            var lengths: [Int] = []
+            lengths.reserveCapacity(themes[themeIndex][lineIndex].count)
+            for token in themes[themeIndex][lineIndex] {
+                let length = token.content.utf16.count
+                lengths.append(length)
+                position += length
+                boundaries.append(position)
+            }
+            lengthsByTheme.append(lengths)
+        }
+        boundaries.sort()
+        var uniqueBoundaries: [Int] = []
+        uniqueBoundaries.reserveCapacity(boundaries.count)
+        for boundary in boundaries where boundary != uniqueBoundaries.last {
+            uniqueBoundaries.append(boundary)
+        }
 
-        while current.allSatisfy({ $0 != nil }) {
-            let lengths = current.map { utf16Length($0!.content) }
-            guard let minimumLength = lengths.min() else { break }
-
-            for themeIndex in 0..<themeCount {
-                guard let token = current[themeIndex] else {
-                    throw MultiThemeTokenizationError.tokenStreamEndedEarly(
-                        theme: themeIndex,
-                        line: lineIndex
-                    )
-                }
-
-                if lengths[themeIndex] == minimumLength {
-                    outputLines[themeIndex].append(token)
-                    indexes[themeIndex] += 1
-                    let nextIndex = indexes[themeIndex]
-                    current[themeIndex] = lines[themeIndex].indices.contains(nextIndex)
-                        ? lines[themeIndex][nextIndex]
-                        : nil
-                } else {
-                    let pieces = splitToken(token, atUTF16Offset: minimumLength)
-                    outputLines[themeIndex].append(pieces.prefix)
-                    current[themeIndex] = pieces.suffix
-                }
+        let needsSlicing = lengthsByTheme.contains { $0.count != uniqueBoundaries.count }
+        if needsSlicing {
+            lineUnits.removeAll(keepingCapacity: true)
+            for token in themes[0][lineIndex] {
+                lineUnits.append(contentsOf: token.content.utf16)
             }
         }
 
-        if let unfinishedTheme = current.firstIndex(where: { $0 != nil }) {
-            throw MultiThemeTokenizationError.tokenStreamEndedEarly(
-                theme: unfinishedTheme,
-                line: lineIndex
-            )
-        }
-
         for themeIndex in 0..<themeCount {
-            output[themeIndex].append(outputLines[themeIndex])
+            let line = themes[themeIndex][lineIndex]
+            let lengths = lengthsByTheme[themeIndex]
+            if lengths.count == uniqueBoundaries.count {
+                output[themeIndex].append(line)
+                continue
+            }
+
+            var fragments: [ThemedToken] = []
+            fragments.reserveCapacity(uniqueBoundaries.count)
+            var boundaryIndex = 0
+            var tokenStart = 0
+            for (tokenIndex, token) in line.enumerated() {
+                let tokenEnd = tokenStart + lengths[tokenIndex]
+                // Fast path: the token is not split by any other theme.
+                if uniqueBoundaries[boundaryIndex] == tokenEnd {
+                    fragments.append(token)
+                    boundaryIndex += 1
+                    tokenStart = tokenEnd
+                    continue
+                }
+                var fragmentStart = tokenStart
+                while boundaryIndex < uniqueBoundaries.count,
+                      uniqueBoundaries[boundaryIndex] <= tokenEnd
+                {
+                    let fragmentEnd = uniqueBoundaries[boundaryIndex]
+                    var fragment = token
+                    fragment.content = String(
+                        decoding: lineUnits[fragmentStart..<fragmentEnd],
+                        as: UTF16.self
+                    )
+                    fragment.offset = token.offset + (fragmentStart - tokenStart)
+                    fragments.append(fragment)
+                    fragmentStart = fragmentEnd
+                    boundaryIndex += 1
+                }
+                tokenStart = tokenEnd
+            }
+            output[themeIndex].append(fragments)
         }
     }
 
@@ -197,13 +300,14 @@ public func mergeThemesTokenization(
         throw MultiThemeTokenizationError.duplicateVariantName(theme.name)
     }
 
+    let names = themes.map(\.name)
     let aligned = try alignThemesTokenization(themes.map(\.tokens))
     return aligned[0].enumerated().map { lineIndex, line in
         line.enumerated().map { tokenIndex, firstToken in
             var variants: [String: TokenStyles] = [:]
             variants.reserveCapacity(themes.count)
             for themeIndex in themes.indices {
-                variants[themes[themeIndex].name] =
+                variants[names[themeIndex]] =
                     aligned[themeIndex][lineIndex][tokenIndex].styles
             }
 
@@ -214,7 +318,8 @@ public func mergeThemesTokenization(
                 explanation: includeExplanation
                     ? firstToken.explanation
                     : nil,
-                variants: variants
+                variants: variants,
+                variantNames: names
             )
         }
     }
@@ -237,23 +342,31 @@ private func validateThemeTokenizations(
 
     for lineIndex in referenceTheme.indices {
         let referenceLine = referenceTheme[lineIndex]
-        let referenceContent = referenceLine.flatMap { Array($0.content.utf16) }
         let referenceStart = referenceLine.first?.offset
+        let referenceLength = try validateOffsets(
+            referenceLine,
+            themeIndex: 0,
+            lineIndex: lineIndex
+        )
 
         for themeIndex in themes.indices {
             let line = themes[themeIndex][lineIndex]
-            try validateOffsets(
-                line,
-                themeIndex: themeIndex,
-                lineIndex: lineIndex
-            )
-
-            let content = line.flatMap { Array($0.content.utf16) }
-            guard content == referenceContent else {
-                throw MultiThemeTokenizationError.lineContentMismatch(
-                    theme: themeIndex,
-                    line: lineIndex
+            if themeIndex > 0 {
+                let length = try validateOffsets(
+                    line,
+                    themeIndex: themeIndex,
+                    lineIndex: lineIndex
                 )
+                // Compare content without materializing per-line arrays.
+                guard length == referenceLength,
+                      line.lazy.flatMap(\.content.utf16)
+                        .elementsEqual(referenceLine.lazy.flatMap(\.content.utf16))
+                else {
+                    throw MultiThemeTokenizationError.lineContentMismatch(
+                        theme: themeIndex,
+                        line: lineIndex
+                    )
+                }
             }
 
             if let referenceStart, let actualStart = line.first?.offset,
@@ -267,14 +380,13 @@ private func validateThemeTokenizations(
                 )
             }
 
-            let emptyShape = line.map { utf16Length($0.content) == 0 }
-            if referenceContent.isEmpty, line.count > 1 {
+            if referenceLength == 0, line.count > 1 {
                 throw MultiThemeTokenizationError.incompatibleEmptyTokens(
                     theme: themeIndex,
                     line: lineIndex
                 )
             }
-            if !referenceContent.isEmpty, emptyShape.contains(true) {
+            if referenceLength != 0, line.contains(where: \.content.isEmpty) {
                 throw MultiThemeTokenizationError.incompatibleEmptyTokens(
                     theme: themeIndex,
                     line: lineIndex
@@ -284,12 +396,14 @@ private func validateThemeTokenizations(
     }
 }
 
+/// Validates contiguous offsets and returns the line's UTF-16 length.
 private func validateOffsets(
     _ line: [ThemedToken],
     themeIndex: Int,
     lineIndex: Int
-) throws {
-    guard var expectedOffset = line.first?.offset else { return }
+) throws -> Int {
+    guard let firstOffset = line.first?.offset else { return 0 }
+    var expectedOffset = firstOffset
 
     for (tokenIndex, token) in line.enumerated() {
         guard token.offset == expectedOffset else {
@@ -301,26 +415,7 @@ private func validateOffsets(
                 actual: token.offset
             )
         }
-        expectedOffset += utf16Length(token.content)
+        expectedOffset += token.content.utf16.count
     }
-}
-
-private func splitToken(
-    _ token: ThemedToken,
-    atUTF16Offset offset: Int
-) -> (prefix: ThemedToken, suffix: ThemedToken) {
-    let units = Array(token.content.utf16)
-    precondition(offset >= 0 && offset < units.count)
-
-    var prefix = token
-    prefix.content = String(decoding: units[..<offset], as: UTF16.self)
-
-    var suffix = token
-    suffix.content = String(decoding: units[offset...], as: UTF16.self)
-    suffix.offset += offset
-    return (prefix, suffix)
-}
-
-private func utf16Length(_ value: String) -> Int {
-    value.utf16.count
+    return expectedOffset - firstOffset
 }

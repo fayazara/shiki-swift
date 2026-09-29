@@ -99,6 +99,12 @@ class DeterminismAndSafetyTests(unittest.TestCase):
             b'{\n  "a": {\n    "b": 1,\n    "d": 2\n  },\n  "z": 1\n}\n',
         )
 
+    def test_source_ordered_json_keeps_key_order_and_is_compact(self) -> None:
+        self.assertEqual(
+            importer.source_ordered_json({"z": 1, "a": {"d": 2, "b": 1}}),
+            b'{"z":1,"a":{"d":2,"b":1}}\n',
+        )
+
     def test_package_digest_includes_paths_and_contents(self) -> None:
         first = importer.package_content_digest({"a": b"bc", "ab": b"c"})
         second = importer.package_content_digest({"ab": b"c", "a": b"bc"})

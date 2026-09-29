@@ -1,4 +1,4 @@
-#if canImport(AppKit)
+#if os(macOS)
 import AppKit
 import ShikiCore
 
@@ -31,21 +31,34 @@ final class ShikiTextDocument {
     private let paragraphLimit = 256
     private let characterLimit = 262_144
 
-    init(result: TokensResult, font: NSFont) {
-        self.result = result
-        self.font = font
-        lineHeight = ceil(NSLayoutManager().defaultLineHeight(for: font))
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.minimumLineHeight = lineHeight
-        paragraphStyle.maximumLineHeight = lineHeight
-        paragraphStyle.tabStops = []
+    /// Widest extent the viewport lays out. Keeping coordinates below 2^22pt
+    /// preserves sub-point precision in Core Animation's 32-bit float
+    /// geometry. Longer rows are clipped (never wrapped over the next row);
+    /// their full text stays selectable and copyable.
+    nonisolated static let maximumWidth: CGFloat = 4_194_304
+
+    /// Font-derived measurements needed to build a layout off the main thread.
+    struct Metrics: Sendable {
+        var advance: CGFloat
+        var wideAdvance: CGFloat
+    }
+
+    /// The expensive, font-independent part of a document: the joined text,
+    /// row ranges, visual line starts, and a conservative width estimate.
+    struct Layout: Sendable {
+        var text: String
+        var rowRanges: [NSRange]
+        var visualLineOffsets: [Int]
+        var width: CGFloat
+    }
+
+    static func metrics(for font: NSFont) -> Metrics {
         let advance = max(1, (" " as NSString).size(withAttributes: [.font: font]).width)
-        paragraphStyle.defaultTabInterval = advance * 4
-        baseAttributes = [
-            .font: font,
-            .foregroundColor: result.fg.flatMap(ShikiRGBAColor.init(hex:))?.appKitColor ?? NSColor.textColor,
-            .paragraphStyle: paragraphStyle,
-        ]
+        return Metrics(advance: advance, wideAdvance: max(advance * 2.3, font.pointSize * 1.5))
+    }
+
+    nonisolated static func makeLayout(result: TokensResult, metrics: Metrics) -> Layout {
+        let advance = metrics.advance
         var text = ""
         var ranges: [NSRange] = []
         ranges.reserveCapacity(result.tokens.count)
@@ -58,12 +71,14 @@ final class ShikiTextDocument {
                 text.append(token.content)
                 offset += token.content.utf16.count
                 // A conservative width estimate avoids laying out hidden rows.
+                // Past the maximum the row is clipped, so stop measuring.
+                guard rowWidth < maximumWidth else { continue }
                 for scalar in token.content.unicodeScalars {
                     if scalar.value == 9 {
                         let tab = advance * 4
                         rowWidth = (floor(rowWidth / tab) + 1) * tab
                     } else {
-                        rowWidth += scalar.isASCII ? advance : max(advance * 2.3, font.pointSize * 1.5)
+                        rowWidth += scalar.isASCII ? advance : metrics.wideAdvance
                     }
                 }
             }
@@ -74,20 +89,46 @@ final class ShikiTextDocument {
             }
             ranges.append(NSRange(location: start, length: offset - start))
         }
-        source = text as NSString
-        rowRanges = ranges
         var lineOffsets = [0]
         var previousCR = false
-        for (offset, unit) in text.utf16.enumerated() {
+        var position = 0
+        for unit in text.utf16 {
+            position += 1
             if unit == 10 && previousCR {
-                lineOffsets[lineOffsets.count - 1] = offset + 1
+                lineOffsets[lineOffsets.count - 1] = position
             } else if unit == 10 || unit == 13 || unit == 0x85 || unit == 0x2028 || unit == 0x2029 {
-                lineOffsets.append(offset + 1)
+                lineOffsets.append(position)
             }
             previousCR = unit == 13
         }
-        visualLineOffsets = lineOffsets
-        estimatedWidth = width + advance * 2
+        return Layout(text: text, rowRanges: ranges, visualLineOffsets: lineOffsets, width: width)
+    }
+
+    convenience init(result: TokensResult, font: NSFont) {
+        self.init(result: result, font: font,
+                  layout: Self.makeLayout(result: result, metrics: Self.metrics(for: font)))
+    }
+
+    init(result: TokensResult, font: NSFont, layout: Layout) {
+        self.result = result
+        self.font = font
+        lineHeight = ceil(NSLayoutManager().defaultLineHeight(for: font))
+        let advance = Self.metrics(for: font).advance
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = lineHeight
+        paragraphStyle.maximumLineHeight = lineHeight
+        paragraphStyle.lineBreakMode = .byClipping
+        paragraphStyle.tabStops = []
+        paragraphStyle.defaultTabInterval = advance * 4
+        baseAttributes = [
+            .font: font,
+            .foregroundColor: result.fg.flatMap(ShikiRGBAColor.init(hex:))?.appKitColor ?? NSColor.textColor,
+            .paragraphStyle: paragraphStyle,
+        ]
+        source = layout.text as NSString
+        rowRanges = layout.rowRanges
+        visualLineOffsets = layout.visualLineOffsets
+        estimatedWidth = min(Self.maximumWidth, layout.width + advance * 2)
     }
 
     /// Also handles TextKit paragraph boundaries inside a token (CR, Unicode

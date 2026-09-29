@@ -18,13 +18,32 @@ public struct ShikiCodeView: View {
         self.contentPadding = contentPadding
     }
 
+    /// Re-renders only when the tokens or font change, not on every body
+    /// evaluation (e.g. unrelated parent state updates). Unchanged results
+    /// usually share storage, making the equality check O(1).
+    @State private var cache = RenderCache()
+
     public var body: some View {
         ScrollView(.horizontal) {
-            Text(result.attributedString(font: font))
+            Text(cache.attributedString(for: result, font: font))
                 .fixedSize(horizontal: true, vertical: true)
                 .padding(contentPadding)
         }
         .background(backgroundColor)
+    }
+
+    private final class RenderCache {
+        private var result: TokensResult?
+        private var font: Font?
+        private var value = AttributedString()
+
+        func attributedString(for result: TokensResult, font: Font) -> AttributedString {
+            if self.font == font, self.result == result { return value }
+            value = ShikiAttributedStringRenderer(font: font).render(result)
+            self.result = result
+            self.font = font
+            return value
+        }
     }
 
     private var backgroundColor: Color {

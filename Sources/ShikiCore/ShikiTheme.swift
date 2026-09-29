@@ -1,9 +1,53 @@
 import Foundation
 
 /// Whether a color theme is intended for a light or dark editor surface.
-public enum ShikiThemeType: String, Codable, Sendable {
-    case light
-    case dark
+///
+/// VS Code themes may carry other values (for example `hc`, `hcLight`, or
+/// `vs`). Like Shiki, any value is accepted and preserved; only `light` changes
+/// behavior, everything else is treated as dark.
+public struct ShikiThemeType: RawRepresentable, Codable, Hashable, Sendable,
+    ExpressibleByStringLiteral, CustomStringConvertible
+{
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(stringLiteral value: String) {
+        rawValue = value
+    }
+
+    public init(from decoder: any Decoder) throws {
+        rawValue = try decoder.singleValueContainer().decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let light = ShikiThemeType(rawValue: "light")
+    public static let dark = ShikiThemeType(rawValue: "dark")
+
+    /// Shiki only special-cases `type === 'light'`.
+    public var isLight: Bool { rawValue == "light" }
+
+    public var description: String { rawValue }
+}
+
+/// Source key order recorded while decoding JSON. It never participates in
+/// equality: two values that differ only in recorded order are equal.
+public struct JSONKeyOrderHint: Equatable, Sendable {
+    public var keys: [String]?
+
+    public init(_ keys: [String]? = nil) {
+        self.keys = keys
+    }
+
+    public static func == (lhs: JSONKeyOrderHint, rhs: JSONKeyOrderHint) -> Bool {
+        true
+    }
 }
 
 /// A TextMate rule's scope, preserving the shape used by VS Code theme JSON.
@@ -166,6 +210,25 @@ public struct ShikiTheme: Codable, Equatable, Sendable {
     public var include: String?
     public var semanticHighlighting: Bool?
     public var semanticTokenColors: [String: ShikiSemanticTokenColor]?
+
+    /// Source order of the `colors` keys, recovered by
+    /// ``decodePreservingKeyOrder(from:)``. Shiki numbers synthetic color
+    /// replacements in this order; without it keys are sorted.
+    public var colorsKeyOrder = JSONKeyOrderHint()
+
+    /// Decodes a theme and records JSON object key order where it matters.
+    public static func decodePreservingKeyOrder(
+        from data: Data,
+        decoder: JSONDecoder = JSONDecoder()
+    ) throws -> ShikiTheme {
+        var theme = try decoder.decode(ShikiTheme.self, from: data)
+        if theme.colors != nil {
+            theme.colorsKeyOrder = JSONKeyOrderHint(
+                JSONKeyOrder.keys(atPath: ["colors"], in: data)
+            )
+        }
+        return theme
+    }
 
     /// Shiki's source-level spelling for `foreground`.
     public var fg: String? {
@@ -457,19 +520,18 @@ private func encodeThemeColors<Key: CodingKey>(
     try container.encode(raw, forKey: key)
 }
 
-private let vscodeFallbackEditorForeground: [ShikiThemeType: String] = [
-    .light: "#333333",
-    .dark: "#bbbbbb",
-]
+private func vscodeFallbackEditorForeground(_ type: ShikiThemeType) -> String {
+    type.isLight ? "#333333" : "#bbbbbb"
+}
 
-private let vscodeFallbackEditorBackground: [ShikiThemeType: String] = [
-    .light: "#fffffe",
-    .dark: "#1e1e1e",
-]
+private func vscodeFallbackEditorBackground(_ type: ShikiThemeType) -> String {
+    type.isLight ? "#fffffe" : "#1e1e1e"
+}
 
 /// Normalizes a TextMate/VS Code theme using Shiki v4.4.3's precedence rules.
 public func normalizeTheme(_ rawTheme: ShikiTheme) -> ShikiResolvedTheme {
-    let type = rawTheme.type ?? .dark
+    // `theme.type ||= 'dark'`: an empty string is falsy in JavaScript.
+    let type = rawTheme.type.flatMap { $0.rawValue.isEmpty ? nil : $0 } ?? .dark
 
     var settings: [ShikiThemeRule]
     var tokenColors = rawTheme.tokenColors
@@ -517,17 +579,17 @@ public func normalizeTheme(_ rawTheme: ShikiTheme) -> ShikiResolvedTheme {
         }
 
         if !isTruthy(foreground) {
-            foreground = vscodeFallbackEditorForeground[type]
+            foreground = vscodeFallbackEditorForeground(type)
         }
         if !isTruthy(background) {
-            background = vscodeFallbackEditorBackground[type]
+            background = vscodeFallbackEditorBackground(type)
         }
     }
 
     // The branches above always produce nonempty values. The nil coalescing is
     // only a static guarantee for Swift and matches Shiki's final fallback.
-    let resolvedForeground = foreground ?? vscodeFallbackEditorForeground[type]!
-    let resolvedBackground = background ?? vscodeFallbackEditorBackground[type]!
+    let resolvedForeground = foreground ?? vscodeFallbackEditorForeground(type)
+    let resolvedBackground = background ?? vscodeFallbackEditorBackground(type)
 
     // JS checks the first rule's settings object and the truthiness of scope.
     let firstRuleIsGlobal = settings.first.map { rule in
@@ -606,7 +668,8 @@ public func normalizeTheme(_ rawTheme: ShikiTheme) -> ShikiResolvedTheme {
     }
 
     var colors = rawTheme.colors
-    for key in colors?.keys.map({ $0 }) ?? [] {
+    // `Object.keys` order: recorded JSON order, else deterministic sorting.
+    for key in orderedKeys(of: colors ?? [:], preferredOrder: rawTheme.colorsKeyOrder.keys) {
         guard isColorPatchedByShiki(key), let original = colors?[key] else {
             continue
         }

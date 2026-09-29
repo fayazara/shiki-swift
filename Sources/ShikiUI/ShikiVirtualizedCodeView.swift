@@ -1,4 +1,4 @@
-#if canImport(AppKit) && canImport(SwiftUI)
+#if os(macOS)
 import AppKit
 import ShikiCore
 import SwiftUI
@@ -68,16 +68,58 @@ struct ShikiTextViewport: NSViewRepresentable {
     func updateScrollView(_ scroll: NSScrollView, coordinator: Coordinator) {
         guard let view = scroll.documentView as? ShikiCodeDocumentView else { return }
         scroll.backgroundColor = result.bg.flatMap(ShikiRGBAColor.init(hex:))?.appKitColor ?? .clear
-        if coordinator.renderID != renderID || coordinator.document?.font.isEqual(font) != true {
-            let document = ShikiTextDocument(result: result, font: font)
-            coordinator.document = document
+        let padding = max(0, padding)
+        if coordinator.renderID != renderID || coordinator.font?.isEqual(font) != true {
             coordinator.renderID = renderID
-            view.replaceDocument(document, padding: max(0, padding))
-            scroll.contentView.scroll(to: .zero)
-            scroll.reflectScrolledClipView(scroll.contentView)
-        } else {
-            view.padding = max(0, padding)
+            coordinator.font = font
+            coordinator.build?.cancel()
+            coordinator.build = nil
+            if Self.buildsInBackground(result) {
+                // Joining and measuring a large result can take tens of
+                // milliseconds; keep showing the previous document meanwhile.
+                let result = result
+                let font = font
+                let metrics = ShikiTextDocument.metrics(for: font)
+                coordinator.build = Task { @MainActor [weak scroll, weak coordinator] in
+                    let layout = await Task.detached(priority: .userInitiated) {
+                        ShikiTextDocument.makeLayout(result: result, metrics: metrics)
+                    }.value
+                    guard !Task.isCancelled, let scroll, let coordinator else { return }
+                    coordinator.build = nil
+                    Self.install(ShikiTextDocument(result: result, font: font, layout: layout),
+                                 in: scroll, coordinator: coordinator, padding: padding)
+                }
+            } else {
+                Self.install(ShikiTextDocument(result: result, font: font),
+                             in: scroll, coordinator: coordinator, padding: padding)
+            }
+            return
         }
+        view.padding = padding
+        view.updateExtent()
+        view.layoutVisibleText()
+    }
+
+    /// Results above this many tokens build their document off the main thread.
+    static let backgroundTokenThreshold = 200_000
+
+    static func buildsInBackground(_ result: TokensResult) -> Bool {
+        var count = 0
+        for row in result.tokens {
+            count += row.count
+            if count > backgroundTokenThreshold { return true }
+        }
+        return false
+    }
+
+    private static func install(
+        _ document: ShikiTextDocument, in scroll: NSScrollView, coordinator: Coordinator, padding: CGFloat
+    ) {
+        guard let view = scroll.documentView as? ShikiCodeDocumentView else { return }
+        coordinator.document = document
+        view.replaceDocument(document, padding: padding)
+        scroll.contentView.scroll(to: .zero)
+        scroll.reflectScrolledClipView(scroll.contentView)
         view.updateExtent()
         view.layoutVisibleText()
     }
@@ -85,7 +127,10 @@ struct ShikiTextViewport: NSViewRepresentable {
     @MainActor
     final class Coordinator: NSObject {
         var renderID: AnyHashable?
+        var font: NSFont?
         var document: ShikiTextDocument?
+        var build: Task<Void, Never>?
+        deinit { build?.cancel() }
     }
 }
 
@@ -128,7 +173,8 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
         textView.isVerticallyResizable = false
         textView.textContainer?.widthTracksTextView = false
         textView.textContainer?.heightTracksTextView = false
-        textView.textContainer?.containerSize = NSSize(width: 1_000_000, height: 5_000_000)
+        // Rows never wrap: wider rows are clipped by the paragraph style.
+        textView.textContainer?.containerSize = NSSize(width: ShikiTextDocument.maximumWidth, height: 5_000_000)
         textView.textContainer?.lineFragmentPadding = 0
         textView.setAccessibilityElement(false)
         addSubview(textView)
@@ -158,7 +204,7 @@ final class ShikiCodeDocumentView: NSView, NSTextViewDelegate {
 
     func updateExtent() {
         guard let document, let scroll = enclosingScrollView else { return }
-        let size = NSSize(width: max(scroll.contentSize.width, min(1_000_000, document.estimatedWidth + padding * 2)),
+        let size = NSSize(width: max(scroll.contentSize.width, min(ShikiTextDocument.maximumWidth, document.estimatedWidth + padding * 2)),
                           height: max(scroll.contentSize.height, CGFloat(document.visualLineOffsets.count) * document.lineHeight + padding * 2))
         if frame.size != size { setFrameSize(size) }
     }
@@ -414,6 +460,15 @@ final class ShikiViewportTextView: NSTextView {
         if owner?.handleKey(event) != true { super.keyDown(with: event) }
     }
     override func copy(_ sender: Any?) { owner?.copy(sender) }
+    // Services, drags, and other pasteboard writers must see the full-document
+    // selection rather than the slice currently held by TextKit.
+    override var writablePasteboardTypes: [NSPasteboard.PasteboardType] { [.string] }
+    override func writeSelection(to pboard: NSPasteboard, types: [NSPasteboard.PasteboardType]) -> Bool {
+        owner?.writeSelection(to: pboard, types: types) ?? false
+    }
+    override func writeSelection(to pboard: NSPasteboard, type: NSPasteboard.PasteboardType) -> Bool {
+        owner?.writeSelection(to: pboard, types: [type]) ?? false
+    }
     override func selectAll(_ sender: Any?) { owner?.selectAll(sender) }
 }
 
