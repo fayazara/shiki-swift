@@ -16,12 +16,17 @@ Shiki, byte for byte (see [Parity with Shiki](#parity-with-shiki)).
 - Runtime registration of your own grammars and themes
 - `AttributedString` and SwiftUI rendering, plus a virtualized macOS code view
   that stays smooth on 100k-line files and 200k-character minified lines
+- **ShikiDiffs** (macOS): a native port of [@pierre/diffs](https://diffs.com):
+  split and unified diffs with word-level changes, multi-file reviews, merge
+  conflicts, an editable diff, and streaming, all rendered with AppKit and
+  highlighted by Shiki
 
 ## Contents
 
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Usage](#usage)
+- [Diffs (ShikiDiffs)](#diffs-shikidiffs)
 - [Long lines and time limits](#long-lines-and-time-limits)
 - [Performance](#performance)
 - [Parity with Shiki](#parity-with-shiki)
@@ -44,6 +49,7 @@ targets: [
         dependencies: [
             .product(name: "Shiki", package: "shiki-swift"),
             .product(name: "ShikiUI", package: "shiki-swift"), // optional
+            .product(name: "ShikiDiffs", package: "shiki-swift"), // optional, macOS
         ]
     ),
 ]
@@ -52,7 +58,7 @@ targets: [
 In Xcode, use **File ▸ Add Package Dependencies…** with the same URL.
 
 Supported platforms: macOS 13+, iOS/tvOS 16+, watchOS 9+, and visionOS 1+.
-`ShikiVirtualizedCodeView` is macOS only.
+`ShikiVirtualizedCodeView` and the ShikiDiffs views are macOS only.
 
 ## Quick start
 
@@ -311,6 +317,66 @@ Choose the presentation API for your use case:
 | `result.attributedString()` | A complete attributed string for your own text view | Supported Apple platforms |
 | `ShikiAttributedStringRenderer.render(_:lines:)` | Attributes for a range of token rows in a custom renderer | Supported Apple platforms |
 
+## Diffs (ShikiDiffs)
+
+`ShikiDiffs` is a native macOS port of Pierre's
+[`@pierre/diffs`](https://github.com/pierrecomputer/pierre/tree/main/packages/diffs)
+1.4.2, the renderer behind [diffs.com](https://diffs.com). It diffs two files
+(or parses a Git patch), highlights both sides with this package's Shiki, and
+draws the result with AppKit and CoreText: no web view or JavaScript.
+
+```swift
+import ShikiDiffs
+import SwiftUI
+
+let highlighter = DiffHighlighter()   // reuse it; it caches grammars and tokens
+
+var options = DiffRenderOptions()
+options.theme = "pierre-dark"          // or any Shiki theme id
+options.diffStyle = .split             // or .unified
+options.lineDiffType = .wordAlt        // inline changes: .word, .char, .none
+
+let document = try await highlighter.prepare(
+    oldFile: FileContents(name: "Engine.swift", contents: oldSource),
+    newFile: FileContents(name: "Engine.swift", contents: newSource),
+    options: options
+)
+
+// SwiftUI
+FileDiffView(document: document, options: options)
+// AppKit: NativeDiffView(frame:).render(document)
+```
+
+What it draws, all configurable through `DiffRenderOptions` and the
+interaction handlers:
+
+- **Split and unified layouts**, with the empty side of an insertion or
+  deletion filled by diagonal stripes, so the two columns stay aligned.
+- **Inline changes**: the changed words (or characters) inside a modified line
+  get a stronger background (`lineDiffType`).
+- **Change indicators**: colored bars, classic `+`/`−`, or none
+  (`diffIndicators`).
+- **Folded context**: unchanged stretches collapse into separators showing the
+  line count, expandable up, down, or entirely (`hunkSeparators`,
+  `expandUnchanged`).
+- **File headers** with change counts and rename/new/deleted status; custom
+  header, gutter, separator, and annotation views.
+- **Interaction**: line and token hover highlighting (`lineHoverHighlight`),
+  gutter line selection, token click callbacks, and copy.
+- **Themes**: any Shiki theme, plus the bundled Pierre Light and Pierre Dark;
+  `ThemedFileDiffView` follows the system appearance.
+
+Beyond a single diff, it includes `FileView` (a highlighted file), `CodeView`
+(a virtualized review of many files), `UnresolvedFileView` (merge conflicts
+with accept current/incoming/both), `EditableFileDiffView` and `EditorView`
+(native editing with undo, multiple carets, search, and predictions), and file
+streaming. Only what is on screen is laid out, including in long reviews.
+
+The views need macOS 13 or later; on macOS 13, smooth review scrolling uses a
+timer instead of a display link. [Documentation/Diffs](Documentation/Diffs/README.md)
+has the full API guide, parity record, and component contracts. ShikiDiffs was
+developed as the separate `swift-diffs` project and moved into this package.
+
 ## Long lines and time limits
 
 Shiki stops tokenizing a line after `tokenizeTimeLimit` milliseconds (default
@@ -465,7 +531,8 @@ each previewed in its own face, and applies the choice to every code view.
 | Streaming Chat | Incremental highlighting with `grammarState` continuation |
 | Token Inspector | Scopes and matching theme rules for each token |
 | Large Files | Timed tokenization of up to 100k lines or a 200k-character minified line in `ShikiVirtualizedCodeView`, with Shiki's 500 ms line limit toggle |
-| Large File Diff | A line diff of two generated versions of a 1k–100k line file, highlighted with Shiki and shown as one unified view in `ShikiVirtualizedCodeView`, with hunks folded to 3 lines of context |
+| Large File Diff | Two generated versions of a 1k–100k line file, diffed and highlighted by ShikiDiffs, in split or unified layout with folded context |
+| Diffs (16 examples) | The ShikiDiffs workbench: split/unified refactors, a 12,000-line JSON diff, patches with collapsed context, renamed/new/deleted files, Unicode, long lines, a highlighted file, a 60-file review, streaming, the native editor, an editable diff, merge conflicts, and a custom language. Every display and comparison option is in the inspector (toolbar button); theme and font follow the app unless overridden |
 
 Build it in the **Release** configuration to judge performance.
 
@@ -475,12 +542,25 @@ Build it in the **Release** configuration to judge performance.
 - `Shiki`: the high-level highlighter and bundled Shiki assets.
 - `ShikiUI`: optional SwiftUI and `AttributedString` adapters, including the
   virtualized macOS code viewport.
+- `ShikiDiffs`: macOS diff, file, review, merge-conflict, and editor views
+  (see [Diffs](#diffs-shikidiffs)). Its internal `CSDRegex` target wraps QuickJS's
+  regex engine for JavaScript-compatible search.
 
 ## Verification
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 ```
+
+ShikiDiffs' AppKit tests wait on real layout and highlighting with fixed
+deadlines, so run them sequentially (`Scripts/diffs/test.sh --no-parallel`, or
+`swift test --no-parallel --filter ShikiDiffsTests`); in parallel with the other
+suites, a debug build can miss a deadline. ShikiDiffs has 478 tests in 99 suites, including oracle fixtures recorded from
+the upstream TypeScript (patches, file diffs, hunk resolution, merge conflicts,
+editing, selection, search, history, predictions). The fixtures are stored
+LZMA-compressed (54 MB of JSON in under 1 MB). See
+[Documentation/Diffs](Documentation/Diffs/README.md#verify) for regenerating them and
+for the sanitizer check of the regex bridge.
 
 The native view tests mount a 10,000-line document and check lazy initial
 styling, bounded caches, bounded work on distant scroll jumps, resizing, global
