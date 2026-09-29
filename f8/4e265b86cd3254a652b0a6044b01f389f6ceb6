@@ -1,0 +1,23 @@
+Sources/ShikiUI/ShikiTextDocument.swift
+  s_6d3a898784554c::t_575e2e0b3f7532 18-19,36-48,132,203-279
+Sources/ShikiUI/ShikiVirtualizedCodeView.swift
+  s_6d3a898784554c::t_23c2ad73d6497b 145-158,214-216,243-247,249-250,252,259-262,267-293,295-303,305-306,340-341,350-351,358-389,407,521-529,531
+Tests/ShikiUITests/ShikiTextDocumentTests.swift
+  s_6d3a898784554c::t_aaf672e873adb4 315-390
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f84e265b86cd3254a652b0a6044b01f389f6ceb6",
+  "prompts": {},
+  "sessions": {
+    "s_6d3a898784554c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b5d0fe38-885c-4387-a0e0-603578ddf2f7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
