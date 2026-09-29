@@ -1,0 +1,491 @@
+Tests/ShikiDiffsTests/UpstreamVisualLayoutTests.swift
+  s_6d3a898784554c::t_135fc5cabfd04d 1-206
+Documentation/Diffs/UNRESOLVED-FILE-API.md
+  s_6d3a898784554c::t_532fb4b101e90c 1-25
+Tests/ShikiDiffsTests/FoldedLineNavigationTests.swift
+  s_6d3a898784554c::t_9e055ea0180287 1-80
+Sources/CSDRegex/Vendor/libunicode-table.h
+  s_6d3a898784554c::t_c8763571754aa0 1-5206
+Tests/ShikiDiffsTests/ResolutionValidationTests.swift
+  s_6d3a898784554c::t_e756ff54c23ba5 1-47
+Sources/CSDRegex/Vendor/cutils.c
+  s_6d3a898784554c::t_a6480876eeac32 1-641
+Sources/CSDRegex/Bridge.c
+  s_6d3a898784554c::t_f6a97fe60e060c 1-113
+Sources/ShikiDiffs/Resources/Themes/NOTICE.md
+  s_6d3a898784554c::t_3422651133185a 1-32
+Tests/ShikiDiffsTests/InitialEditStateTests.swift
+  s_6d3a898784554c::t_bcb5af06e25ac1 1-176
+Sources/ShikiDiffs/PatchUtilities.swift
+  s_6d3a898784554c::t_734b0e7f78ed3c 1-29
+Documentation/Diffs/regexp-manifest.json
+  s_6d3a898784554c::t_a86235f6b35229 1-16
+Documentation/Diffs/upstream-manifest.json
+  s_6d3a898784554c::t_be73a60df3bc59 1-224
+Sources/ShikiDiffs/RenderingModel.swift
+  s_6d3a898784554c::t_a39e0b58964553 1-925
+Sources/ShikiDiffs/FileHeightIndex.swift
+  s_6d3a898784554c::t_bc19e980f6244a 1-37
+Tests/ShikiDiffsTests/WheelScrollTests.swift
+  s_6d3a898784554c::t_eca7ffb8b9a6ad 1-92
+Sources/ShikiDiffs/TrimPatchContext.swift
+  s_6d3a898784554c::t_3c004fe086e4ee 1-52
+Sources/ShikiDiffs/FileEquality.swift
+  s_6d3a898784554c::t_23699d3ee8cd2c 1-17
+Tests/ShikiDiffsTests/EditHistoryTests.swift
+  s_6d3a898784554c::t_b8694128f91139 1-147
+Package.swift
+  s_6d3a898784554c::t_1a38bdc7668eed 18-19,115-125,147-151
+Documentation/Diffs/NAMED-API-AUDIT.md
+  s_6d3a898784554c::t_232c538693408f 1-124
+Tests/ShikiDiffsTests/GutterUtilityTests.swift
+  s_6d3a898784554c::t_f060c5509fe564 1-206
+Tests/ShikiDiffsTests/LineIndexTests.swift
+  s_6d3a898784554c::t_24735efac005ca 1-103
+Tests/ShikiDiffsTests/TokenGeometryTests.swift
+  s_6d3a898784554c::t_4d0d79bf54e1dd 1-53
+Tests/ShikiDiffsTests/IncrementalHighlightTests.swift
+  s_6d3a898784554c::t_1159b84760a3da 1-92
+Documentation/Diffs/ANNOTATION-TRACKING.md
+  s_6d3a898784554c::t_497e9814b5b8b7 1-36
+Sources/ShikiDiffs/NativeFileView.swift
+  s_6d3a898784554c::t_87a2c7ddd58c3f 1-158
+Tests/ShikiDiffsTests/ExpansionStateTests.swift
+  s_6d3a898784554c::t_6522b18753b1e7 1-121
+Documentation/Diffs/native-api-dispositions.json
+  s_6d3a898784554c::t_fc28b31be859cc 1-1123
+Sources/CSDRegex/Vendor/libregexp.h
+  s_6d3a898784554c::t_34ecf5428ee2b2 1-65
+THIRD_PARTY_NOTICES.md
+  s_6d3a898784554c::t_a96e85c27e5e57 15-18,25-54
+Scripts/diffs/generate-conflict-oracle.ts
+  s_6d3a898784554c::t_baacb9b3e8cf8a 1-43
+Tests/ShikiDiffsTests/AttachedEditorTests.swift
+  s_6d3a898784554c::t_6d8f51bf83a3a8 1-580
+Sources/ShikiDiffs/DiffInteractions.swift
+  s_6d3a898784554c::t_4699addd22a8ee 1-239
+Sources/ShikiDiffs/VirtualWindow.swift
+  s_6d3a898784554c::t_36e0da7af69783 1-38
+Tests/ShikiDiffsTests/PredictionSuffixStyleTests.swift
+  s_6d3a898784554c::t_11bc3cbc4b7626 1-59
+Documentation/Diffs/IMPLEMENTATION-REMAINING.md
+  s_6d3a898784554c::t_63a5a939196725 1-81
+Scripts/diffs/generate-patch-oracle.ts
+  s_6d3a898784554c::t_8373cc06c53f2b 1-62
+Scripts/diffs/generate-native-symbols.py
+  s_6d3a898784554c::t_fe02bfcdbc3a20 1-156
+Sources/ShikiDiffs/Resources/Themes/pierre-dark.json
+  s_6d3a898784554c::t_2cf39e5c65c79a 1-1961
+Documentation/Diffs/EDIT-PREDICTION.md
+  s_6d3a898784554c::t_8952d7f6c1854c 1-107
+Tests/ShikiDiffsTests/CoreTests.swift
+  s_6d3a898784554c::t_f3fa4f9e5c0dbd 1-250
+Tests/ShikiDiffsTests/FixtureSupport.swift
+  s_6d3a898784554c::t_fbb7765730d794 1-35
+Sources/ShikiDiffs/ThemeEquality.swift
+  s_6d3a898784554c::t_e400c53d303d57 1-26
+Sources/ShikiDiffs/PostRenderPhase.swift
+  s_6d3a898784554c::t_6a4b884313e78f 1-3
+LICENSES/pierre-diffs-Apache-2.0.txt
+  s_6d3a898784554c::t_2031f0e965d182 1-189
+Sources/ShikiDiffs/HunkData.swift
+  s_6d3a898784554c::t_9a324d2613f8e2 1-80
+Sources/ShikiDiffs/EditorOverlays.swift
+  s_6d3a898784554c::t_b80c2ee3e1bbb0 1-90
+Tests/ShikiDiffsTests/ViewportTests.swift
+  s_6d3a898784554c::t_fc66acaa5e14cb 1-267
+Tests/ShikiDiffsTests/EditPredictionTests.swift
+  s_6d3a898784554c::t_d8aef1ae0487b1 1-105
+Scripts/diffs/generate-resolution-validation-oracle.ts
+  s_6d3a898784554c::t_1ac9bc1f9947af 1-34
+Scripts/diffs/generate-clipboard-oracle.ts
+  s_6d3a898784554c::t_9d180d263139ec 1-16
+Tests/ShikiDiffsTests/EditingTests.swift
+  s_6d3a898784554c::t_46f7feb9064f1d 1-53
+Sources/CSDRegex/Vendor/cutils.h
+  s_6d3a898784554c::t_6dfaa4394e606e 1-457
+Sources/ShikiDiffs/DiffAlgorithm.swift
+  s_6d3a898784554c::t_47547837fd23d3 1-218
+Sources/ShikiDiffs/EditorWidgets.swift
+  s_6d3a898784554c::t_b3a184bf4016d2 1-87
+Tests/ShikiDiffsTests/LazyThemeTests.swift
+  s_6d3a898784554c::t_7b77dcf19f20ff 1-177
+Sources/ShikiDiffs/DiffTarget.swift
+  s_6d3a898784554c::t_7f4d8a89975b5a 1-17
+Documentation/Diffs/NATIVE-PLATFORM-CONTRACTS.md
+  s_6d3a898784554c::t_030679374a964d 1-24
+Scripts/diffs/generate-hydration-oracle.ts
+  s_6d3a898784554c::t_885278506b262f 1-56
+Sources/ShikiDiffs/NativeEditor.swift
+  s_6d3a898784554c::t_d2a15c94a1e6b9 1-226
+Scripts/diffs/generate-inline-oracle.ts
+  s_6d3a898784554c::t_70d944fe94664a 1-35
+Sources/CSDRegex/Vendor/libregexp.c
+  s_6d3a898784554c::t_ae07a9e3280c73 1-3448
+Tests/ShikiDiffsTests/SharedTokenChunkTests.swift
+  s_6d3a898784554c::t_1b5f03b4d1ef3e 1-161
+Sources/ShikiDiffs/NativeDiffView.swift
+  s_6d3a898784554c::t_4c4b6817416d3d 1-2850
+Sources/ShikiDiffs/Resolution.swift
+  s_6d3a898784554c::t_51ab508ccc58d8 1-92
+Scripts/diffs/generate-prediction-oracle.ts
+  s_6d3a898784554c::t_5dc5533e9d6a6f 1-61
+Sources/ShikiDiffs/NativeUnresolvedFileView.swift
+  s_6d3a898784554c::t_0a66727adc37c8 1-185
+Tests/ShikiDiffsTests/FileHeightIndexTests.swift
+  s_6d3a898784554c::t_ba70cdc97aa56f 1-27
+Tests/ShikiDiffsTests/CSSVariablesThemeTests.swift
+  s_6d3a898784554c::t_b7b61645a8a482 1-61
+Documentation/Diffs/COMPLETION-CHECKLIST.md
+  s_6d3a898784554c::t_e8bdda175059fd 1-249
+Documentation/Diffs/SHARED-HIGHLIGHTER-CONTRACTS.md
+  s_6d3a898784554c::t_ae985aa65c4aed 1-45
+Sources/ShikiDiffs/CodeView.swift
+  s_6d3a898784554c::t_96c5ab9a4db86a 1-1467
+Tests/ShikiDiffsTests/WrapTests.swift
+  s_6d3a898784554c::t_763932a04c1e77 1-96
+Tests/ShikiDiffsTests/ScrollSpringTests.swift
+  s_6d3a898784554c::t_8fad304cb12a86 1-488
+Sources/ShikiDiffs/TokenInteractionIndex.swift
+  s_6d3a898784554c::t_188836ea743502 1-35
+Sources/ShikiDiffs/LineIndexes.swift
+  s_6d3a898784554c::t_fbdd23974491bd 1-68
+Sources/ShikiDiffs/DiffEditor.swift
+  s_6d3a898784554c::t_ff239d4e0978c8 1-1477
+Sources/CSDRegex/Vendor/libunicode.c
+  s_6d3a898784554c::t_b0a2bd1cd1f411 1-2124
+Sources/ShikiDiffs/EditorComments.swift
+  s_6d3a898784554c::t_efabf7b0aaeb4b 1-199
+Documentation/Diffs/DEMO-VALIDATION.md
+  s_6d3a898784554c::t_44103deeb354ab 1-1461
+Tests/RegexBridge/regex_sanitize.c
+  s_6d3a898784554c::t_b0a88635d77cef 1-24
+Tests/ShikiDiffsTests/FileEqualityTests.swift
+  s_6d3a898784554c::t_7ed329b5310205 1-24
+Tests/ShikiDiffsTests/ConflictTests.swift
+  s_6d3a898784554c::t_daa505122b32da 1-40
+Sources/ShikiDiffs/Streaming.swift
+  s_6d3a898784554c::t_3cd9224290204e 1-229
+Tests/ShikiDiffsTests/EditorKeymapTests.swift
+  s_6d3a898784554c::t_991a9eb27955ed 1-51
+Documentation/Diffs/BASE-OPTIONS-CONTRACTS.md
+  s_6d3a898784554c::t_a85219f4761116 1-29
+Tests/ShikiDiffsTests/PatchUtilityTests.swift
+  s_6d3a898784554c::t_45f374cd1af841 1-46
+Tests/ShikiDiffsTests/ManagedReviewEditingTests.swift
+  s_6d3a898784554c::t_b872ab7ad030a0 1-108
+Sources/ShikiDiffs/UnresolvedFileView.swift
+  s_6d3a898784554c::t_b5c81b3f58100b 1-108
+Tests/ShikiDiffsTests/EditorHighlighterTests.swift
+  s_6d3a898784554c::t_18c412a9d3ab86 1-77
+Sources/ShikiDiffs/MergeConflicts.swift
+  s_6d3a898784554c::t_6d33ce4d3d175d 1-250
+Tests/ShikiDiffsTests/TokenInteractionTests.swift
+  s_6d3a898784554c::t_7bee20cec4986f 1-187
+Sources/ShikiDiffs/RowHeightIndex.swift
+  s_6d3a898784554c::t_37c073135f6979 1-83
+Sources/ShikiDiffs/MultipleSelections.swift
+  s_6d3a898784554c::t_647e7fa3fb9523 1-120
+Sources/ShikiDiffs/EditHistory.swift
+  s_6d3a898784554c::t_45f7981d1eb16a 1-168
+Tests/ShikiDiffsTests/NoNewlineLayoutTests.swift
+  s_6d3a898784554c::t_0173d37c13258f 1-45
+Sources/ShikiDiffs/EditorPredictionController.swift
+  s_6d3a898784554c::t_ff04f4f9bc4f14 1-168
+Documentation/Diffs/DEMO-FEATURE-MAP.md
+  s_6d3a898784554c::t_06518530540f96 1-46
+Sources/ShikiDiffs/EditorSelection.swift
+  s_6d3a898784554c::t_ccd9843e326e33 1-200
+Scripts/diffs/test-api-inventory.ts
+  s_6d3a898784554c::t_c55e40cf4b253f 1-48
+Scripts/diffs/compress-fixtures.swift
+  s_6d3a898784554c::t_322f44155924a8 1-22
+Tests/ShikiDiffsTests/NativeEditorNavigationTests.swift
+  s_6d3a898784554c::t_131fee160211e9 1-87
+Sources/ShikiDiffs/TextDocument.swift
+  s_6d3a898784554c::t_1bcbb6bf0b2522 1-404
+Sources/ShikiDiffs/EditorLineCommands.swift
+  s_6d3a898784554c::t_71a6025b27ee96 1-100
+Sources/ShikiDiffs/FoldedLineNavigation.swift
+  s_6d3a898784554c::t_c2d19a4cc86bf5 1-101
+Sources/ShikiDiffs/TokenLineGeometry.swift
+  s_6d3a898784554c::t_5858c3ebb5de02 1-40
+Sources/ShikiDiffs/EditSessionHunks.swift
+  s_6d3a898784554c::t_4661091ab4ce97 1-375
+Tests/ShikiDiffsTests/EditSessionTests.swift
+  s_6d3a898784554c::t_f776dc512db9e4 1-109
+Sources/ShikiDiffs/DiffHeaderView.swift
+  s_6d3a898784554c::t_ffcca47d6a17c8 1-174
+Tests/ShikiDiffsTests/AnnotationTests.swift
+  s_6d3a898784554c::t_0b7574364dc330 1-824
+Tests/ShikiDiffsTests/TokenTransformStreamTests.swift
+  s_6d3a898784554c::t_2c8c836725f03a 1-83
+LICENSES/jsdiff-BSD-3-Clause.txt
+  s_6d3a898784554c::t_6d02df79278639 1-29
+Sources/ShikiDiffs/CSSVariablePrefix.swift
+  s_6d3a898784554c::t_25ff58e4310e5f 1-11
+Sources/CSDRegex/Vendor/libregexp-opcode.h
+  s_6d3a898784554c::t_ef6be8a264b457 1-73
+Scripts/diffs/inventory-upstream-api.ts
+  s_6d3a898784554c::t_9adba36baa715a 1-96
+Sources/ShikiDiffs/SeparatorRenderer.swift
+  s_6d3a898784554c::t_e46fbabd804fdd 1-15
+Tests/ShikiDiffsTests/BulkResolutionTests.swift
+  s_6d3a898784554c::t_d61641c5d25fc1 1-78
+Tests/ShikiDiffsTests/HighlightingTests.swift
+  s_6d3a898784554c::t_85a9cf379b17d3 1-127
+Tests/ShikiDiffsTests/FileAnnotationHelpersTests.swift
+  s_6d3a898784554c::t_d2813400aeeac5 1-21
+Tests/ShikiDiffsTests/LoadingAndThemeTests.swift
+  s_6d3a898784554c::t_c6b5c08eeb71e3 1-115
+Scripts/diffs/generate-trailing-context-oracle.ts
+  s_6d3a898784554c::t_c0daba7b08597b 1-17
+Tests/ShikiDiffsTests/EditorOverlayTests.swift
+  s_6d3a898784554c::t_32bd049fbbcbc1 1-83
+Scripts/diffs/generate-options-oracle.ts
+  s_6d3a898784554c::t_65822a0f3f1965 1-36
+Sources/CSDRegex/Vendor/libunicode.h
+  s_6d3a898784554c::t_8d0252b0fac6fd 1-196
+Sources/ShikiDiffs/SharedTokenChunks.swift
+  s_6d3a898784554c::t_fc477ffa278aae 1-112
+Sources/ShikiDiffs/ConflictActionRenderer.swift
+  s_6d3a898784554c::t_1d70739fb916d1 1-14
+Tests/ShikiDiffsTests/EditorSearchTests.swift
+  s_6d3a898784554c::t_293a2f8617a44a 1-57
+Scripts/diffs/generate-editor-oracle.ts
+  s_6d3a898784554c::t_b62b52e546c823 1-93
+Sources/ShikiDiffs/TokenCache.swift
+  s_6d3a898784554c::t_a1051443042d99 1-41
+Sources/ShikiDiffs/ScrollSpring.swift
+  s_6d3a898784554c::t_8a1e0445074ef0 1-39
+Scripts/diffs/generate-search-oracle.ts
+  s_6d3a898784554c::t_3219c51a985ab5 1-19
+Tests/ShikiDiffsTests/DiffSymbolTests.swift
+  s_6d3a898784554c::t_b427b0e6503cb8 1-37
+LICENSES/QuickJS-MIT.txt
+  s_6d3a898784554c::t_06b4b93e3c7f9f 1-22
+Tests/ShikiDiffsTests/StandaloneHeaderTests.swift
+  s_6d3a898784554c::t_fde6e27fe2a9a4 1-76
+Documentation/Diffs/DATA-CONTRACTS.md
+  s_6d3a898784554c::t_6ec83803ccc245 1-51
+Tests/ShikiDiffsTests/PreviewTests.swift
+  s_6d3a898784554c::t_3be3f6d5b7a01d 1-126
+Sources/ShikiDiffs/TrailingContext.swift
+  s_6d3a898784554c::t_49dfad3f2c65f7 1-23
+Sources/ShikiDiffs/EditStateManager.swift
+  s_6d3a898784554c::t_9d2e633aebb5ec 1-133
+Sources/CSDRegex/libregexp.c
+  s_6d3a898784554c::t_5c2e4272ae2a24 1-2
+Sources/ShikiDiffs/EditorClipboard.swift
+  s_6d3a898784554c::t_32f23938d2ca4b 1-151
+Tests/ShikiDiffsTests/RowHeightIndexTests.swift
+  s_6d3a898784554c::t_cea38b7ee20faf 1-42
+Scripts/diffs/generate-comment-oracle.ts
+  s_6d3a898784554c::t_04a120e8b8a9bc 1-27
+Documentation/Diffs/COMPONENT-CONTRACTS.md
+  s_6d3a898784554c::t_09509de0c9d34d 1-131
+Tests/ShikiDiffsTests/HunkDataTests.swift
+  s_6d3a898784554c::t_0d2918d026c672 1-124
+Sources/ShikiDiffs/Resources/Themes/pierre-light.json
+  s_6d3a898784554c::t_94376f5524f1ca 1-1961
+Tests/ShikiDiffsTests/EditorCommandTests.swift
+  s_6d3a898784554c::t_5cde73a95d9c1b 1-57
+Documentation/Diffs/upstream-api-inventory.json
+  s_6d3a898784554c::t_4bca2a7e0a9b60 1-31589
+Scripts/diffs/generate-line-command-oracle.ts
+  s_6d3a898784554c::t_c92ef2f4816daa 1-34
+Scripts/diffs/test-regexp-bridge.sh
+  s_6d3a898784554c::t_e7f49534f3f069 1-10
+Scripts/diffs/generate-navigation-oracle.ts
+  s_6d3a898784554c::t_7bc64148413dae 1-29
+Tests/ShikiDiffsTests/ComponentControlTests.swift
+  s_6d3a898784554c::t_6b0a49e6e46b45 1-66
+Sources/ShikiDiffs/IncrementalTokens.swift
+  s_6d3a898784554c::t_1ce5d6b6e20b31 1-94
+Sources/CSDRegex/Vendor/LICENSE
+  s_6d3a898784554c::t_c6d00d8f6b606e 1-22
+Tests/ShikiDiffsTests/RenderOptionEqualityTests.swift
+  s_6d3a898784554c::t_d47dff0c6dfddf 1-29
+Scripts/diffs/generate-selection-oracle.ts
+  s_6d3a898784554c::t_98ee76375c8d2e 1-56
+Sources/ShikiDiffs/DiffAnnotationRenderer.swift
+  s_6d3a898784554c::t_57d4868118c201 1-11
+Tests/ShikiDiffsTests/EditorHostCustomizationTests.swift
+  s_6d3a898784554c::t_f540317c14d2f9 1-222
+Scripts/diffs/generate-history-oracle.ts
+  s_6d3a898784554c::t_1f8db909c82b7e 1-46
+Scripts/diffs/generate-diff-oracle.ts
+  s_6d3a898784554c::t_3f2e7cb5ac0f76 1-39
+Tests/ShikiDiffsTests/DiffTargetTests.swift
+  s_6d3a898784554c::t_537fb26a1f797a 1-26
+Sources/ShikiDiffs/ColorMix.swift
+  s_6d3a898784554c::t_8c0f98307deee6 1-42
+Tests/ShikiDiffsTests/AnnotationChangeTests.swift
+  s_6d3a898784554c::t_d365cdd73cb0dc 1-106
+Sources/ShikiDiffs/Observation.swift
+  s_6d3a898784554c::t_f99ddf362c3582 1-31
+Tests/ShikiDiffsTests/BatchEditingTests.swift
+  s_6d3a898784554c::t_4889b6dcac61aa 1-51
+Sources/ShikiDiffs/EditorSearch.swift
+  s_6d3a898784554c::t_79e9ec3c0531e5 1-141
+Sources/ShikiDiffs/EditorSearchController.swift
+  s_6d3a898784554c::t_1f9ae4815e7a4e 1-211
+Tests/ShikiDiffsTests/StreamConfigurationTests.swift
+  s_6d3a898784554c::t_591250613b7dd4 1-97
+Tests/ShikiDiffsTests/LazyLanguageTests.swift
+  s_6d3a898784554c::t_50c77f78bb6088 1-222
+Sources/ShikiDiffs/ThemedDiffView.swift
+  s_6d3a898784554c::t_00240dfcd90fe5 1-132
+Sources/ShikiDiffs/ReducedMotion.swift
+  s_6d3a898784554c::t_bd650f1b5ba8bc 1-9
+Tests/ShikiDiffsTests/EditorClipboardTests.swift
+  s_6d3a898784554c::t_e84b2358191429 1-27
+Sources/ShikiDiffs/EditorKeymap.swift
+  s_6d3a898784554c::t_3f1ae8994a1700 1-92
+Tests/ShikiDiffsTests/AnnotationShapeTests.swift
+  s_6d3a898784554c::t_1bad9907ff4ea3 1-96
+Sources/ShikiDiffs/FileLoading.swift
+  s_6d3a898784554c::t_41cd1182cfe27d 1-26
+Documentation/Diffs/EQUALITY-CONTRACTS.md
+  s_6d3a898784554c::t_bc2ec9b8c72ba6 1-22
+Scripts/diffs/generate-multiselection-oracle.ts
+  s_6d3a898784554c::t_ce34017a511a3e 1-34
+Sources/ShikiDiffs/Selection.swift
+  s_6d3a898784554c::t_560691349d320e 1-95
+Tests/ShikiDiffsTests/DiffOptionsTests.swift
+  s_6d3a898784554c::t_1087266a00dce8 1-51
+Documentation/Diffs/PARITY.md
+  s_6d3a898784554c::t_22b1d3dae26abf 1-243
+Tests/ShikiDiffsTests/BracketMatchingTests.swift
+  s_6d3a898784554c::t_b1605d87ea3904 1-90
+Tests/ShikiDiffsTests/MultipleSelectionTests.swift
+  s_6d3a898784554c::t_94744a1eb63d53 1-180
+Sources/ShikiDiffs/OrderedLoadResults.swift
+  s_6d3a898784554c::t_82eb8c8f69a953 1-40
+Sources/ShikiDiffs/CSSVariablesTheme.swift
+  s_6d3a898784554c::t_1299693f0e71a1 1-112
+Documentation/Diffs/EDITOR-HOST-CUSTOMIZATION.md
+  s_6d3a898784554c::t_713c8ad25dd5ad 1-107
+Sources/ShikiDiffs/BracketMatching.swift
+  s_6d3a898784554c::t_c9d677348db732 1-77
+Tests/ShikiDiffsTests/NativeEditorStyleTests.swift
+  s_6d3a898784554c::t_8ae9a597b04d37 1-47
+Sources/CSDRegex/include/SwiftDiffsRegex.h
+  s_6d3a898784554c::t_c9c9fdff545528 1-12
+Documentation/Diffs/RESOURCE-RESOLVER-CONTRACTS.md
+  s_6d3a898784554c::t_0a278d1b0a55cb 1-58
+Sources/ShikiDiffs/Alignment.swift
+  s_6d3a898784554c::t_c5884c2c8b22fd 1-106
+Tests/ShikiDiffsTests/SelectionTests.swift
+  s_6d3a898784554c::t_f69589610b1e6b 1-68
+Scripts/diffs/generate-css-theme-oracle.ts
+  s_6d3a898784554c::t_434cac38c19cfb 1-14
+Tests/ShikiDiffsTests/SearchControllerTests.swift
+  s_6d3a898784554c::t_7efea57ed022bd 1-157
+Tests/ShikiDiffsTests/ThemeEqualityTests.swift
+  s_6d3a898784554c::t_f753f2715dd339 1-25
+Tests/ShikiDiffsTests/PostRenderTests.swift
+  s_6d3a898784554c::t_5d5d2ab1e350e2 1-124
+Documentation/Diffs/EDITOR-INPUT.md
+  s_6d3a898784554c::t_176f0d2a2455b4 1-157
+Tests/ShikiDiffsTests/FallbackColorTests.swift
+  s_6d3a898784554c::t_4e90e2dc6a24d9 1-50
+Tests/ShikiDiffsTests/EditorFocusTests.swift
+  s_6d3a898784554c::t_35b79135eb352a 1-62
+Tests/ShikiDiffsTests/UnresolvedFileViewTests.swift
+  s_6d3a898784554c::t_8f50896e6b4211 1-294
+Sources/ShikiDiffs/WrapLayout.swift
+  s_6d3a898784554c::t_3e997d9c109722 1-55
+Sources/ShikiDiffs/AnnotationShape.swift
+  s_6d3a898784554c::t_9da72a6699f69e 1-54
+Tests/ShikiDiffsTests/SeparatorRendererTests.swift
+  s_6d3a898784554c::t_afa6639289b2c5 1-145
+Sources/ShikiDiffs/RenderOptionEquality.swift
+  s_6d3a898784554c::t_cba487046cbcb3 1-42
+Sources/ShikiDiffs/Models.swift
+  s_6d3a898784554c::t_7e28816437d1be 1-149
+Tests/ShikiDiffsTests/ConflictActionRendererTests.swift
+  s_6d3a898784554c::t_59380996759020 1-121
+Documentation/Diffs/README.md
+  s_6d3a898784554c::t_19931cc30838e0 1-1194
+Tests/ShikiDiffsTests/ReviewCollapseTests.swift
+  s_6d3a898784554c::t_23e3ed7ba4027f 1-76
+Tests/ShikiDiffsTests/AnnotationEqualityTests.swift
+  s_6d3a898784554c::t_6cf7d8725e6eda 1-39
+Tests/ShikiDiffsTests/EditorSelectionTests.swift
+  s_6d3a898784554c::t_2fbc34af1c2216 1-67
+Tests/ShikiDiffsTests/TextDocumentContractTests.swift
+  s_6d3a898784554c::t_c44ca75fa4229c 1-40
+Sources/ShikiDiffs/PatchParser.swift
+  s_6d3a898784554c::t_c86b3d6a0211a3 1-146
+Sources/CSDRegex/libunicode.c
+  s_6d3a898784554c::t_c79ded363494a6 1-2
+Tests/ShikiDiffsTests/ReviewLifecycleCallbackTests.swift
+  s_6d3a898784554c::t_0d5d36db316620 1-59
+Sources/ShikiDiffs/TokenTransformStream.swift
+  s_6d3a898784554c::t_c2233198361480 1-74
+Sources/CSDRegex/cutils.c
+  s_6d3a898784554c::t_d686fd6b106a53 1-2
+Sources/ShikiDiffs/LineAnnotationMetadata.swift
+  s_6d3a898784554c::t_683c1ac925b097 1-28
+Tests/ShikiDiffsTests/EditorPredictionIntegrationTests.swift
+  s_6d3a898784554c::t_b51910e78c66e6 1-189
+Scripts/diffs/generate-annotation-oracle.ts
+  s_6d3a898784554c::t_3f2222592c90ad 1-35
+Tests/ShikiDiffsTests/HeaderTests.swift
+  s_6d3a898784554c::t_a7156a4d412f60 1-298
+Tests/ShikiDiffsTests/InlineParityTests.swift
+  s_6d3a898784554c::t_28a3f07006dcc2 1-16
+Tests/ShikiDiffsTests/HydrationTests.swift
+  s_6d3a898784554c::t_80f44399e5c00f 1-77
+Sources/ShikiDiffs/AnnotationTracking.swift
+  s_6d3a898784554c::t_8b116ea3c020be 1-40
+Tests/ShikiDiffsTests/EditStateManagerTests.swift
+  s_6d3a898784554c::t_81ab6a4bfb22b2 1-85
+Tests/ShikiDiffsTests/StreamCloneTests.swift
+  s_6d3a898784554c::t_1a77115d45b936 1-58
+Sources/ShikiDiffs/Languages.swift
+  s_6d3a898784554c::t_f065e3787bcab0 1-400
+Sources/ShikiDiffs/DiffSymbol.swift
+  s_6d3a898784554c::t_adc85efae40f3e 1-345
+Sources/ShikiDiffs/EditPrediction.swift
+  s_6d3a898784554c::t_99a5676f5268f5 1-340
+Sources/ShikiDiffs/UnresolvedFile.swift
+  s_6d3a898784554c::t_612f8c45b813b8 1-50
+Tests/ShikiDiffsTests/InteractionTests.swift
+  s_6d3a898784554c::t_d0bb758596cfa4 1-627
+Documentation/Diffs/RENDERER-CONTRACTS.md
+  s_6d3a898784554c::t_f5142e79b5f321 1-42
+Sources/ShikiDiffs/FileStreamView.swift
+  s_6d3a898784554c::t_3854a6eadb85a0 1-196
+Tests/ShikiDiffsTests/VirtualWindowTests.swift
+  s_6d3a898784554c::t_668d1b64c507f3 1-882
+Sources/ShikiDiffs/FileAnnotations.swift
+  s_6d3a898784554c::t_2673d23468679e 1-39
+Documentation/Diffs/EXPORT-AUDIT.md
+  s_6d3a898784554c::t_53958ef21cdd53 1-465
+Sources/CSDRegex/Prefix.h
+  s_6d3a898784554c::t_cb72ab85098c2a 1-51
+Sources/ShikiDiffs/NativeEditorNavigation.swift
+  s_6d3a898784554c::t_f5038a210a5c32 1-51
+Scripts/diffs/test.sh
+  s_6d3a898784554c::t_97f26e33e4096f 1-7
+Tests/ShikiDiffsTests/FileStreamViewTests.swift
+  s_6d3a898784554c::t_0e3869c8697de6 1-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c77f92dee6a28581938bd5309e2b88e78250175a",
+  "prompts": {},
+  "sessions": {
+    "s_6d3a898784554c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b5d0fe38-885c-4387-a0e0-603578ddf2f7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
