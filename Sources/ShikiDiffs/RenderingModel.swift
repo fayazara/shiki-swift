@@ -59,6 +59,19 @@ public struct LineAnnotation: Identifiable, Equatable, Sendable {
         self.id = id; self.side = side; self.lineNumber = lineNumber; self.text = text; self.metadata = metadata
     }
 }
+/// Faint text drawn after the end of a source line, like the inline blame GitLens shows.
+/// It is painted with the line itself, so it scrolls, selects, and re-renders with the code, and it
+/// does not change the file's layout.
+public struct LineTrailingText: Equatable, Sendable {
+    /// The 1-based line it follows.
+    public var lineNumber: Int
+    public var text: String
+    /// A `#rrggbb` color. The default is the theme's foreground at reduced opacity.
+    public var color: String?
+    public init(lineNumber: Int, text: String, color: String? = nil) {
+        self.lineNumber = lineNumber; self.text = text; self.color = color
+    }
+}
 public struct LineSelection: Equatable, Sendable {
     public var side: DiffSide
     public var startLine: Int

@@ -352,6 +352,10 @@ public struct EditorActiveLineOptions: Equatable, Sendable {
         guard let document = displayedDocument else { self.options = options; return }
         render(document, options: options, annotations: annotations, markerRows: markerRows)
     }
+    /// Ghost text drawn after the end of lines, such as inline blame. It survives re-renders.
+    public var lineTrailingText: [LineTrailingText] = [] {
+        didSet { canvas.trailingText = Dictionary(lineTrailingText.map { ($0.lineNumber, $0) }, uniquingKeysWith: { _, last in last }) }
+    }
     public func setLineAnnotations(_ annotations: [LineAnnotation]) {
         guard let document = displayedDocument else { self.annotations = annotations; return }
         render(document, options: options, annotations: annotations, markerRows: markerRows)
@@ -988,6 +992,8 @@ public struct EditorActiveLineOptions: Equatable, Sendable {
         return result
     }
     var annotations: [LineAnnotation] = []
+    /// Ghost text after the end of a line, keyed by 1-based line number.
+    var trailingText: [Int: LineTrailingText] = [:] { didSet { if oldValue != trailingText { needsDisplay = true } } }
     var markerRows: [MergeConflictMarkerRow] = []
     var canLoadPartial = false { didSet { if canLoadPartial != oldValue { refreshExpansionLayout() } } }
     var expanded: Set<Int> = []
@@ -2062,6 +2068,12 @@ public struct EditorActiveLineOptions: Equatable, Sendable {
         context.saveGState(); context.translateBy(x: textX, y: y + (options.lineHeight - font.ascender + font.descender) / 2 + font.ascender)
         context.scaleBy(x: 1, y: -1); context.textMatrix = .identity; context.textPosition = .zero; CTLineDraw(line, context); context.restoreGState()
         for (rect, color) in strikes { color.setFill(); rect.fill() }
+        // Ghost text follows the end of a whole line. A line cut into slices has no single end to follow.
+        if side == .additions, fragment == nil, let number, let ghost = trailingText[number], !ghost.text.isEmpty {
+            let end = textX + CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+            let color = ghost.color.map { NSColor.diffHex($0) } ?? foreground.withAlphaComponent(0.45)
+            label(ghost.text, x: end + monospaceAdvance * 4, y: y, color: color)
+        }
     }
     private func drawEditorOverlays(line: CTLine, sourceLine: Int, fragment: NSRange?, sourceLength: Int, textX: CGFloat, y: CGFloat) {
         guard let editor, let document else { return }

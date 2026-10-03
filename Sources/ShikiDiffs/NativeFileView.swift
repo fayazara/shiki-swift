@@ -45,6 +45,11 @@ import SwiftUI
         diffView.setLineAnnotations(annotations)
     }
     public func setFileAnnotations(_ annotations: [FileLineAnnotation]) { setLineAnnotations(annotations.map(\.renderedAnnotation)) }
+    /// Ghost text drawn after the end of lines, such as inline blame.
+    public var lineTrailingText: [LineTrailingText] {
+        get { diffView.lineTrailingText }
+        set { diffView.lineTrailingText = newValue }
+    }
     public func rerender() { diffView.rerender() }
     public func cleanUp() {
         let ticket = UUID(); presentationRevision = ticket
@@ -119,7 +124,10 @@ public struct FileView: NSViewRepresentable {
     public var file: FileContents?
     public var options: DiffRenderOptions
     public var headerRenderers: FileHeaderRenderers?
-    public init(document: HighlightedDiff, options: DiffRenderOptions = .init(), file: FileContents? = nil, headerRenderers: FileHeaderRenderers? = nil, interactionHandlers: FileInteractionHandlers? = nil, annotations: [LineAnnotation] = [], annotationRenderer: DiffAnnotationRenderer? = nil, gutterRenderer: FileGutterRenderer? = nil, onPostRender: ((NativeFileView, PostRenderPhase) -> Void)? = nil) {
+    /// Ghost text drawn after the end of lines, such as inline blame.
+    public var lineTrailingText: [LineTrailingText]
+    public init(document: HighlightedDiff, options: DiffRenderOptions = .init(), file: FileContents? = nil, headerRenderers: FileHeaderRenderers? = nil, interactionHandlers: FileInteractionHandlers? = nil, annotations: [LineAnnotation] = [], annotationRenderer: DiffAnnotationRenderer? = nil, gutterRenderer: FileGutterRenderer? = nil, lineTrailingText: [LineTrailingText] = [], onPostRender: ((NativeFileView, PostRenderPhase) -> Void)? = nil) {
+        self.lineTrailingText = lineTrailingText
         self.onPostRender = onPostRender
         self.gutterRenderer = gutterRenderer
         self.annotations = annotations; self.annotationRenderer = annotationRenderer
@@ -134,6 +142,7 @@ public struct FileView: NSViewRepresentable {
         view.annotationRenderer = annotationRenderer
         view.interactionHandlers = interactionHandlers ?? .init()
         view.stageHeaderRenderers(headerRenderers ?? .init())
+        view.lineTrailingText = lineTrailingText
         view.render(document, file: file, options: options, annotations: annotations)
     }
 }
@@ -148,10 +157,10 @@ extension NativeFileView {
 extension FileView {
     public init(document: HighlightedDiff, options: DiffRenderOptions = .init(), file: FileContents? = nil,
                 headerRenderers: FileHeaderRenderers? = nil, interactionHandlers: FileInteractionHandlers? = nil,
-                fileAnnotations: [FileLineAnnotation], annotationRenderer: DiffAnnotationRenderer? = nil, gutterRenderer: FileGutterRenderer? = nil, onPostRender: ((NativeFileView, PostRenderPhase) -> Void)? = nil) {
+                fileAnnotations: [FileLineAnnotation], annotationRenderer: DiffAnnotationRenderer? = nil, gutterRenderer: FileGutterRenderer? = nil, lineTrailingText: [LineTrailingText] = [], onPostRender: ((NativeFileView, PostRenderPhase) -> Void)? = nil) {
         self.init(document: document, options: options, file: file, headerRenderers: headerRenderers,
                   interactionHandlers: interactionHandlers, annotations: fileAnnotations.map(\.renderedAnnotation),
-                  annotationRenderer: annotationRenderer, gutterRenderer: gutterRenderer, onPostRender: onPostRender)
+                  annotationRenderer: annotationRenderer, gutterRenderer: gutterRenderer, lineTrailingText: lineTrailingText, onPostRender: onPostRender)
     }
 }
 
