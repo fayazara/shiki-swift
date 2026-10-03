@@ -1,0 +1,25 @@
+Sources/ShikiDiffs/NativeDiffView.swift
+  s_ecf7847dcad2f1::t_e146981abb93ec 355-358,995-996,2071-2076
+Sources/ShikiDiffs/NativeFileView.swift
+  s_ecf7847dcad2f1::t_3d2bf4a2664843 48-52,127-130,145,160,163
+Sources/ShikiDiffs/RenderingModel.swift
+  s_ecf7847dcad2f1::t_eb9304f649d8bb 62-74
+Tests/ShikiDiffsTests/LineTrailingTextTests.swift
+  s_ecf7847dcad2f1::t_eb499ae7216dc8 1-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5a92f4d906e858de9849999a161f1543d598d43c",
+  "prompts": {},
+  "sessions": {
+    "s_ecf7847dcad2f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb24cfbe-5975-4b1d-a955-92c544a30b38",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
