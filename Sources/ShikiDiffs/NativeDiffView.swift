@@ -993,7 +993,23 @@ public struct EditorActiveLineOptions: Equatable, Sendable {
     }
     var annotations: [LineAnnotation] = []
     /// Ghost text after the end of a line, keyed by 1-based line number.
-    var trailingText: [Int: LineTrailingText] = [:] { didSet { if oldValue != trailingText { needsDisplay = true } } }
+    var trailingText: [Int: LineTrailingText] = [:] {
+        didSet {
+            guard oldValue != trailingText else { return }
+            // Ghost text past the end of the longest line has to be scrollable to.
+            updateSize(viewport: enclosingScrollView?.contentSize ?? .zero)
+            needsDisplay = true
+            onLayoutChange?()
+        }
+    }
+    /// Characters needed to show the widest line together with its ghost text, which follows the line after a gap.
+    private var trailingTextCharacters: Int {
+        guard let lines = document?.diff.additionLines else { return 0 }
+        return trailingText.values.compactMap { ghost -> Int? in
+            guard lines.indices.contains(ghost.lineNumber - 1) else { return nil }
+            return cleanLastNewline(lines[ghost.lineNumber - 1]).utf16.count + 4 + ghost.text.count
+        }.max() ?? 0
+    }
     var markerRows: [MergeConflictMarkerRow] = []
     var canLoadPartial = false { didSet { if canLoadPartial != oldValue { refreshExpansionLayout() } } }
     var expanded: Set<Int> = []
@@ -1315,7 +1331,7 @@ public struct EditorActiveLineOptions: Equatable, Sendable {
     func updateSize(viewport: NSSize) {
         viewportWidth = viewport.width
         let advance = ("M" as NSString).size(withAttributes: [.font: font]).width
-        let width = max(CGFloat(maxCharacters) * advance, predictionContentWidth) + gutter + 30
+        let width = max(CGFloat(max(maxCharacters, trailingTextCharacters)) * advance, predictionContentWidth) + gutter + 30
         let totalWidth = options.diffStyle == .split ? width * 2 : width
         setFrameSize(NSSize(width: options.overflow == .wrap ? viewport.width : max(viewport.width, totalWidth), height: max(max(0, viewport.height - (enclosingScrollView?.contentInsets.top ?? 0)), rowHeights.totalHeight)))
         scheduleWrapping()

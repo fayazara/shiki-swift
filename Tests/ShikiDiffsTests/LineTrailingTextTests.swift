@@ -68,3 +68,24 @@ import Testing
         #expect(ghost.color == nil && ghost.lineNumber == 4)
     }
 }
+
+extension LineTrailingTextTests {
+    @Test @MainActor func widensTheScrollableAreaToFitGhostTextAfterALongLine() async throws {
+        let long = String(repeating: "x", count: 120)
+        let view = try await makeView("short\n\(long)\n")
+        view.layoutSubtreeIfNeeded()
+        let canvas = try #require(view.diffView.scrollView.documentView)
+        let before = canvas.frame.width
+
+        let ghost = "You, 2 weeks ago • a fairly long commit summary"
+        view.lineTrailingText = [.init(lineNumber: 2, text: ghost, color: "#ff00ff")]
+        view.layoutSubtreeIfNeeded()
+        // The line (120) plus a gap (4) plus the ghost text now has to fit, so the area grew by about that much.
+        let advance = ("M" as NSString).size(withAttributes: [.font: NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)]).width
+        #expect(canvas.frame.width > before + CGFloat(ghost.count) * advance * 0.5)
+
+        view.lineTrailingText = []
+        view.layoutSubtreeIfNeeded()
+        #expect(canvas.frame.width == before)
+    }
+}
