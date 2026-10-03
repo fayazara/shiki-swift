@@ -7,6 +7,15 @@ All notable changes to ShikiSwift are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-03
+
+### Added
+
+- **ShikiDiffs**: `LineTrailingText` draws faint ghost text after the end of a
+  source line, such as inline git blame. Pass it to `FileView(lineTrailingText:)`
+  or set `NativeFileView.lineTrailingText` / `NativeDiffView.lineTrailingText`.
+  It is painted with the line, so it scrolls and re-renders with the code.
+
 ## [0.1.0] - 2026-09-29
 
 The first release: a native Swift port of Shiki 4.4.3, with native rendering
@@ -56,5 +65,6 @@ and a native port of @pierre/diffs.
   file size: about 3 s for two 100,000-line files in a Release build.
 - ShikiDiffs' AppKit tests should run sequentially (`--no-parallel`).
 
-[Unreleased]: https://github.com/fayazara/shiki-swift/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/fayazara/shiki-swift/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/fayazara/shiki-swift/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/fayazara/shiki-swift/releases/tag/0.1.0

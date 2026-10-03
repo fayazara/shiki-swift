@@ -43,7 +43,7 @@ Add the package with Swift Package Manager (Swift 6.1+):
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fayazara/shiki-swift.git", from: "0.1.0"),
+    .package(url: "https://github.com/fayazara/shiki-swift.git", from: "0.1.1"),
 ],
 targets: [
     .target(
@@ -380,6 +380,27 @@ The views need macOS 13 or later; on macOS 13, smooth review scrolling uses a
 timer instead of a display link. [Documentation/Diffs](Documentation/Diffs/README.md)
 has the full API guide, parity record, and component contracts. ShikiDiffs was
 developed as the separate `swift-diffs` project and moved into this package.
+
+### Ghost text after a line
+
+`FileView` can draw faint text after the end of a line, like the inline blame
+GitLens shows. It is painted with the line itself, so it scrolls, re-renders,
+and keeps its place with the code, and it never changes the file's layout.
+
+```swift
+FileView(
+    document: document,
+    options: options,
+    lineTrailingText: [
+        LineTrailingText(lineNumber: 12, text: "You, 2 weeks ago • first commit"),
+    ]
+)
+// AppKit: nativeFileView.lineTrailingText = [...]
+```
+
+The text uses the theme's foreground at reduced opacity unless you pass a
+`#rrggbb` `color`. It follows whole lines only: a line cut into slices (very
+long minified lines) is left alone.
 
 ## Long lines and time limits
 
