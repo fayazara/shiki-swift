@@ -1,0 +1,21 @@
+Sources/ShikiDiffs/NativeDiffView.swift
+  s_ecf7847dcad2f1::t_8dcc8bb20c877a 996-1012,1334
+Tests/ShikiDiffsTests/LineTrailingTextTests.swift
+  s_ecf7847dcad2f1::t_fdb886f9a0370f 71-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1b6bc11336cd3747be7941f3fa47e8271223117c",
+  "prompts": {},
+  "sessions": {
+    "s_ecf7847dcad2f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb24cfbe-5975-4b1d-a955-92c544a30b38",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
