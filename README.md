@@ -43,7 +43,7 @@ Add the package with Swift Package Manager (Swift 6.1+):
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fayazara/shiki-swift.git", from: "0.1.1"),
+    .package(url: "https://github.com/fayazara/shiki-swift.git", from: "0.1.2"),
 ],
 targets: [
     .target(

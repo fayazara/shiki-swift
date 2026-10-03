@@ -7,6 +7,14 @@ All notable changes to ShikiSwift are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-03
+
+### Fixed
+
+- **ShikiDiffs**: ghost text (`LineTrailingText`) after a long line could extend
+  past the scrollable area, so it could not be scrolled into view. The area now
+  grows to fit the widest line together with its ghost text.
+
 ## [0.1.1] - 2026-10-03
 
 ### Added
@@ -65,6 +73,7 @@ and a native port of @pierre/diffs.
   file size: about 3 s for two 100,000-line files in a Release build.
 - ShikiDiffs' AppKit tests should run sequentially (`--no-parallel`).
 
-[Unreleased]: https://github.com/fayazara/shiki-swift/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/fayazara/shiki-swift/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/fayazara/shiki-swift/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/fayazara/shiki-swift/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/fayazara/shiki-swift/releases/tag/0.1.0
