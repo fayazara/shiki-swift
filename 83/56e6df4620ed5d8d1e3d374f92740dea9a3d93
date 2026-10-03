@@ -1,0 +1,23 @@
+CHANGELOG.md
+  s_ecf7847dcad2f1::t_8f7b0881fe5eec 10-18,68-69
+README.md
+  s_ecf7847dcad2f1::t_57a89680d8adc6 46,384-404
+shiki-swift.xcodeproj/project.pbxproj
+  s_ecf7847dcad2f1::t_d4766c978ef330 284,318
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8356e6df4620ed5d8d1e3d374f92740dea9a3d93",
+  "prompts": {},
+  "sessions": {
+    "s_ecf7847dcad2f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb24cfbe-5975-4b1d-a955-92c544a30b38",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Fayaz Ahmed <fayazara@gmail.com>"
+    }
+  }
+}
